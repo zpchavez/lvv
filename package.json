@@ -1,7 +1,7 @@
 {
-    "name"        : "phaser-template",
+    "name"        : "mm-ripoff",
     "version"     : "0.0.1",
-    "description" : "Nearly-empty phaser project",
+    "description" : "In-browser racing game like MM, but worse",
     "author"      : "Trevor",
     "license"     : "MIT",
     "devDependencies" : {
