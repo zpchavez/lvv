@@ -16,6 +16,35 @@ var Car = function(state, x, y, key, group)
 
 Car.prototype = Object.create(Phaser.Sprite.prototype);
 
+Car.prototype.accelerate = function()
+{
+    this.body.applyForce(
+        rotateVector(this.body.rotation, [0, 1600]),
+        this.body.x,
+        this.body.y
+    );
+};
+
+Car.prototype.brake = function()
+{
+    this.body.applyForce(
+        rotateVector(this.body.rotation, [0, -500]),
+        this.body.x,
+        this.body.y
+    );
+};
+
+Car.prototype.turnRight = function()
+{
+    this.body.rotateRight(80);
+};
+
+
+Car.prototype.turnLeft = function()
+{
+    this.body.rotateLeft(80);
+};
+
 Car.prototype.updateWithinState = function()
 {
     this.body.setZeroRotation();
@@ -36,25 +65,16 @@ Car.prototype.updateWithinState = function()
         this.body.y
     );
 
-
     if (this.state.cursors.up.isDown) {
-        this.body.applyForce(
-            rotateVector(this.body.rotation, [0, 1600]),
-            this.body.x,
-            this.body.y
-        );
+        this.accelerate();
     } else if (this.state.cursors.down.isDown) {
-        this.body.applyForce(
-            rotateVector(this.body.rotation, [0, -500]),
-            this.body.x,
-            this.body.y
-        );
+        this.brake();
     }
 
     if (this.state.cursors.right.isDown) {
-        this.body.rotateRight(80);
+        this.turnRight();
     } else if (this.state.cursors.left.isDown) {
-        this.body.rotateLeft(80);
+        this.turnLeft();
     }
 };
 
