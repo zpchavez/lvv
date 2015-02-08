@@ -3,9 +3,9 @@
 var Phaser       = require('phaser');
 var rotateVector = require('../util').rotateVector;
 
-var Car = function(state, x, y, key, group)
+var Car = function(state, x, y, key)
 {
-    Phaser.Sprite.apply(this, [state.game, x, y, key, group]);
+    Phaser.Sprite.apply(this, [state.game, x, y, key]);
 
     this.state = state;
 
