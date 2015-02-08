@@ -45,7 +45,7 @@ Car.prototype.turnLeft = function()
     this.body.rotateLeft(80);
 };
 
-Car.prototype.updateWithinState = function()
+Car.prototype.applyForces = function()
 {
     this.body.setZeroRotation();
 
@@ -64,18 +64,6 @@ Car.prototype.updateWithinState = function()
         this.body.x,
         this.body.y
     );
-
-    if (this.state.cursors.up.isDown) {
-        this.accelerate();
-    } else if (this.state.cursors.down.isDown) {
-        this.brake();
-    }
-
-    if (this.state.cursors.right.isDown) {
-        this.turnRight();
-    } else if (this.state.cursors.left.isDown) {
-        this.turnLeft();
-    }
 };
 
 module.exports = Car;

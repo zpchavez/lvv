@@ -86,7 +86,19 @@ CarDrivingState.prototype.create = function()
 
 CarDrivingState.prototype.update = function()
 {
-    this.car.updateWithinState();
+    this.car.applyForces();
+
+    if (this.cursors.up.isDown) {
+        this.car.accelerate();
+    } else if (this.cursors.down.isDown) {
+        this.car.brake();
+    }
+
+    if (this.cursors.right.isDown) {
+        this.car.turnRight();
+    } else if (this.cursors.left.isDown) {
+        this.car.turnLeft();
+    }
 
     _.each(this.boxes, function(box) {
         if (box.body.dynamic) {
