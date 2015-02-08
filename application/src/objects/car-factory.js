@@ -2,11 +2,14 @@
 
 var CarSprite = require('./car-sprite');
 
-var CarFactory = function() {};
-
-CarFactory.prototype.loadAssets = function(state)
+var CarFactory = function(state)
 {
-    state.load.image('car', this.getSpritePath());
+    this.state = state;
+};
+
+CarFactory.prototype.loadAssets = function()
+{
+    this.state.load.image('car', this.getSpritePath());
 };
 
 CarFactory.prototype.getSpritePath = function()
@@ -16,9 +19,9 @@ CarFactory.prototype.getSpritePath = function()
 
 CarFactory.prototype.spritePrototype = CarSprite;
 
-CarFactory.prototype.getSprite = function(state, x, y, key, group)
+CarFactory.prototype.getSprite = function(x, y, key, group)
 {
-    return new this.spritePrototype(state, x, y, key, group);
+    return new this.spritePrototype(this.state, x, y, key, group);
 };
 
 module.exports = CarFactory;

@@ -39,18 +39,18 @@ var makeObstacles = function(context) {
     ball.body.mass = 150;
 };
 
-var carFactory = new CarFactory();
-
 var CarDrivingState = function()
 {
     Phaser.State.apply(this, arguments);
+
+    this.carFactory = new CarFactory(this);
 };
 
 CarDrivingState.prototype = Object.create(Phaser.State.prototype);
 
 CarDrivingState.prototype.preload = function()
 {
-    carFactory.loadAssets(this);
+    this.carFactory.loadAssets();
 
     this.load.image('dirt', 'assets/img/dirt.png');
     this.load.image('box-black', 'assets/img/black-box.png');
@@ -71,7 +71,7 @@ CarDrivingState.prototype.create = function()
 
     this.game.physics.p2.updateBoundsCollisionGroup();
 
-    this.car = carFactory.getSprite(this, this.game.world.centerX, this.game.world.centerY, 'car');
+    this.car = this.carFactory.getSprite(this.game.world.centerX, this.game.world.centerY, 'car');
     this.game.world.addChild(this.car);
 
     this.car.body.setCollisionGroup(this.collisionGroup);
