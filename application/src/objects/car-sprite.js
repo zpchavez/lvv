@@ -7,14 +7,16 @@ var Car = function(state, x, y, key, group)
 {
     Phaser.Sprite.apply(this, [state.game, x, y, key, group]);
 
-    state.game.physics.p2.enable(this);
+    this.state = state;
+
+    this.state.game.physics.p2.enable(this);
 
     this.body.mass = 10;
 };
 
 Car.prototype = Object.create(Phaser.Sprite.prototype);
 
-Car.prototype.updateWithinState = function(state)
+Car.prototype.updateWithinState = function()
 {
     this.body.setZeroRotation();
 
@@ -35,13 +37,13 @@ Car.prototype.updateWithinState = function(state)
     );
 
 
-    if (state.cursors.up.isDown) {
+    if (this.state.cursors.up.isDown) {
         this.body.applyForce(
             rotateVector(this.body.rotation, [0, 1600]),
             this.body.x,
             this.body.y
         );
-    } else if (state.cursors.down.isDown) {
+    } else if (this.state.cursors.down.isDown) {
         this.body.applyForce(
             rotateVector(this.body.rotation, [0, -500]),
             this.body.x,
@@ -49,9 +51,9 @@ Car.prototype.updateWithinState = function(state)
         );
     }
 
-    if (state.cursors.right.isDown) {
+    if (this.state.cursors.right.isDown) {
         this.body.rotateRight(80);
-    } else if (state.cursors.left.isDown) {
+    } else if (this.state.cursors.left.isDown) {
         this.body.rotateLeft(80);
     }
 };

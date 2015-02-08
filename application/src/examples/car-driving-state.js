@@ -86,7 +86,7 @@ CarDrivingState.prototype.create = function()
 
 CarDrivingState.prototype.update = function()
 {
-    this.car.updateWithinState(this);
+    this.car.updateWithinState();
 
     _.each(this.boxes, function(box) {
         if (box.body.dynamic) {
