@@ -1,19 +1,58 @@
 'use strict';
 
-var Phaser = require('phaser');
-var _      = require('underscore');
+var Phaser     = require('phaser');
+var _          = require('underscore');
+var CarFactory = require('../objects/car-factory');
+
+var makeObstacles = function(context) {
+    context.boxes = [];
+
+    for (var i = 0; i < 10; i += 1) {
+        for (var j = 0; j < 10; j += 1) {
+            var greyBox = context.add.sprite(100 + 80 * i, 100 + 75 * j + i * 3, 'box-gray');
+            context.game.physics.p2.enable(greyBox);
+            greyBox.body.setCollisionGroup(context.collisionGroup);
+            greyBox.body.collides(context.collisionGroup);
+            greyBox.body.angularDamping = 0.97;
+
+            context.boxes.push(greyBox);
+        }
+    }
+
+    for (var x = 0; x < 60; x += 1) {
+        for (var y = 0; y < 2; y += 1) {
+            var blackBox = context.add.sprite(1200 + 300 * y, 100 + 100 * x, 'box-black');
+            context.game.physics.p2.enable(blackBox);
+            blackBox.body.setCollisionGroup(context.collisionGroup);
+            blackBox.body.collides(context.collisionGroup);
+            blackBox.body.dynamic = false;
+
+            context.boxes.push(blackBox);
+        }
+    }
+
+    var ball = context.add.sprite(850, 1400, 'red-circle');
+    context.game.physics.p2.enable(ball);
+    ball.body.setCircle(150);
+    ball.body.setCollisionGroup(context.collisionGroup);
+    ball.body.collides(context.collisionGroup);
+    ball.body.mass = 150;
+};
 
 var CarDrivingState = function()
 {
     Phaser.State.apply(this, arguments);
-}
+
+    this.carFactory = new CarFactory(this);
+};
 
 CarDrivingState.prototype = Object.create(Phaser.State.prototype);
 
 CarDrivingState.prototype.preload = function()
 {
+    this.carFactory.loadAssets();
+
     this.load.image('dirt', 'assets/img/dirt.png');
-    this.load.image('car', 'assets/img/bluebox.png');
     this.load.image('box-black', 'assets/img/black-box.png');
     this.load.image('box-gray', 'assets/img/gray-box.png');
     this.load.image('red-circle', 'assets/img/red-circle.png');
@@ -32,9 +71,9 @@ CarDrivingState.prototype.create = function()
 
     this.game.physics.p2.updateBoundsCollisionGroup();
 
-    this.car = this.add.sprite(this.game.world.centerX, this.game.world.centerY, 'car');
-    this.game.physics.p2.enable(this.car);
-    this.car.body.mass = 10;
+    this.car = this.carFactory.getNew(this.game.world.centerX, this.game.world.centerY, 'car');
+    this.game.world.addChild(this.car);
+
     this.car.body.setCollisionGroup(this.collisionGroup);
     this.car.body.collides(this.collisionGroup);
 
@@ -43,51 +82,26 @@ CarDrivingState.prototype.create = function()
     this.cursors = this.game.input.keyboard.createCursorKeys();
 
     this.game.camera.follow(this.car);
-}
+};
 
 CarDrivingState.prototype.update = function()
 {
-    this.car.body.setZeroRotation();
-
-    var carRefVelocity = rotateVector(-this.car.body.rotation, [this.car.body.velocity.x, this.car.body.velocity.y]);
-
-    // apply rolling friction
-    this.car.body.applyForce(
-        rotateVector(this.car.body.rotation, [0, carRefVelocity[1] * 0.175 * this.car.body.mass]),
-        this.car.body.x,
-        this.car.body.y
-    );
-
-    // apply skid friction
-    this.car.body.applyForce(
-        rotateVector(this.car.body.rotation, [carRefVelocity[0] * 0.25 * this.car.body.mass, 0]),
-        this.car.body.x,
-        this.car.body.y
-    );
-
+    this.car.applyForces();
 
     if (this.cursors.up.isDown) {
-        this.car.body.applyForce(
-            rotateVector(this.car.body.rotation, [0, 1600]),
-            this.car.body.x,
-            this.car.body.y
-        );
+        this.car.accelerate();
     } else if (this.cursors.down.isDown) {
-        this.car.body.applyForce(
-            rotateVector(this.car.body.rotation, [0, -500]),
-            this.car.body.x,
-            this.car.body.y
-        );
+        this.car.brake();
     }
 
     if (this.cursors.right.isDown) {
-        this.car.body.rotateRight(80);
+        this.car.turnRight();
     } else if (this.cursors.left.isDown) {
-        this.car.body.rotateLeft(80);
+        this.car.turnLeft();
     }
 
-    _.each(this.boxes, function(box){
-        if (! box.body.static) {
+    _.each(this.boxes, function(box) {
+        if (box.body.dynamic) {
             box.body.applyForce(
                 [
                     box.body.velocity.x * 0.2 * box.body.mass,
@@ -97,50 +111,8 @@ CarDrivingState.prototype.update = function()
                 box.body.y
             );
         }
-        
+
     });
-}
-
-var rotateVector = function(rotation, vector) {
-    return [
-        vector[0] * Math.cos(rotation) - vector[1] * Math.sin(rotation),
-        vector[0] * Math.sin(rotation) + vector[1] * Math.cos(rotation)
-    ];
-}
-
-var makeObstacles = function(context) {
-    context.boxes = [];
-
-    for (var i = 0; i < 10; i++) {
-        for (var j = 0; j < 10; j++) {
-            var box = context.add.sprite(100 + 80 * i, 100 + 75 * j + i * 3, 'box-gray');
-            context.game.physics.p2.enable(box);
-            box.body.setCollisionGroup(context.collisionGroup);
-            box.body.collides(context.collisionGroup);
-            box.body.angularDamping = 0.97;
-
-            context.boxes.push(box);
-        }
-    };
-
-    for (var i = 0; i < 60; i++) {
-        for (var j = 0; j < 2; j++) {
-            var box = context.add.sprite(1200 + 300 * j, 100 + 100 * i, 'box-black');
-            context.game.physics.p2.enable(box);
-            box.body.setCollisionGroup(context.collisionGroup);
-            box.body.collides(context.collisionGroup);
-            box.body.static = true;
-
-            context.boxes.push(box);
-        }
-    }
-
-    var ball = context.add.sprite(850, 1400, 'red-circle');
-    context.game.physics.p2.enable(ball);
-    ball.body.setCircle(150);
-    ball.body.setCollisionGroup(context.collisionGroup);
-    ball.body.collides(context.collisionGroup);
-    ball.body.mass = 150;
-}
+};
 
 module.exports = CarDrivingState;
