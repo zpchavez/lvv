@@ -41,24 +41,23 @@ var makeObstacles = function(context) {
     context.add.existing(ball);
 };
 
-var carFactory = new CarFactory();
-
 var CarDrivingState = function()
 {
     Phaser.State.apply(this, arguments);
 
     this.obstacleFactory = new ObstacleFactory(this);
+    this.carFactory      = new CarFactory(this);
 };
 
 CarDrivingState.prototype = Object.create(Phaser.State.prototype);
 
 CarDrivingState.prototype.preload = function()
 {
-    carFactory.loadAssets(this);
     this.obstacleFactory.loadAssets([
         'ClownNose',
         'DynamicBox'
     ]);
+    this.carFactory.loadAssets();
 
     this.load.image('dirt', 'assets/img/dirt.png');
     this.load.image('box-black', 'assets/img/black-box.png');
@@ -77,7 +76,7 @@ CarDrivingState.prototype.create = function()
 
     this.game.physics.p2.updateBoundsCollisionGroup();
 
-    this.car = carFactory.getSprite(this, this.game.world.centerX, this.game.world.centerY, 'car');
+    this.car = this.carFactory.getNew(this.game.world.centerX, this.game.world.centerY, 'car');
     this.game.world.addChild(this.car);
 
     this.car.body.setCollisionGroup(this.collisionGroup);
@@ -92,7 +91,19 @@ CarDrivingState.prototype.create = function()
 
 CarDrivingState.prototype.update = function()
 {
-    this.car.updateWithinState(this);
+    this.car.applyForces();
+
+    if (this.cursors.up.isDown) {
+        this.car.accelerate();
+    } else if (this.cursors.down.isDown) {
+        this.car.brake();
+    }
+
+    if (this.cursors.right.isDown) {
+        this.car.turnRight();
+    } else if (this.cursors.left.isDown) {
+        this.car.turnLeft();
+    }
 
     _.each(this.boxes, function(box) {
         if (box.body.dynamic) {
