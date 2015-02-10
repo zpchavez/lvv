@@ -1,6 +1,6 @@
 'use strict';
 
-var CarSprite = require('./car-sprite');
+var CarSprite = require('./car');
 
 var CarFactory = function(state)
 {
@@ -19,7 +19,7 @@ CarFactory.prototype.getSpritePath = function()
 
 CarFactory.prototype.spritePrototype = CarSprite;
 
-CarFactory.prototype.getSprite = function(x, y, key, group)
+CarFactory.prototype.getNew = function(x, y, key, group)
 {
     return new this.spritePrototype(this.state, x, y, key, group);
 };
