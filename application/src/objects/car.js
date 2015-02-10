@@ -12,6 +12,9 @@ var Car = function(state, x, y, key)
     this.state.game.physics.p2.enable(this);
 
     this.body.mass = 10;
+
+    this.constants = this.getConstants();
+    Object.freeze(this.constants);
 };
 
 Car.prototype = Object.create(Phaser.Sprite.prototype);
@@ -55,8 +58,6 @@ Car.prototype.turnLeft = function()
 
 Car.prototype.applyForces = function()
 {
-    var constants = this.getConstants();
-
     this.body.setZeroRotation();
 
     var carRefVelocity = rotateVector(
@@ -70,7 +71,7 @@ Car.prototype.applyForces = function()
             this.body.rotation,
             [
                 0,
-                carRefVelocity[1] * constants.ROLLING_FRICTION_MULTIPLIER * this.body.mass
+                carRefVelocity[1] * this.constants.ROLLING_FRICTION_MULTIPLIER * this.body.mass
             ]
         ),
         this.body.x,
@@ -82,7 +83,7 @@ Car.prototype.applyForces = function()
         rotateVector(
             this.body.rotation,
             [
-                carRefVelocity[0] * constants.SKID_FRICTION_MULTIPLIER * this.body.mass, 0
+                carRefVelocity[0] * this.constants.SKID_FRICTION_MULTIPLIER * this.body.mass, 0
             ]
         ),
         this.body.x,
