@@ -2,13 +2,12 @@
 
 var Phaser = require('phaser');
 
-var AbstractDynamicObstacle = function(state, x, y, key, collisionGroup)
+var AbstractDynamicObstacle = function(state, x, y, key)
 {
     Phaser.Sprite.apply(this, [state.game, x, y, key]);
 
     this.createPhysicsBody(state);
 
-    this.body.setCollisionGroup(collisionGroup);
     this.body.mass = this.getAttributes().mass;
     this.body.angularDamping = this.getAttributes().angularDamping;
 };

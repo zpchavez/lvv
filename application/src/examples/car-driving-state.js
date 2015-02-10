@@ -12,9 +12,9 @@ var makeObstacles = function(context) {
         for (var j = 0; j < 10; j += 1) {
             var greyBox = context.obstacleFactory.getNew('DynamicBox',
                 100 + 80 * i,
-                100 + 75 * j + i * 3,
-                context.collisionGroup
+                100 + 75 * j + i * 3
             );
+            greyBox.body.setCollisionGroup(context.collisionGroup);
             greyBox.body.collides(context.collisionGroup);
             context.add.existing(greyBox);
         }
@@ -34,9 +34,9 @@ var makeObstacles = function(context) {
 
     var ball = context.obstacleFactory.getNew('ClownNose',
         850,
-        1400,
-        context.collisionGroup
+        1400
     );
+    ball.body.setCollisionGroup(context.collisionGroup);
     ball.body.collides(context.collisionGroup);
     context.add.existing(ball);
 };
