@@ -11,10 +11,10 @@ var Car = function(state, x, y, key)
 
     this.state.game.physics.p2.enable(this);
 
-    this.body.mass = 10;
-
     this.constants = this.getConstants();
     Object.freeze(this.constants);
+
+    this.body.mass = this.constants.MASS;
 };
 
 Car.prototype = Object.create(Phaser.Sprite.prototype);
@@ -22,15 +22,19 @@ Car.prototype = Object.create(Phaser.Sprite.prototype);
 Car.prototype.getConstants = function()
 {
     return {
+        MASS                        : 10,
         ROLLING_FRICTION_MULTIPLIER : 0.175,
-        SKID_FRICTION_MULTIPLIER    : 0.25
+        SKID_FRICTION_MULTIPLIER    : 0.25,
+        ACCELERATION_FORCE          : 1600,
+        BRAKE_FORCE                 : -500,
+        TURNING_VELOCITY            : 80
     };
 };
 
 Car.prototype.accelerate = function()
 {
     this.body.applyForce(
-        rotateVector(this.body.rotation, [0, 1600]),
+        rotateVector(this.body.rotation, [0, this.constants.ACCELERATION_FORCE]),
         this.body.x,
         this.body.y
     );
@@ -39,7 +43,7 @@ Car.prototype.accelerate = function()
 Car.prototype.brake = function()
 {
     this.body.applyForce(
-        rotateVector(this.body.rotation, [0, -500]),
+        rotateVector(this.body.rotation, [0, this.constants.BRAKE_FORCE]),
         this.body.x,
         this.body.y
     );
@@ -47,13 +51,13 @@ Car.prototype.brake = function()
 
 Car.prototype.turnRight = function()
 {
-    this.body.rotateRight(80);
+    this.body.rotateRight(this.constants.TURNING_VELOCITY);
 };
 
 
 Car.prototype.turnLeft = function()
 {
-    this.body.rotateLeft(80);
+    this.body.rotateLeft(this.constants.TURNING_VELOCITY);
 };
 
 Car.prototype.applyForces = function()
