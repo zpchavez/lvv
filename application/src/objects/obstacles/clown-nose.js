@@ -2,7 +2,7 @@
 
 var AbstractDynamicObstacle = require('./abstract-dynamic-obstacle');
 
-var ClownNose = function()
+var ClownNose = function(state, x, y, key)
 {
     AbstractDynamicObstacle.apply(this, arguments);
 };
