@@ -14,12 +14,12 @@ ClownNose.prototype.getSpritePath = function()
     return 'assets/img/red-circle.png';
 };
 
-ClownNose.prototype.getAttributes = function()
+ClownNose.prototype.getConstants = function()
 {
     return {
-        angularDamping     : 0.97,
-        mass               : 150,
-        frictionMultiplier : 0.01
+        ANGULAR_DAMPING     : 0.97,
+        MASS                : 150,
+        FRICTION_MULTIPLIER : 0.01
     };
 };
 

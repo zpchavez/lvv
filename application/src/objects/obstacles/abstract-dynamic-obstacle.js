@@ -8,8 +8,11 @@ var AbstractDynamicObstacle = function(state, x, y, key)
 
     this.createPhysicsBody(state);
 
-    this.body.mass = this.getAttributes().mass;
-    this.body.angularDamping = this.getAttributes().angularDamping;
+    this.constants = this.getConstants();
+    Object.freeze(this.constants);
+
+    this.body.mass = this.constants.MASS;
+    this.body.angularDamping = this.constants.ANGULAR_DAMPING;
 };
 
 AbstractDynamicObstacle.prototype = Object.create(Phaser.Sprite.prototype);
@@ -19,12 +22,12 @@ AbstractDynamicObstacle.prototype.getSpritePath = function()
     throw new Error('Attempted to load assets on abstract class');
 };
 
-AbstractDynamicObstacle.prototype.getAttributes = function()
+AbstractDynamicObstacle.prototype.getConstants = function()
 {
     return {
-        angularDamping     : 0.97,
-        mass               : 1,
-        frictionMultiplier : 0.2
+        ANGULAR_DAMPING     : 0.97,
+        MASS                : 1,
+        FRICTION_MULTIPLIER : 0.2
     };
 };
 
@@ -35,7 +38,7 @@ AbstractDynamicObstacle.prototype.createPhysicsBody = function(state)
 
 AbstractDynamicObstacle.prototype.update = function()
 {
-    var frictionMultiplier = this.getAttributes().frictionMultiplier;
+    var frictionMultiplier = this.constants.FRICTION_MULTIPLIER;
 
     this.body.applyForce(
         [

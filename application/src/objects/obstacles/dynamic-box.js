@@ -14,12 +14,12 @@ DynamicBox.prototype.getSpritePath = function()
     return 'assets/img/gray-box.png';
 };
 
-DynamicBox.prototype.getAttributes = function()
+DynamicBox.prototype.getConstants = function()
 {
     return {
-        angularDamping     : 0.97,
-        mass               : 1,
-        frictionMultiplier : 0.2
+        ANGULAR_DAMPING     : 0.97,
+        MASS                : 1,
+        FRICTION_MULTIPLIER : 0.2
     };
 };
 
