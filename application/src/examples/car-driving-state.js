@@ -6,8 +6,6 @@ var CarFactory      = require('../objects/car-factory');
 var ObstacleFactory = require('../objects/obstacles/obstacle-factory');
 
 var makeObstacles = function(context) {
-    context.boxes = [];
-
     for (var i = 0; i < 10; i += 1) {
         for (var j = 0; j < 10; j += 1) {
             var greyBox = context.obstacleFactory.getNew('DynamicBox',
@@ -22,13 +20,13 @@ var makeObstacles = function(context) {
 
     for (var x = 0; x < 60; x += 1) {
         for (var y = 0; y < 2; y += 1) {
-            var blackBox = context.add.sprite(1200 + 300 * y, 100 + 100 * x, 'box-black');
-            context.game.physics.p2.enable(blackBox);
+            var blackBox = context.obstacleFactory.getNew('StaticBox',
+                1200 + 300 * y,
+                100 + 100 * x
+            );
             blackBox.body.setCollisionGroup(context.collisionGroup);
             blackBox.body.collides(context.collisionGroup);
-            blackBox.body.dynamic = false;
-
-            context.boxes.push(blackBox);
+            context.add.existing(blackBox);
         }
     }
 
@@ -55,12 +53,12 @@ CarDrivingState.prototype.preload = function()
 {
     this.obstacleFactory.loadAssets([
         'ClownNose',
-        'DynamicBox'
+        'DynamicBox',
+        'StaticBox'
     ]);
     this.carFactory.loadAssets();
 
     this.load.image('dirt', 'assets/img/dirt.png');
-    this.load.image('box-black', 'assets/img/black-box.png');
 };
 
 CarDrivingState.prototype.create = function()
@@ -104,20 +102,6 @@ CarDrivingState.prototype.update = function()
     } else if (this.cursors.left.isDown) {
         this.car.turnLeft();
     }
-
-    _.each(this.boxes, function(box) {
-        if (box.body.dynamic) {
-            box.body.applyForce(
-                [
-                    box.body.velocity.x * 0.2 * box.body.mass,
-                    box.body.velocity.y * 0.2 * box.body.mass
-                ],
-                box.body.x,
-                box.body.y
-            );
-        }
-
-    });
 };
 
 module.exports = CarDrivingState;
