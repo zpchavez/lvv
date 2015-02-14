@@ -1,4 +1,4 @@
-'user strict';
+'use strict';
 
 var AbstractStaticObstacle = require('./abstract-static-obstacle');
 

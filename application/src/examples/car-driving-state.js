@@ -32,11 +32,19 @@ var makeObstacles = function(context) {
 
     var ball = context.obstacleFactory.getNew('ClownNose',
         850,
-        1400
+        1300
     );
     ball.body.setCollisionGroup(context.collisionGroup);
     ball.body.collides(context.collisionGroup);
     context.add.existing(ball);
+
+    var toothbrush = context.obstacleFactory.getNew('Toothbrush',
+        400,
+        1700
+    );
+    toothbrush.body.setCollisionGroup(context.collisionGroup);
+    toothbrush.body.collides(context.collisionGroup);
+    context.add.existing(toothbrush);
 };
 
 var CarDrivingState = function()
@@ -54,7 +62,8 @@ CarDrivingState.prototype.preload = function()
     this.obstacleFactory.loadAssets([
         'ClownNose',
         'DynamicBox',
-        'StaticBox'
+        'StaticBox',
+        'Toothbrush'
     ]);
     this.carFactory.loadAssets();
 
