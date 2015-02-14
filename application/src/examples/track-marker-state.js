@@ -62,19 +62,33 @@ TrackMarkerState.prototype.addMarkers = function()
     var points, state = this;
 
     points = [
-        [this.game.world.centerX, this.game.world.centerY - 200],
-        [this.game.world.centerX, this.game.world.centerY - 600],
-        [this.game.world.centerX, this.game.world.centerY - 1000],
-        [this.game.world.centerX, this.game.world.centerY - 1400],
-        [this.game.world.centerX, this.game.world.centerY - 1800],
-        [this.game.world.centerX, this.game.world.centerY - 2200]
+        [this.game.world.centerX, this.game.world.centerY - 200, 0],
+        [this.game.world.centerX, this.game.world.centerY - 600, 0],
+        [this.game.world.centerX, this.game.world.centerY - 1000, 0],
+        [this.game.world.centerX, this.game.world.centerY - 1400, 0],
+        [this.game.world.centerX, this.game.world.centerY - 1800, 0],
+        [this.game.world.centerX + 400, this.game.world.centerY - 2400, 90],
+        [this.game.world.centerX + 800, this.game.world.centerY - 2400, 90],
+        [this.game.world.centerX + 1200, this.game.world.centerY - 2400, 90],
+        [this.game.world.centerX + 1600, this.game.world.centerY - 2400, 90],
+        [this.game.world.centerX + 2000, this.game.world.centerY - 2400, 90],
+        [this.game.world.centerX + 2500, this.game.world.centerY - 1800, 0],
+        [this.game.world.centerX + 2500, this.game.world.centerY - 1400, 0],
+        [this.game.world.centerX + 2500, this.game.world.centerY - 1000, 0],
+        [this.game.world.centerX + 2500, this.game.world.centerY - 600, 0],
+        [this.game.world.centerX + 2500, this.game.world.centerY - 200, 0],
+        [this.game.world.centerX + 2000, this.game.world.centerY + 400, 90],
+        [this.game.world.centerX + 1600, this.game.world.centerY + 400, 90],
+        [this.game.world.centerX + 1200, this.game.world.centerY + 400, 90],
+        [this.game.world.centerX + 800, this.game.world.centerY + 400, 90],
+        [this.game.world.centerX + 400, this.game.world.centerY + 400, 90]
     ];
 
     state.markers = [];
 
     state = this;
     _.each(points, function(point) {
-        var marker = state.trackMarkerFactory.getNew(point[0], point[1]);
+        var marker = state.trackMarkerFactory.getNew(point[0], point[1], point[2]);
         state.markers.push(marker);
         state.game.world.addChild(marker);
     });

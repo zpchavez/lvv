@@ -17,7 +17,7 @@ TrackMarkerFactory.prototype.loadAssets = function()
 
 TrackMarkerFactory.prototype.spritePrototype = TrackMarker;
 
-TrackMarkerFactory.prototype.getNew = function(x, y)
+TrackMarkerFactory.prototype.getNew = function(x, y, angle)
 {
     this.counter += 1;
 
@@ -26,7 +26,8 @@ TrackMarkerFactory.prototype.getNew = function(x, y)
         x,
         y,
         'track-marker-off',
-        this.counter
+        this.counter,
+        angle
     );
 
     return sprite;
