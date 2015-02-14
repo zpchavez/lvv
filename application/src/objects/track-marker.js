@@ -2,7 +2,7 @@
 
 var Phaser = require('phaser');
 
-var TrackMarker = function(state, x, y, key)
+var TrackMarker = function(state, x, y, key, ordinal)
 {
     Phaser.Sprite.apply(this, [state.game, x, y, key]);
 
@@ -13,8 +13,9 @@ var TrackMarker = function(state, x, y, key)
     // of the very left edge of the marker
     this.anchor.setTo(0.5, 0.5);
 
-    this.height = 32;
-    this.width  = 1000;
+    this.height  = 32;
+    this.width   = 1000;
+    this.ordinal = ordinal;
 
     this.activated = false;
 };

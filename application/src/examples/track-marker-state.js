@@ -3,6 +3,7 @@
 var Phaser             = require('phaser');
 var CarFactory         = require('../objects/car-factory');
 var TrackMarkerFactory = require('../objects/track-marker-factory.js');
+var _                  = require('underscore');
 
 var TrackMarkerState = function()
 {
@@ -41,11 +42,7 @@ TrackMarkerState.prototype.create = function()
     this.car = this.carFactory.getNew(this.game.world.centerX, this.game.world.centerY, 'car');
     this.game.world.addChild(this.car);
 
-    this.marker = this.trackMarkerFactory.getNew(
-        this.game.world.centerX,
-        this.game.world.centerY - 200
-    );
-    this.game.world.addChild(this.marker);
+    this.addMarkers();
 
     // Keep car from going under markers
     this.car.bringToTop();
@@ -58,6 +55,29 @@ TrackMarkerState.prototype.create = function()
     this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR ]);
 
     this.game.camera.follow(this.car);
+};
+
+TrackMarkerState.prototype.addMarkers = function()
+{
+    var points, state = this;
+
+    points = [
+        [this.game.world.centerX, this.game.world.centerY - 200],
+        [this.game.world.centerX, this.game.world.centerY - 600],
+        [this.game.world.centerX, this.game.world.centerY - 1000],
+        [this.game.world.centerX, this.game.world.centerY - 1400],
+        [this.game.world.centerX, this.game.world.centerY - 1800],
+        [this.game.world.centerX, this.game.world.centerY - 2200]
+    ];
+
+    state.markers = [];
+
+    state = this;
+    _.each(points, function(point) {
+        var marker = state.trackMarkerFactory.getNew(point[0], point[1]);
+        state.markers.push(marker);
+        state.game.world.addChild(marker);
+    });
 };
 
 // An alternate way to check for overlap. Use with P2.setPostBroadphaseCallback
@@ -88,24 +108,28 @@ TrackMarkerState.prototype.checkOverlap = function(body1, body2)
 
 TrackMarkerState.prototype.update = function()
 {
-    this.car.applyForces();
+    var state = this;
 
-    if (Phaser.Rectangle.intersects(this.marker.getBounds(), this.car.getBounds())) {
-        if (! this.marker.activated) {
-            this.marker.activate();
+    state.car.applyForces();
+
+    _.each(state.markers, function(marker) {
+        if (Phaser.Rectangle.intersects(marker.getBounds(), state.car.getBounds())) {
+            if (! marker.activated) {
+                marker.activate();
+            }
         }
+    });
+
+    if (state.cursors.up.isDown) {
+        state.car.accelerate();
+    } else if (state.cursors.down.isDown) {
+        state.car.brake();
     }
 
-    if (this.cursors.up.isDown) {
-        this.car.accelerate();
-    } else if (this.cursors.down.isDown) {
-        this.car.brake();
-    }
-
-    if (this.cursors.right.isDown) {
-        this.car.turnRight();
-    } else if (this.cursors.left.isDown) {
-        this.car.turnLeft();
+    if (state.cursors.right.isDown) {
+        state.car.turnRight();
+    } else if (state.cursors.left.isDown) {
+        state.car.turnLeft();
     }
 };
 
