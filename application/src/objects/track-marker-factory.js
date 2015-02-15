@@ -1,6 +1,7 @@
 'use strict';
 
-var TrackMarker = require('./track-marker');
+var TrackMarker  = require('./track-marker');
+var FinishMarker = require('./finish-marker');
 
 var TrackMarkerFactory = function(state)
 {
@@ -21,8 +22,7 @@ TrackMarkerFactory.prototype.createMarker = function(x, y, angle)
         x,
         y,
         'track-marker-off',
-        angle,
-        false
+        angle
     );
 
     return sprite;
@@ -30,13 +30,12 @@ TrackMarkerFactory.prototype.createMarker = function(x, y, angle)
 
 TrackMarkerFactory.prototype.createFinishLine = function(x, y, angle)
 {
-    var sprite = new TrackMarker(
+    var sprite = new FinishMarker(
         this.state,
         x,
         y,
         'finish-line',
-        angle,
-        true
+        angle
     );
 
     return sprite;
