@@ -26,6 +26,8 @@ ObstacleFactory.prototype.loadAssets = function(types)
             throw new Error('Attempted to load assets for unknown class ' + type);
         }        
     }, this);
+
+    this.state.load.physics('Obstacles', 'assets/physics/obstacles.json');
 };
 
 ObstacleFactory.prototype.getNew = function(type, x, y)

@@ -39,7 +39,7 @@ var makeObstacles = function(context) {
     context.add.existing(ball);
 
     var toothbrush = context.obstacleFactory.getNew('Toothbrush',
-        400,
+        600,
         1700
     );
     toothbrush.body.setCollisionGroup(context.collisionGroup);
