@@ -1,16 +1,15 @@
 'use strict';
 
-var Phaser             = require('phaser');
-var CarFactory         = require('../objects/car-factory');
-var TrackMarkerFactory = require('../objects/track-marker-factory.js');
-var _                  = require('underscore');
+var Phaser     = require('phaser');
+var CarFactory = require('../objects/car-factory');
+var Track      = require('../objects/track');
 
 var TrackMarkerState = function()
 {
     Phaser.State.apply(this, arguments);
 
-    this.carFactory         = new CarFactory(this);
-    this.trackMarkerFactory = new TrackMarkerFactory(this);
+    this.carFactory = new CarFactory(this);
+    this.track      = new Track(this);
 
     this.lapNumber = 1;
 };
@@ -20,7 +19,7 @@ TrackMarkerState.prototype = Object.create(Phaser.State.prototype);
 TrackMarkerState.prototype.preload = function()
 {
     this.carFactory.loadAssets();
-    this.trackMarkerFactory.loadAssets();
+    this.track.loadAssets();
 
     this.load.image('dirt', 'assets/img/dirt.png');
     this.load.image('box-black', 'assets/img/black-box.png');
@@ -44,7 +43,7 @@ TrackMarkerState.prototype.create = function()
     this.car = this.carFactory.getNew(this.game.world.centerX, this.game.world.centerY, 'car');
     this.game.world.addChild(this.car);
 
-    this.addMarkers();
+    this.defineTrack();
 
     // Keep car from going under markers
     this.car.bringToTop();
@@ -81,20 +80,11 @@ TrackMarkerState.prototype.incrementLapCounter = function()
     this.lapDisplay.setText('Lap ' + this.lapNumber);
 };
 
-TrackMarkerState.prototype.deactivateMarkers = function()
+TrackMarkerState.prototype.defineTrack = function()
 {
-    for (var i = 0; i < this.markers.length - 1; i += 1) {
-        this.markers[i].deactivate();
-    }
-};
+    var data = {};
 
-TrackMarkerState.prototype.addMarkers = function()
-{
-    var points, finishLine, state = this;
-
-    this.allowedSkippedMarkers = 0;
-
-    points = [
+    data.markers = [
         [this.game.world.centerX, this.game.world.centerY - 200, 0],
         [this.game.world.centerX, this.game.world.centerY - 600, 0],
         [this.game.world.centerX, this.game.world.centerY - 1000, 0],
@@ -115,50 +105,38 @@ TrackMarkerState.prototype.addMarkers = function()
         [this.game.world.centerX + 800, this.game.world.centerY + 400, 90]
     ];
 
-    state.markers = [];
+    data.finishLine = [this.game.world.centerX, this.game.world.centerY, 0];
 
-    state = this;
-    _.each(points, function(point) {
-        var marker = state.trackMarkerFactory.createMarker(point[0], point[1], point[2]);
-        state.markers.push(marker);
-        state.game.world.addChild(marker);
-    });
+    this.track.loadFromObject(data);
 
-    finishLine = state.trackMarkerFactory.createFinishLine(
-        this.game.world.centerX,
-        this.game.world.centerY,
-        0
-    );
-    state.game.world.addChild(finishLine);
-    state.markers.push(finishLine);
-
-    this.lastActivatedMarker = -1; // -1 means the finish line
+    this.track.setLapCompletedCallback(this.incrementLapCounter, this);
+    this.track.setMarkerSkippedCallback(this.moveCarToLastActivatedMarker, this);
 };
 
 TrackMarkerState.prototype.moveCarToLastActivatedMarker = function()
 {
     // Negative one means the finish line
-    if (this.lastActivatedMarker === -1) {
+    if (this.track.lastActivatedMarker === -1) {
         this.car.body.reset(
-            this.markers[this.markers.length - 1].x,
-            this.markers[this.markers.length - 1].y
+            this.track.finish.x,
+            this.track.finish.y
         );
-        this.car.body.angle = this.markers[this.markers.length - 1].angle;
+        this.car.body.angle = this.track.finish.angle;
         return;
     }
 
     this.car.body.reset(
-        this.markers[this.lastActivatedMarker].x,
-        this.markers[this.lastActivatedMarker].y
+        this.track.markers[this.track.lastActivatedMarker].x,
+        this.track.markers[this.track.lastActivatedMarker].y
     );
-    this.car.body.angle = this.markers[this.lastActivatedMarker].angle;
+    this.car.body.angle = this.track.markers[this.track.lastActivatedMarker].angle;
 };
 
 TrackMarkerState.prototype.update = function()
 {
     this.car.applyForces();
 
-    this.enforceTrack();
+    this.track.enforce(this.car);
 
     if (this.cursors.up.isDown) {
         this.car.accelerate();
@@ -171,32 +149,6 @@ TrackMarkerState.prototype.update = function()
     } else if (this.cursors.left.isDown) {
         this.car.turnLeft();
     }
-};
-
-TrackMarkerState.prototype.enforceTrack = function()
-{
-    var state = this;
-
-    _.each(state.markers, function(marker, index) {
-        if (marker.overlap(state.car)) {
-            if (marker.activated) {
-                return;
-            }
-
-            if (marker.isFinishLine && state.lastActivatedMarker === state.markers.length - 2) {
-                state.incrementLapCounter();
-                state.deactivateMarkers();
-                state.lastActivatedMarker = -1;
-            } else if (marker.isFinishLine && state.lastActivatedMarker === -1) {
-                return;
-            } else if ((index - state.lastActivatedMarker - 1) <= state.allowedSkippedMarkers) {
-                marker.activate();
-                state.lastActivatedMarker = index;
-            } else {
-                state.moveCarToLastActivatedMarker();
-            }
-        }
-    });
 };
 
 module.exports = TrackMarkerState;
