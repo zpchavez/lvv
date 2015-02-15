@@ -154,9 +154,26 @@ TrackMarkerState.prototype.moveCarToLastActivatedMarker = function()
 
 TrackMarkerState.prototype.update = function()
 {
-    var state = this;
+    this.car.applyForces();
 
-    state.car.applyForces();
+    this.enforceTrack();
+
+    if (this.cursors.up.isDown) {
+        this.car.accelerate();
+    } else if (this.cursors.down.isDown) {
+        this.car.brake();
+    }
+
+    if (this.cursors.right.isDown) {
+        this.car.turnRight();
+    } else if (this.cursors.left.isDown) {
+        this.car.turnLeft();
+    }
+};
+
+TrackMarkerState.prototype.enforceTrack = function()
+{
+    var state = this;
 
     _.each(state.markers, function(marker, index) {
         if (marker.overlap(state.car)) {
@@ -178,18 +195,6 @@ TrackMarkerState.prototype.update = function()
             }
         }
     });
-
-    if (state.cursors.up.isDown) {
-        state.car.accelerate();
-    } else if (state.cursors.down.isDown) {
-        state.car.brake();
-    }
-
-    if (state.cursors.right.isDown) {
-        state.car.turnRight();
-    } else if (state.cursors.left.isDown) {
-        state.car.turnLeft();
-    }
 };
 
 module.exports = TrackMarkerState;
