@@ -143,6 +143,7 @@ TrackMarkerState.prototype.moveCarToLastActivatedMarker = function()
             this.markers[this.markers.length - 1].x,
             this.markers[this.markers.length - 1].y
         );
+        this.car.body.angle = this.markers[this.markers.length - 1].angle;
         return;
     }
 
@@ -150,6 +151,7 @@ TrackMarkerState.prototype.moveCarToLastActivatedMarker = function()
         this.markers[this.lastActivatedMarker].x,
         this.markers[this.lastActivatedMarker].y
     );
+    this.car.body.angle = this.markers[this.lastActivatedMarker].angle;
 };
 
 TrackMarkerState.prototype.update = function()
