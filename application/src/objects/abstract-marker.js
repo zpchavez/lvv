@@ -3,7 +3,7 @@
 var Phaser = require('phaser');
 var _      = require('underscore');
 
-var AbstractMarker = function(state, x, y, key, angle)
+var AbstractMarker = function(state, x, y, key, angle, length)
 {
     var validAngles;
 
@@ -17,7 +17,7 @@ var AbstractMarker = function(state, x, y, key, angle)
     this.anchor.setTo(0.5, 0.5);
 
     this.height = 32;
-    this.width  = 1000;
+    this.width  = length;
 
     validAngles = [0, 90, 180, 270];
     if (! _(validAngles).contains(angle)) {

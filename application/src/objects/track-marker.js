@@ -2,7 +2,7 @@
 
 var AbstractMarker = require('./abstract-marker');
 
-var TrackMarker = function(state, x, y, key, angle)
+var TrackMarker = function(state, x, y, key, angle, length)
 {
     AbstractMarker.apply(this, arguments);
 

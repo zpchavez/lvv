@@ -26,8 +26,8 @@ Track.prototype.loadFromObject = function(data)
 {
     var track = this;
 
-    _.each(data.markers, function(point) {
-        var marker = track.trackMarkerFactory.createMarker(point[0], point[1], point[2]);
+    _.each(data.markers, function(datum) {
+        var marker = track.trackMarkerFactory.createMarker(datum[0], datum[1], datum[2], datum[3]);
         track.markers.push(marker);
         track.state.game.world.addChild(marker);
     });
@@ -35,7 +35,8 @@ Track.prototype.loadFromObject = function(data)
     this.finish = this.trackMarkerFactory.createFinishLine(
         data.finishLine[0],
         data.finishLine[1],
-        data.finishLine[2]
+        data.finishLine[2],
+        data.finishLine[3]
     );
     this.state.game.world.addChild(this.finish);
 

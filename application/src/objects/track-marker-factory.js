@@ -15,27 +15,29 @@ TrackMarkerFactory.prototype.loadAssets = function()
     this.state.load.image('finish-line', 'assets/img/finish-line.png');
 };
 
-TrackMarkerFactory.prototype.createMarker = function(x, y, angle)
+TrackMarkerFactory.prototype.createMarker = function(x, y, angle, length)
 {
     var sprite = new TrackMarker(
         this.state,
         x,
         y,
         'track-marker-off',
-        angle
+        angle,
+        length
     );
 
     return sprite;
 };
 
-TrackMarkerFactory.prototype.createFinishLine = function(x, y, angle)
+TrackMarkerFactory.prototype.createFinishLine = function(x, y, angle, length)
 {
     var sprite = new FinishMarker(
         this.state,
         x,
         y,
         'finish-line',
-        angle
+        angle,
+        length
     );
 
     return sprite;
