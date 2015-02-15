@@ -130,7 +130,7 @@ TrackMarkerState.prototype.update = function()
     state.car.applyForces();
 
     _.each(state.markers, function(marker, index) {
-        if (Phaser.Rectangle.intersects(marker.getBounds(), state.car.getBounds())) {
+        if (marker.overlap(state.car)) {
             if (! marker.activated) {
                 if ((index - state.lastActivatedMarker - 1) > state.allowedSkippedMarkers) {
                     state.car.body.x = state.markers[state.lastActivatedMarker].x;
