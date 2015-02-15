@@ -3,7 +3,7 @@
 var Phaser = require('phaser');
 var _      = require('underscore');
 
-var TrackMarker = function(state, x, y, key, ordinal, angle)
+var TrackMarker = function(state, x, y, key, angle)
 {
     var validAngles;
 
@@ -18,7 +18,6 @@ var TrackMarker = function(state, x, y, key, ordinal, angle)
 
     this.height    = 32;
     this.width     = 1000;
-    this.ordinal   = ordinal;
     this.activated = false;
 
     validAngles = [0, 90];

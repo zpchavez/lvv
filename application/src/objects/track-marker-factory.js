@@ -5,8 +5,6 @@ var TrackMarker = require('./track-marker');
 var TrackMarkerFactory = function(state)
 {
     this.state = state;
-
-    this.counter = 0;
 };
 
 TrackMarkerFactory.prototype.loadAssets = function()
@@ -19,14 +17,11 @@ TrackMarkerFactory.prototype.spritePrototype = TrackMarker;
 
 TrackMarkerFactory.prototype.getNew = function(x, y, angle)
 {
-    this.counter += 1;
-
     var sprite = new this.spritePrototype(
         this.state,
         x,
         y,
         'track-marker-off',
-        this.counter,
         angle
     );
 
