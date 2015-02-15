@@ -94,15 +94,15 @@ TrackMarkerState.prototype.defineTrack = function()
         [this.game.world.centerX + 1200, this.game.world.centerY - 2400, 90],
         [this.game.world.centerX + 1600, this.game.world.centerY - 2400, 90],
         [this.game.world.centerX + 2000, this.game.world.centerY - 2400, 90],
-        [this.game.world.centerX + 2500, this.game.world.centerY - 1800, 0],
-        [this.game.world.centerX + 2500, this.game.world.centerY - 1400, 0],
-        [this.game.world.centerX + 2500, this.game.world.centerY - 1000, 0],
-        [this.game.world.centerX + 2500, this.game.world.centerY - 600, 0],
-        [this.game.world.centerX + 2500, this.game.world.centerY - 200, 0],
-        [this.game.world.centerX + 2000, this.game.world.centerY + 400, 90],
-        [this.game.world.centerX + 1600, this.game.world.centerY + 400, 90],
-        [this.game.world.centerX + 1200, this.game.world.centerY + 400, 90],
-        [this.game.world.centerX + 800, this.game.world.centerY + 400, 90]
+        [this.game.world.centerX + 2500, this.game.world.centerY - 1800, 180],
+        [this.game.world.centerX + 2500, this.game.world.centerY - 1400, 180],
+        [this.game.world.centerX + 2500, this.game.world.centerY - 1000, 180],
+        [this.game.world.centerX + 2500, this.game.world.centerY - 600, 180],
+        [this.game.world.centerX + 2500, this.game.world.centerY - 200, 180],
+        [this.game.world.centerX + 2000, this.game.world.centerY + 400, 270],
+        [this.game.world.centerX + 1600, this.game.world.centerY + 400, 270],
+        [this.game.world.centerX + 1200, this.game.world.centerY + 400, 270],
+        [this.game.world.centerX + 800, this.game.world.centerY + 400, 270]
     ];
 
     data.finishLine = [this.game.world.centerX, this.game.world.centerY, 0];

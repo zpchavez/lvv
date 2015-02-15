@@ -20,7 +20,7 @@ var TrackMarker = function(state, x, y, key, angle, isFinishLine)
     this.width     = 1000;
     this.activated = false;
 
-    validAngles = [0, 90];
+    validAngles = [0, 90, 180, 270];
     if (! _(validAngles).contains(angle)) {
         throw new Error('Invalid marker angle. Must be one of: ' + validAngles.join(', '));
     }
