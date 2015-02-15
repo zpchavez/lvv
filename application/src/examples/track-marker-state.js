@@ -185,7 +185,7 @@ TrackMarkerState.prototype.enforceTrack = function()
                 state.incrementLapCounter();
                 state.deactivateMarkers();
                 state.lastActivatedMarker = -1;
-            } else if (marker.isFinishLine) {
+            } else if (marker.isFinishLine && state.lastActivatedMarker === -1) {
                 return;
             } else if ((index - state.lastActivatedMarker - 1) <= state.allowedSkippedMarkers) {
                 marker.activate();
