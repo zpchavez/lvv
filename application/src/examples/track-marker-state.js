@@ -61,6 +61,9 @@ TrackMarkerState.prototype.addMarkers = function()
 {
     var points, state = this;
 
+    this.lastActivatedMarker   = 0;
+    this.allowedSkippedMarkers = 0;
+
     points = [
         [this.game.world.centerX, this.game.world.centerY - 200, 0],
         [this.game.world.centerX, this.game.world.centerY - 600, 0],
@@ -126,10 +129,16 @@ TrackMarkerState.prototype.update = function()
 
     state.car.applyForces();
 
-    _.each(state.markers, function(marker) {
+    _.each(state.markers, function(marker, index) {
         if (Phaser.Rectangle.intersects(marker.getBounds(), state.car.getBounds())) {
             if (! marker.activated) {
-                marker.activate();
+                if ((index - state.lastActivatedMarker - 1) > state.allowedSkippedMarkers) {
+                    state.car.body.x = state.markers[state.lastActivatedMarker].x;
+                    state.car.body.y = state.markers[state.lastActivatedMarker].y;
+                } else {
+                    marker.activate();
+                    state.lastActivatedMarker = index;
+                }
             }
         }
     });
