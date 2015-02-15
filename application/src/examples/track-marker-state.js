@@ -135,31 +135,6 @@ TrackMarkerState.prototype.addMarkers = function()
     this.lastActivatedMarker = -1; // -1 means the finish line
 };
 
-// An alternate way to check for overlap. Use with P2.setPostBroadphaseCallback
-// Not sure yet which is better so leaving this code here for now.
-TrackMarkerState.prototype.checkOverlap = function(body1, body2)
-{
-    var names = [], bodies = [], carIndex, markerIndex, markerBody;
-
-    names.push(body1.name, body2.name);
-
-    carIndex = names.indexOf('car');
-    markerIndex = names.indexOf('marker');
-
-    // If either body is not a car or marker, allow them to collide
-    if (carIndex === -1 || markerIndex === -1) {
-        return true;
-    }
-
-    bodies.push(body1, body2);
-    markerBody = bodies[markerIndex];
-    if (! markerBody.sprite.activated) {
-        markerBody.sprite.activate();
-    }
-
-    return false;
-};
-
 TrackMarkerState.prototype.moveCarToLastActivatedMarker = function()
 {
     // Negative one means the finish line
