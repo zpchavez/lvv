@@ -11,18 +11,32 @@ TrackMarkerFactory.prototype.loadAssets = function()
 {
     this.state.load.image('track-marker-off', 'assets/img/track-marker-off.png');
     this.state.load.image('track-marker-on', 'assets/img/track-marker-on.png');
+    this.state.load.image('finish-line', 'assets/img/finish-line.png');
 };
 
-TrackMarkerFactory.prototype.spritePrototype = TrackMarker;
-
-TrackMarkerFactory.prototype.getNew = function(x, y, angle)
+TrackMarkerFactory.prototype.createMarker = function(x, y, angle)
 {
-    var sprite = new this.spritePrototype(
+    var sprite = new TrackMarker(
         this.state,
         x,
         y,
         'track-marker-off',
-        angle
+        angle,
+        false
+    );
+
+    return sprite;
+};
+
+TrackMarkerFactory.prototype.createFinishLine = function(x, y, angle)
+{
+    var sprite = new TrackMarker(
+        this.state,
+        x,
+        y,
+        'finish-line',
+        angle,
+        true
     );
 
     return sprite;

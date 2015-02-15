@@ -3,7 +3,7 @@
 var Phaser = require('phaser');
 var _      = require('underscore');
 
-var TrackMarker = function(state, x, y, key, angle)
+var TrackMarker = function(state, x, y, key, angle, isFinishLine)
 {
     var validAngles;
 
@@ -25,6 +25,8 @@ var TrackMarker = function(state, x, y, key, angle)
         throw new Error('Invalid marker angle. Must be one of: ' + validAngles.join(', '));
     }
 
+    this.isFinishLine = isFinishLine;
+
     this.angle = angle;
 };
 
@@ -32,8 +34,22 @@ TrackMarker.prototype = Object.create(Phaser.Sprite.prototype);
 
 TrackMarker.prototype.activate = function()
 {
+    if (this.isFinishLine) {
+        throw new Error('cannot activate finish line');
+    }
+
     this.loadTexture('track-marker-on');
     this.activated = true;
+};
+
+TrackMarker.prototype.deactivate = function()
+{
+    if (this.isFinishLine) {
+        throw new Error('cannot deactivate finish line');
+    }
+
+    this.loadTexture('track-marker-off');
+    this.activated = false;
 };
 
 module.exports = TrackMarker;
