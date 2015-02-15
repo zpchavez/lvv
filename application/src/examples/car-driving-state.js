@@ -10,7 +10,8 @@ var makeObstacles = function(context) {
         for (var j = 0; j < 10; j += 1) {
             var greyBox = context.obstacleFactory.getNew('DynamicBox',
                 100 + 80 * i,
-                100 + 75 * j + i * 3
+                100 + 75 * j + i * 3,
+                i * 10 + j
             );
             greyBox.body.setCollisionGroup(context.collisionGroup);
             greyBox.body.collides(context.collisionGroup);
@@ -40,7 +41,8 @@ var makeObstacles = function(context) {
 
     var toothbrush = context.obstacleFactory.getNew('Toothbrush',
         600,
-        1700
+        1700,
+        15
     );
     toothbrush.body.setCollisionGroup(context.collisionGroup);
     toothbrush.body.collides(context.collisionGroup);

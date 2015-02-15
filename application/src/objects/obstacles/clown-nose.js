@@ -23,7 +23,7 @@ ClownNose.prototype.getConstants = function()
     };
 };
 
-ClownNose.prototype.createPhysicsBody = function(state)
+ClownNose.prototype.createPhysicsBody = function(state, rotation)
 {
     state.game.physics.p2.enable(this);
     this.body.setCircle(150);
