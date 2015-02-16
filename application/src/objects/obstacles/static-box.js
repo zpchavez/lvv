@@ -2,7 +2,7 @@
 
 var AbstractStaticObstacle = require('./abstract-static-obstacle');
 
-var StaticBox = function(state, x, y, key)
+var StaticBox = function(state, x, y, key, angle)
 {
     AbstractStaticObstacle.apply(this, arguments);
 };

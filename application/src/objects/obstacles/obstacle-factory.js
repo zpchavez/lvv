@@ -30,10 +30,10 @@ ObstacleFactory.prototype.loadAssets = function(types)
     this.state.load.physics('Obstacles', 'assets/physics/obstacles.json');
 };
 
-ObstacleFactory.prototype.getNew = function(type, x, y, rotation)
+ObstacleFactory.prototype.getNew = function(type, x, y, angle)
 {
     if (this.types[type]) {
-        return new this.types[type](this.state, x, y, type, rotation);
+        return new this.types[type](this.state, x, y, type, angle);
     } else {
         throw new Error('Attempted to create unknown class ' + type);
     }

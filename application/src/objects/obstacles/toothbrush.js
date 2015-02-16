@@ -2,7 +2,7 @@
 
 var AbstractStaticObstacle = require('./abstract-static-obstacle');
 
-var Toothbrush = function(state, x, y, key)
+var Toothbrush = function(state, x, y, key, angle)
 {
     AbstractStaticObstacle.apply(this, arguments);
 };
@@ -14,7 +14,7 @@ Toothbrush.prototype.getSpritePath = function()
     return ('assets/img/toothbrush.png');
 };
 
-Toothbrush.prototype.createPhysicsBody = function(state, rotation)
+Toothbrush.prototype.createPhysicsBody = function(state, angle)
 {
     state.game.physics.p2.enable(this);
 
@@ -22,8 +22,8 @@ Toothbrush.prototype.createPhysicsBody = function(state, rotation)
 
     this.body.loadPolygon('Obstacles', 'toothbrush');
 
-    if (rotation) {
-        this.body.rotation = rotation * Math.PI / 180;
+    if (angle) {
+        this.body.angle = angle;
     }
 };
 

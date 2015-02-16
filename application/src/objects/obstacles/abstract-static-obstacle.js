@@ -2,11 +2,11 @@
 
 var Phaser = require('phaser');
 
-var AbstractStaticObstacle = function(state, x, y, key, rotation)
+var AbstractStaticObstacle = function(state, x, y, key, angle)
 {
     Phaser.Sprite.apply(this, [state.game, x, y, key]);
 
-    this.createPhysicsBody(state, rotation);
+    this.createPhysicsBody(state, angle);
 
     this.body.dynamic = false;
 };
@@ -18,12 +18,12 @@ AbstractStaticObstacle.prototype.getSpritePath = function()
     throw new error('Attempted to load assets on abstract class');
 };
 
-AbstractStaticObstacle.prototype.createPhysicsBody = function(state, rotation)
+AbstractStaticObstacle.prototype.createPhysicsBody = function(state, angle)
 {
     state.game.physics.p2.enable(this);
 
-    if (rotation) {
-        this.body.rotation = rotation * Math.PI / 180;
+    if (angle) {
+        this.body.angle = angle;
     }
 };
 
