@@ -82,7 +82,7 @@ Track.prototype.enforce = function(car)
                 return;
             }
 
-            if ((index - track.lastActivatedMarker - 1) <= 0) { // no markers skipped
+            if ((index - track.lastActivatedMarker - 1) === 0) { // no markers skipped
                 marker.activate();
                 track.lastActivatedMarker = index;
             } else {
