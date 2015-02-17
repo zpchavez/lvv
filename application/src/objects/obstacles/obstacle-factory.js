@@ -4,6 +4,7 @@ var _          = require('underscore');
 var ClownNose  = require('./clown-nose');
 var DynamicBox = require('./dynamic-box');
 var StaticBox  = require('./static-box');
+var Toothbrush = require('./toothbrush');
 
 var ObstacleFactory = function(state) {
     this.state      = state;
@@ -12,7 +13,8 @@ var ObstacleFactory = function(state) {
 ObstacleFactory.prototype.types = {
     'ClownNose'  : ClownNose,
     'DynamicBox' : DynamicBox,
-    'StaticBox'  : StaticBox
+    'StaticBox'  : StaticBox,
+    'Toothbrush' : Toothbrush
 };
 
 ObstacleFactory.prototype.loadAssets = function(types)
@@ -24,12 +26,14 @@ ObstacleFactory.prototype.loadAssets = function(types)
             throw new Error('Attempted to load assets for unknown class ' + type);
         }        
     }, this);
+
+    this.state.load.physics('Obstacles', 'assets/physics/obstacles.json');
 };
 
-ObstacleFactory.prototype.getNew = function(type, x, y, collisionGroup)
+ObstacleFactory.prototype.getNew = function(type, x, y, angle)
 {
     if (this.types[type]) {
-        return new this.types[type](this.state, x, y, type, collisionGroup);
+        return new this.types[type](this.state, x, y, type, angle);
     } else {
         throw new Error('Attempted to create unknown class ' + type);
     }

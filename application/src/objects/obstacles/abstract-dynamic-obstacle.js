@@ -2,11 +2,11 @@
 
 var Phaser = require('phaser');
 
-var AbstractDynamicObstacle = function(state, x, y, key)
+var AbstractDynamicObstacle = function(state, x, y, key, angle)
 {
     Phaser.Sprite.apply(this, [state.game, x, y, key]);
 
-    this.createPhysicsBody(state);
+    this.createPhysicsBody(state, angle);
 
     this.constants = this.getConstants();
     Object.freeze(this.constants);
@@ -31,9 +31,13 @@ AbstractDynamicObstacle.prototype.getConstants = function()
     };
 };
 
-AbstractDynamicObstacle.prototype.createPhysicsBody = function(state)
+AbstractDynamicObstacle.prototype.createPhysicsBody = function(state, angle)
 {
     state.game.physics.p2.enable(this);
+
+    if (angle) {
+        this.body.angle = angle;
+    }
 };
 
 AbstractDynamicObstacle.prototype.update = function()

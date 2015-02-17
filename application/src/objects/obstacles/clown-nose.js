@@ -2,7 +2,7 @@
 
 var AbstractDynamicObstacle = require('./abstract-dynamic-obstacle');
 
-var ClownNose = function(state, x, y, key)
+var ClownNose = function(state, x, y, key, angle)
 {
     AbstractDynamicObstacle.apply(this, arguments);
 };
@@ -23,7 +23,7 @@ ClownNose.prototype.getConstants = function()
     };
 };
 
-ClownNose.prototype.createPhysicsBody = function(state)
+ClownNose.prototype.createPhysicsBody = function(state, angle)
 {
     state.game.physics.p2.enable(this);
     this.body.setCircle(150);

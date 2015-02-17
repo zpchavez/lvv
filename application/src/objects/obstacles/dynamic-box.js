@@ -2,7 +2,7 @@
 
 var AbstractDynamicObstacle = require('./abstract-dynamic-obstacle');
 
-var DynamicBox = function(state, x, y, key)
+var DynamicBox = function(state, x, y, key, angle)
 {
     AbstractDynamicObstacle.apply(this, arguments);
 };
