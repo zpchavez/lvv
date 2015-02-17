@@ -22,9 +22,6 @@ TrackMarkerState.prototype.preload = function()
     this.track.loadAssets();
 
     this.load.image('dirt', 'assets/img/dirt.png');
-    this.load.image('box-black', 'assets/img/black-box.png');
-    this.load.image('box-gray', 'assets/img/gray-box.png');
-    this.load.image('red-circle', 'assets/img/red-circle.png');
 };
 
 TrackMarkerState.prototype.create = function()
