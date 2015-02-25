@@ -5,6 +5,7 @@ var Phaser = require('phaser');
 var DrawImageState = require('../examples/draw-image-state');
 var CarDrivingState = require('../examples/car-driving-state');
 var TrackMarkerState = require('../examples/track-marker-state');
+var TrackEditorState = require('../states/track-editor');
 
 var MainMenuState = function()
 {
@@ -18,6 +19,7 @@ MainMenuState.prototype.preload = function()
     this.load.image('button-image-example', 'assets/img/draw-image-example-button.png');
     this.load.image('button-driving-example', 'assets/img/car-driving-example-button.png');
     this.load.image('button-track-marker-example', 'assets/img/track-marker-example-button.png');
+    this.load.image('button-track-editor', 'assets/img/track-editor-button.png');
 };
 
 MainMenuState.prototype.create = function()
@@ -27,6 +29,8 @@ MainMenuState.prototype.create = function()
     this.add.button(120, 10, 'button-driving-example', this.onDrivingExampleClick);
 
     this.add.button(230, 10, 'button-track-marker-example', this.onTrackMarkerExampleClick);
+
+    this.add.button(400, 10, 'button-track-editor', this.onTrackEditorClick);
 };
 
 MainMenuState.prototype.onImageExampleClick = function()
@@ -42,6 +46,11 @@ MainMenuState.prototype.onDrivingExampleClick = function()
 MainMenuState.prototype.onTrackMarkerExampleClick = function()
 {
     this.game.state.add('simple-track-example', new TrackMarkerState(), true);
+};
+
+MainMenuState.prototype.onTrackEditorClick = function()
+{
+    this.game.state.add('track-editor', new TrackEditorState(), true);
 };
 
 module.exports = MainMenuState;
