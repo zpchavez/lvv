@@ -30,7 +30,12 @@ TrackEditorState.prototype.create = function()
     this.marker.lineStyle(2, 0x000000, 1);
     this.marker.drawRect(0, 0, 32, 32);
 
-    this.cursors = this.game.input.keyboard.createCursorKeys();
+    this.cursors = {
+        w : this.game.input.keyboard.addKey(Phaser.Keyboard.W),
+        a : this.game.input.keyboard.addKey(Phaser.Keyboard.A),
+        s : this.game.input.keyboard.addKey(Phaser.Keyboard.S),
+        d : this.game.input.keyboard.addKey(Phaser.Keyboard.D)
+    };
 };
 
 TrackEditorState.prototype.update = function()
@@ -53,20 +58,20 @@ TrackEditorState.prototype.update = function()
         }
     }
 
-    if (this.cursors.left.isDown)
+    if (this.cursors.a.isDown)
     {
         this.game.camera.x -= 4;
     }
-    else if (this.cursors.right.isDown)
+    else if (this.cursors.d.isDown)
     {
         this.game.camera.x += 4;
     }
 
-    if (this.cursors.up.isDown)
+    if (this.cursors.w.isDown)
     {
         this.game.camera.y -= 4;
     }
-    else if (this.cursors.down.isDown)
+    else if (this.cursors.s.isDown)
     {
         this.game.camera.y += 4;
     }
