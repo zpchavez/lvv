@@ -1,10 +1,15 @@
+/* globals window */
 'use strict';
 
-var Phaser = require('phaser');
+var Phaser     = require('phaser');
+var React      = require('react');
+var EditorMenu = require('../components/editor');
 
 var TrackEditorState = function()
 {
     Phaser.State.apply(this, arguments);
+
+    this.showInstructionsOffCanvas();
 };
 
 TrackEditorState.prototype = Object.create(Phaser.State.prototype);
@@ -75,6 +80,14 @@ TrackEditorState.prototype.update = function()
     {
         this.game.camera.y += 4;
     }
+};
+
+TrackEditorState.prototype.showInstructionsOffCanvas = function()
+{
+    React.render(
+        React.createElement(EditorMenu),
+        window.document.getElementById('content')
+    );
 };
 
 module.exports = TrackEditorState;

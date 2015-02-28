@@ -13,6 +13,7 @@ var gulp        = require('gulp'),
     connect     = require('gulp-connect'),
     source      = require('vinyl-source-stream'),
     browserify  = require('browserify'),
+    reactify    = require('reactify'),
     watchify    = require('watchify'),
     gulpif      = require('gulp-if'),
     paths;
@@ -29,7 +30,7 @@ paths = {
     libs:   [
         './node_modules/phaser/build/phaser.js'
     ],
-    js:     ['application/src/*.js', 'application/src/**/*.js'],
+    js:     ['application/src/*.jsx', 'application/src/**/*.jsx', 'application/src/components/**/*.jsx'],
     entry: './application/src/main.js',
     dist:   './build/'
 };
@@ -55,10 +56,11 @@ gulp.task('copylibs', ['clean'], function () {
 
 gulp.task('compile', ['clean'], function () {
     var bundler = browserify({
-        cache: {}, packageCache: {}, fullPaths: true,
-        entries: [paths.entry],
-        debug: watching
-    });
+        cache      : {}, packageCache: {}, fullPaths: true,
+        entries    : [paths.entry],
+        extensions : ['.js', '.jsx'],
+        debug      : watching
+    }).transform(reactify);
 
     var bundlee = function() {
         return bundler
