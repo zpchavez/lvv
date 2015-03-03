@@ -21,5 +21,6 @@ h1,h2,h3 {
 }
 
 #content {
-    color : white;
+    background : white;
+    float      : left;
 }

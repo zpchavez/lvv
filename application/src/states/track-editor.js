@@ -4,6 +4,7 @@
 var Phaser     = require('phaser');
 var React      = require('react');
 var EditorMenu = require('../components/editor');
+var _          = require('underscore');
 
 var TrackEditorState = function()
 {
@@ -16,7 +17,7 @@ TrackEditorState.prototype = Object.create(Phaser.State.prototype);
 
 TrackEditorState.prototype.preload = function()
 {
-    this.load.tilemap('desert', 'assets/tilemaps/maps/desert.json', null, Phaser.Tilemap.TILED_JSON);
+    this.load.tilemap('desert', 'assets/tilemaps/maps/desert2.json', null, Phaser.Tilemap.TILED_JSON);
     this.load.image('tiles', 'assets/tilemaps/tiles/tmw_desert_spacing.png');
 };
 
@@ -82,10 +83,71 @@ TrackEditorState.prototype.update = function()
     }
 };
 
-TrackEditorState.prototype.showInstructionsOffCanvas = function()
+TrackEditorState.prototype.save = function()
 {
+    var layers = [], tilesets, fileData, dataUri;
+
+    _(this.map.layers).each(function (layer) {
+        var layerData = {
+            name    : layer.name,
+            height  : layer.height,
+            width   : layer.width,
+            opacity : layer.alpha,
+            type    : 'tilelayer',
+            visible : layer.visible,
+            x       : layer.x,
+            y       : layer.y,
+            data    : []
+        };
+        _(layer.data).each(function (datum) {
+            _(datum).each(function (line) {
+                layerData.data.push(line.index);
+            });
+        });
+
+        layers.push(layerData);
+    });
+
+    tilesets = [];
+    _(this.map.tilesets).each(function (tileset) {
+        tilesets.push({
+            firstgid    : tileset.firstgid,
+            imagewidth  : tileset.image.width,
+            imageheight : tileset.image.height,
+            margin      : tileset.tileMargin,
+            name        : tileset.name,
+            properties  : tileset.properties,
+            spacing     : tileset.tileSpacing,
+            tileheight  : tileset.tileHeight,
+            tilewidth   : tileset.tileWidth
+        });
+    });
+
+    fileData = {
+        height      : this.map.height,
+        width       : this.map.width,
+        orientation : this.map.orientation,
+        properties  : this.map.properties,
+        tileheight  : this.map.tileHeight,
+        tilewidth   : this.map.tileWidth,
+        version     : this.map.version,
+        layers      : layers,
+        tilesets    : tilesets
+    };
+
+    dataUri = 'data:application/json;base64,' + window.btoa(JSON.stringify(fileData));
+
+    this.showInstructionsOffCanvas({downloadUri : dataUri});
+};
+
+TrackEditorState.prototype.showInstructionsOffCanvas = function(props)
+{
+    props = props || {};
+
+    props.saveButtonCallback = _(this.save).bind(this);
+
     React.render(
-        React.createElement(EditorMenu),
+        React.createElement(EditorMenu, props),
         window.document.getElementById('content')
     );
 };
