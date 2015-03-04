@@ -2,12 +2,17 @@
 
 var Phaser     = require('phaser');
 var CarFactory = require('../objects/car-factory');
+var Track      = require('../objects/track');
+var _          = require('underscore');
 
 var TrackLoaderState = function()
 {
     Phaser.State.apply(this, arguments);
 
     this.carFactory = new CarFactory(this);
+    this.track      = new Track(this);
+
+    this.lapNumber = 1;
 };
 
 TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
@@ -15,8 +20,9 @@ TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
 TrackLoaderState.prototype.preload = function()
 {
     this.carFactory.loadAssets();
+    this.track.loadAssets();
 
-    this.load.tilemap('desert', 'assets/tilemaps/maps/desert.json', null, Phaser.Tilemap.TILED_JSON);
+    this.load.tilemap('desert', 'assets/tilemaps/maps/simple-with-track.json', null, Phaser.Tilemap.TILED_JSON);
     this.load.image('tiles', 'assets/tilemaps/tiles/tmw_desert_spacing.png');
 };
 
@@ -24,9 +30,13 @@ TrackLoaderState.prototype.create = function()
 {
     this.map = this.game.add.tilemap('desert');
     this.map.addTilesetImage('Desert', 'tiles');
-    this.layer = this.map.createLayer('Ground');
+    this.layer = this.map.createLayer('background');
+
     this.layer.resizeWorld();
-    this.marker = this.game.add.graphics();
+
+    this.game.add.graphics();
+
+    this.placeTrackMarkers();
 
     this.game.physics.startSystem(Phaser.Physics.P2JS);
 
@@ -36,7 +46,7 @@ TrackLoaderState.prototype.create = function()
 
     this.game.physics.p2.updateBoundsCollisionGroup();
 
-    this.car = this.carFactory.getNew(this.game.world.centerX, this.game.world.centerY, 'car');
+    this.car = this.carFactory.getNew(this.startingPoint[0], this.startingPoint[1], 'car');
     this.game.world.addChild(this.car);
 
     this.car.bringToTop();
@@ -46,12 +56,50 @@ TrackLoaderState.prototype.create = function()
 
     this.cursors = this.game.input.keyboard.createCursorKeys();
 
+    this.showLapCounter();
+
     this.game.camera.follow(this.car);
+};
+
+TrackLoaderState.prototype.placeTrackMarkers = function()
+{
+    var data, state = this;
+
+    data = {
+        markers : []
+    };
+
+    _(this.map.objects.track).each(function (object) {
+        if (object.name === 'finish-line') {
+            data.finishLine = [
+                object.x,
+                object.y,
+                parseInt(object.properties.angle, 10),
+                parseInt(object.properties.length, 10)
+            ];
+
+            state.startingPoint = [object.x, object.y];
+        } else {
+            data.markers[object.properties.index] = [
+                object.x,
+                object.y,
+                parseInt(object.properties.angle, 10),
+                parseInt(object.properties.length, 10)
+            ];
+        }
+    });
+
+    this.track.loadFromObject(data);
+
+    this.track.setLapCompletedCallback(this.incrementLapCounter, this);
+    this.track.setMarkerSkippedCallback(this.moveCarToLastActivatedMarker, this);
 };
 
 TrackLoaderState.prototype.update = function()
 {
     this.car.applyForces();
+
+    this.track.enforce(this.car);
 
     if (this.cursors.up.isDown) {
         this.car.accelerate();
@@ -64,6 +112,45 @@ TrackLoaderState.prototype.update = function()
     } else if (this.cursors.left.isDown) {
         this.car.turnLeft();
     }
+};
+
+TrackLoaderState.prototype.moveCarToLastActivatedMarker = function()
+{
+    // Negative one means the finish line
+    if (this.track.lastActivatedMarker === -1) {
+        this.car.body.reset(
+            this.track.finish.x,
+            this.track.finish.y
+        );
+        this.car.body.angle = this.track.finish.angle;
+        return;
+    }
+
+    this.car.body.reset(
+        this.track.markers[this.track.lastActivatedMarker].x,
+        this.track.markers[this.track.lastActivatedMarker].y
+    );
+    this.car.body.angle = this.track.markers[this.track.lastActivatedMarker].angle;
+};
+
+TrackLoaderState.prototype.showLapCounter = function()
+{
+    this.lapDisplay = this.game.add.text(
+        30,
+        20,
+        'Lap ' + this.lapNumber,
+        {
+            font: "22px Arial",
+            fill: "#ffffff"
+        }
+    );
+    this.lapDisplay.fixedToCamera = true;
+};
+
+TrackLoaderState.prototype.incrementLapCounter = function()
+{
+    this.lapNumber += 1;
+    this.lapDisplay.setText('Lap ' + this.lapNumber);
 };
 
 module.exports = TrackLoaderState;
