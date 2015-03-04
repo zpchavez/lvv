@@ -17,7 +17,7 @@ TrackEditorState.prototype = Object.create(Phaser.State.prototype);
 
 TrackEditorState.prototype.preload = function()
 {
-    this.load.tilemap('desert', 'assets/tilemaps/maps/desert2.json', null, Phaser.Tilemap.TILED_JSON);
+    this.load.tilemap('desert', 'assets/tilemaps/maps/desert.json', null, Phaser.Tilemap.TILED_JSON);
     this.load.image('tiles', 'assets/tilemaps/tiles/tmw_desert_spacing.png');
 };
 
