@@ -4,6 +4,7 @@ var _          = require('underscore');
 var ClownNose  = require('./clown-nose');
 var Comb       = require('./comb');
 var DynamicBox = require('./dynamic-box');
+var Floss      = require('./floss');
 var StaticBox  = require('./static-box');
 var Toothbrush = require('./toothbrush');
 
@@ -16,7 +17,8 @@ ObstacleFactory.prototype.types = {
     'DynamicBox' : DynamicBox,
     'StaticBox'  : StaticBox,
     'Toothbrush' : Toothbrush,
-    'Comb'       : Comb
+    'Comb'       : Comb,
+    'Floss'      : Floss
 };
 
 ObstacleFactory.prototype.loadAssets = function(types)

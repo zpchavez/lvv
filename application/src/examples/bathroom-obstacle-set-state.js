@@ -6,23 +6,19 @@ var CarFactory      = require('../objects/car-factory');
 var ObstacleFactory = require('../objects/obstacles/obstacle-factory');
 
 var makeObstacles = function(context) {
-    var toothbrush = context.obstacleFactory.getNew('Toothbrush',
-        500,
-        700,
-        0
-    );
-    toothbrush.body.setCollisionGroup(context.collisionGroup);
-    toothbrush.body.collides(context.collisionGroup);
-    context.add.existing(toothbrush);
+    var obstacles = [];
 
-    var comb = context.obstacleFactory.getNew('Comb',
-        100,
-        315,
-        90
-    );
-    comb.body.setCollisionGroup(context.collisionGroup);
-    comb.body.collides(context.collisionGroup);
-    context.add.existing(comb);
+    obstacles.push(context.obstacleFactory.getNew('Toothbrush', 500, 700, 0));
+    
+    obstacles.push(context.obstacleFactory.getNew('Comb', 100, 315, 90));
+
+    obstacles.push(context.obstacleFactory.getNew('Floss', 375, 175, 0));
+
+    _.each(obstacles, function(obstacle) {
+        obstacle.body.setCollisionGroup(context.collisionGroup);
+        obstacle.body.collides(context.collisionGroup);
+        context.add.existing(obstacle);
+    });
 };
 
 var CarDrivingState = function()
@@ -39,7 +35,8 @@ CarDrivingState.prototype.preload = function()
 {
     this.obstacleFactory.loadAssets([
        'Toothbrush',
-       'Comb'
+       'Comb',
+       'Floss'
     ]);
     this.carFactory.loadAssets();
 
