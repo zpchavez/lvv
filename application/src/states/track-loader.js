@@ -70,21 +70,43 @@ TrackLoaderState.prototype.placeTrackMarkers = function()
     };
 
     _(this.map.objects.track).each(function (object) {
+        var x, y;
+        // Positions from file are the edge of the marker, but we
+        // need the center.
+        switch (parseInt(object.properties.angle, 10)) {
+            case 0 :
+                x = object.x + (object.width / 2);
+                y = object.y;
+                break;
+            case 90 :
+                x = object.x;
+                y = object.y + (object.width / 2);
+                break;
+            case 180 :
+                x = object.x - (object.width / 2);
+                y = object.y;
+                break;
+            case 270 :
+                x = object.x;
+                y = object.y - (object.width / 2);
+                break;
+        }
+
         if (object.name === 'finish-line') {
             data.finishLine = [
-                object.x,
-                object.y,
+                x,
+                y,
                 parseInt(object.properties.angle, 10),
-                parseInt(object.properties.length, 10)
+                object.width
             ];
 
-            state.startingPoint = [object.x, object.y];
+            state.startingPoint = [x, y];
         } else {
             data.markers[object.properties.index] = [
-                object.x,
-                object.y,
+                x,
+                y,
                 parseInt(object.properties.angle, 10),
-                parseInt(object.properties.length, 10)
+                object.width
             ];
         }
     });

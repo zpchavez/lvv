@@ -17,183 +17,163 @@
          "name":"track",
          "objects":[
                 {
-                 "gid":46,
                  "height":32,
-                 "id":3,
+                 "id":18,
                  "name":"finish-line",
                  "properties":
                     {
-                     "angle":"0",
-                     "length":"1000"
+                     "angle":"0"
                     },
                  "rotation":0,
                  "type":"finish-line",
                  "visible":true,
-                 "width":1000,
-                 "x":424.535400090049,
-                 "y":2213.66250229445
+                 "width":681,
+                 "x":90,
+                 "y":2176
                 }, 
                 {
-                 "gid":46,
-                 "height":32,
-                 "id":4,
-                 "name":"marker",
+                 "height":33,
+                 "id":19,
+                 "name":"",
                  "properties":
                     {
                      "angle":"0",
-                     "index":"0",
-                     "length":"1000"
+                     "index":"0"
                     },
                  "rotation":0,
                  "type":"marker",
                  "visible":true,
-                 "width":1000,
-                 "x":437.187763930374,
-                 "y":751.400144196107
+                 "width":910,
+                 "x":18,
+                 "y":705
                 }, 
                 {
-                 "gid":46,
-                 "height":32,
-                 "id":5,
-                 "name":"marker",
+                 "height":31,
+                 "id":20,
+                 "name":"",
                  "properties":
                     {
                      "angle":"90",
-                     "index":"1",
-                     "length":"1000"
+                     "index":"1"
                     },
                  "rotation":90,
                  "type":"marker",
                  "visible":true,
-                 "width":1000,
-                 "x":879.045833762488,
-                 "y":168.435884231126
+                 "width":670,
+                 "x":1246,
+                 "y":1
                 }, 
                 {
-                 "gid":46,
-                 "height":32,
-                 "id":6,
-                 "name":"marker",
+                 "height":31,
+                 "id":21,
+                 "name":"",
                  "properties":
                     {
                      "angle":"90",
-                     "index":"2",
-                     "length":"1000"
+                     "index":"2"
                     },
                  "rotation":90,
                  "type":"marker",
                  "visible":true,
-                 "width":1000,
-                 "x":2383.83520444948,
-                 "y":157.106190132866
+                 "width":670,
+                 "x":2398,
+                 "y":-5
                 }, 
                 {
-                 "gid":46,
-                 "height":32,
-                 "id":7,
-                 "name":"marker",
+                 "height":31,
+                 "id":22,
+                 "name":"",
                  "properties":
                     {
                      "angle":"180",
-                     "index":"3",
-                     "length":"1000"
+                     "index":"3"
                     },
                  "rotation":180,
                  "type":"marker",
                  "visible":true,
-                 "width":1000,
-                 "x":3002.84849109074,
-                 "y":535.105984138428
+                 "width":670,
+                 "x":3195,
+                 "y":675
                 }, 
                 {
-                 "gid":46,
-                 "height":32,
-                 "id":8,
-                 "name":"marker",
+                 "height":31,
+                 "id":23,
+                 "name":"",
                  "properties":
                     {
                      "angle":"180",
-                     "index":"4",
-                     "length":"1000"
+                     "index":"4"
                     },
                  "rotation":180,
                  "type":"marker",
                  "visible":true,
-                 "width":1000,
-                 "x":2998.72860232774,
-                 "y":1389.98290246163
+                 "width":670,
+                 "x":3197,
+                 "y":1408
                 }, 
                 {
-                 "gid":46,
-                 "height":32,
-                 "id":9,
-                 "name":"marker",
+                 "height":31,
+                 "id":24,
+                 "name":"",
                  "properties":
                     {
                      "angle":"180",
-                     "index":"5",
-                     "length":"1000"
+                     "index":"5"
                     },
                  "rotation":180,
                  "type":"marker",
                  "visible":true,
-                 "width":1000,
-                 "x":2991.51879699248,
-                 "y":2433.34473169224
+                 "width":670,
+                 "x":3197,
+                 "y":2430
                 }, 
                 {
-                 "gid":46,
-                 "height":32,
-                 "id":10,
-                 "name":"marker",
+                 "height":31,
+                 "id":25,
+                 "name":"",
                  "properties":
                     {
                      "angle":"270",
-                     "index":"6",
-                     "length":"1000"
+                     "index":"6"
                     },
                  "rotation":270,
                  "type":"marker",
                  "visible":true,
-                 "width":1000,
-                 "x":2607.33916984241,
-                 "y":3011.15913070347
+                 "width":670,
+                 "x":2498,
+                 "y":3200
                 }, 
                 {
-                 "gid":46,
-                 "height":32,
-                 "id":11,
-                 "name":"marker",
+                 "height":31,
+                 "id":26,
+                 "name":"",
                  "properties":
                     {
                      "angle":"270",
-                     "index":"7",
-                     "length":"1000"
+                     "index":"7"
                     },
                  "rotation":270,
                  "type":"marker",
                  "visible":true,
-                 "width":1000,
-                 "x":1658.73478216088,
-                 "y":3017.33896384798
+                 "width":670,
+                 "x":1599,
+                 "y":3201
                 }, 
                 {
-                 "gid":46,
-                 "height":32,
-                 "id":12,
-                 "name":"marker",
+                 "height":31,
+                 "id":27,
+                 "name":"",
                  "properties":
                     {
                      "angle":"270",
-                     "index":"8",
-                     "length":"1000"
+                     "index":"8"
                     },
                  "rotation":270,
                  "type":"marker",
                  "visible":true,
-                 "width":1000,
-                 "x":673.051395612318,
-                 "y":3017.33896384798
+                 "width":670,
+                 "x":679,
+                 "y":3200
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -202,7 +182,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":13,
+ "nextobjectid":28,
  "orientation":"orthogonal",
  "properties":
     {
