@@ -11,6 +11,8 @@ var TrackMarkerState = function()
     this.carFactory = new CarFactory(this);
     this.track      = new Track(this);
 
+    this.track.enableDebug();
+
     this.lapNumber = 1;
 };
 

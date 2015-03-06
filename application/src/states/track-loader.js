@@ -199,10 +199,22 @@ TrackLoaderState.prototype.selectTrack = function(theme, track)
     this.game.state.add('track-loader', new TrackLoaderState(theme, track), true);
 };
 
+TrackLoaderState.prototype.changeDebugMode = function(value)
+{
+    if (value) {
+        this.track.enableDebug();
+    } else {
+        this.track.disableDebug();
+    }
+};
+
 TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
 {
     React.render(
-        React.createElement(TrackSelector, {onSelectTrack : this.selectTrack.bind(this)}),
+        React.createElement(TrackSelector, {
+            onSelectTrack     : this.selectTrack.bind(this),
+            onChangeDebugMode : this.changeDebugMode.bind(this)
+        }),
         window.document.getElementById('content')
     );
 };

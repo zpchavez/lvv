@@ -7,7 +7,8 @@ var _         = require('underscore');
 module.exports = React.createClass({
 
     propTypes : {
-        onSelectTrack : React.PropTypes.func.isRequired
+        onSelectTrack     : React.PropTypes.func.isRequired,
+        onChangeDebugMode : React.PropTypes.func.isRequired
     },
 
     getInitialState : function()
@@ -25,6 +26,13 @@ module.exports = React.createClass({
         );
     },
 
+    selectDebugMode : function(event)
+    {
+        this.props.onChangeDebugMode(
+            !! parseInt(event.currentTarget.value, 10)
+        );
+    },
+
     renderThemeSelector : function()
     {
         var themes, options = [];
@@ -38,7 +46,7 @@ module.exports = React.createClass({
         });
 
         return (
-            <select onChange={this.selectTheme}>
+            <select id="theme" onChange={this.selectTheme}>
                 {options}
             </select>
         );
@@ -57,7 +65,7 @@ module.exports = React.createClass({
         });
 
         return (
-            <select onChange={this.selectTrack}>
+            <select id="track" onChange={this.selectTrack}>
                 {options}
             </select>
         );
@@ -74,6 +82,13 @@ module.exports = React.createClass({
                 <div>
                     <label htmlFor="track">Track</label>
                     {this.renderTrackSelector()}
+                </div>
+                <div>
+                    <label htmlFor="debug">Debug</label>
+                    <select id="debug" onChange={this.selectDebugMode}>
+                        <option value={0}>off</option>
+                        <option value={1}>on</option>
+                    </select>
                 </div>
             </div>
         );
