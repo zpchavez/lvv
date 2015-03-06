@@ -1,18 +1,27 @@
+/* globals window */
 'use strict';
 
-var Phaser     = require('phaser');
-var CarFactory = require('../objects/car-factory');
-var Track      = require('../objects/track');
-var _          = require('underscore');
+var Phaser        = require('phaser');
+var CarFactory    = require('../objects/car-factory');
+var Track         = require('../objects/track');
+var trackList     = require('../../assets/tilemaps/maps/list');
+var React         = require('react');
+var TrackSelector = require('../components/track-selector');
+var _             = require('underscore');
 
-var TrackLoaderState = function()
+var TrackLoaderState = function(trackTheme, trackName)
 {
+    this.trackTheme = trackTheme || 'Desert';
+    this.trackName  = trackName  || 'Square Loop';
+
     Phaser.State.apply(this, arguments);
 
     this.carFactory = new CarFactory(this);
     this.track      = new Track(this);
 
     this.lapNumber = 1;
+
+    this.showTrackSelectorOffCanvas();
 };
 
 TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
@@ -22,14 +31,24 @@ TrackLoaderState.prototype.preload = function()
     this.carFactory.loadAssets();
     this.track.loadAssets();
 
-    this.load.tilemap('desert', 'assets/tilemaps/maps/simple-with-track.json', null, Phaser.Tilemap.TILED_JSON);
-    this.load.image('tiles', 'assets/tilemaps/tiles/tmw_desert_spacing.png');
+    this.load.tilemap(
+        this.trackName,
+        trackList[this.trackTheme].tracks[this.trackName],
+        null,
+        Phaser.Tilemap.TILED_JSON
+    );
+
+    this.load.image(
+        'tiles',
+        trackList[this.trackTheme].tileset
+    );
 };
 
 TrackLoaderState.prototype.create = function()
 {
-    this.map = this.game.add.tilemap('desert');
-    this.map.addTilesetImage('Desert', 'tiles');
+    this.map = this.game.add.tilemap(this.trackName);
+    this.map.addTilesetImage(this.trackTheme, 'tiles');
+
     this.layer = this.map.createLayer('background');
 
     this.layer.resizeWorld();
@@ -173,6 +192,19 @@ TrackLoaderState.prototype.incrementLapCounter = function()
 {
     this.lapNumber += 1;
     this.lapDisplay.setText('Lap ' + this.lapNumber);
+};
+
+TrackLoaderState.prototype.selectTrack = function(theme, track)
+{
+    this.game.state.add('track-loader', new TrackLoaderState(theme, track), true);
+};
+
+TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
+{
+    React.render(
+        React.createElement(TrackSelector, {onSelectTrack : this.selectTrack.bind(this)}),
+        window.document.getElementById('content')
+    );
 };
 
 module.exports = TrackLoaderState;
