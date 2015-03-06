@@ -30,7 +30,7 @@ paths = {
     libs:   [
         './node_modules/phaser/build/phaser.js'
     ],
-    js:     ['application/src/*.jsx', 'application/src/**/*.jsx', 'application/src/components/**/*.jsx'],
+    js:     ['application/src/*.js', 'application/src/**/*.js', 'application/src/components/**/*.jsx'],
     entry: './application/src/main.js',
     dist:   './build/'
 };
