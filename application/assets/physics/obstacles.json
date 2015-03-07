@@ -194,5 +194,97 @@
       },
       "shape" : [256.5, 37,  197, 29.5,  251, 33.5]
     }
+  ],
+  "aspirinBottle": [
+    {
+      "density": 2,
+      "friction": 0,
+      "bounce": 0,
+      "filter": {
+        "categoryBits": 1,
+        "maskBits" : 65535
+      },
+      "shape" : [248.5, 18,  231, 24.5,  81, 63,  113, -0.5,  210, -0.5,  238, 4.5,  248, 9.5]
+    },
+    {
+      "density": 2,
+      "friction": 0,
+      "bounce": 0,
+      "filter": {
+        "categoryBits": 1,
+        "maskBits" : 65535
+      },
+      "shape" : [63, 10,  83, 3.5,  113, -0.5,  78.5, 25,  63, 19]
+    },
+    {
+      "density": 2,
+      "friction": 0,
+      "bounce": 0,
+      "filter": {
+        "categoryBits": 1,
+        "maskBits" : 65535
+      },
+      "shape" : [113, -0.5,  81, 63,  78.5, 25]
+    },
+    {
+      "density": 2,
+      "friction": 0,
+      "bounce": 0,
+      "filter": {
+        "categoryBits": 1,
+        "maskBits" : 65535
+      },
+      "shape" : [288, 543.5,  212, 550.5,  58, 550.5,  -0.5, 117,  70, 71,  313.5, 116,  314.5, 522,  304, 535.5]
+    },
+    {
+      "density": 2,
+      "friction": 0,
+      "bounce": 0,
+      "filter": {
+        "categoryBits": 1,
+        "maskBits" : 65535
+      },
+      "shape" : [1.5, 527,  -0.5, 117,  58, 550.5,  24, 546.5,  10.5, 539]
+    },
+    {
+      "density": 2,
+      "friction": 0,
+      "bounce": 0,
+      "filter": {
+        "categoryBits": 1,
+        "maskBits" : 65535
+      },
+      "shape" : [70, 71,  -0.5, 117,  10, 100.5]
+    },
+    {
+      "density": 2,
+      "friction": 0,
+      "bounce": 0,
+      "filter": {
+        "categoryBits": 1,
+        "maskBits" : 65535
+      },
+      "shape" : [231, 24.5,  248.5, 18,  245.5, 21]
+    },
+    {
+      "density": 2,
+      "friction": 0,
+      "bounce": 0,
+      "filter": {
+        "categoryBits": 1,
+        "maskBits" : 65535
+      },
+      "shape" : [313.5, 116,  70, 71,  230, 60,  299, 97.5]
+    },
+    {
+      "density": 2,
+      "friction": 0,
+      "bounce": 0,
+      "filter": {
+        "categoryBits": 1,
+        "maskBits" : 65535
+      },
+      "shape" : [70, 71,  81, 63,  231, 24.5,  230, 60]
+    }
   ]
 }

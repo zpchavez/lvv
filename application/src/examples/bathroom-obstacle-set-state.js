@@ -8,11 +8,27 @@ var ObstacleFactory = require('../objects/obstacles/obstacle-factory');
 var makeObstacles = function(context) {
     var obstacles = [];
 
-    obstacles.push(context.obstacleFactory.getNew('Toothbrush', 500, 700, 0));
-    
+    obstacles.push(context.obstacleFactory.getNew('Toothbrush', 450, 700, 0));
+
     obstacles.push(context.obstacleFactory.getNew('Comb', 100, 315, 90));
 
-    obstacles.push(context.obstacleFactory.getNew('Floss', 375, 175, 0));
+    obstacles.push(context.obstacleFactory.getNew('Floss', 1000, 580, 45));
+
+    obstacles.push(context.obstacleFactory.getNew('AspirinBottle', 850, 220, 270));
+
+    obstacles.push(context.obstacleFactory.getNew('AspirinPill', 550, 210, Math.random() * 180));
+    obstacles.push(context.obstacleFactory.getNew('AspirinPill', 250, 180, Math.random() * 180));
+    obstacles.push(context.obstacleFactory.getNew('AspirinPill', 292, 190, Math.random() * 180));
+    obstacles.push(context.obstacleFactory.getNew('AspirinPill', 429, 195, Math.random() * 180));
+    obstacles.push(context.obstacleFactory.getNew('AspirinPill', 310, 222, Math.random() * 180));
+    obstacles.push(context.obstacleFactory.getNew('AspirinPill', 460, 240, Math.random() * 180));
+    obstacles.push(context.obstacleFactory.getNew('AspirinPill', 510, 270, Math.random() * 180));
+    obstacles.push(context.obstacleFactory.getNew('AspirinPill', 240, 310, Math.random() * 180));
+    obstacles.push(context.obstacleFactory.getNew('AspirinPill', 320, 340, Math.random() * 180));
+    obstacles.push(context.obstacleFactory.getNew('AspirinPill', 435, 355, Math.random() * 180));
+    obstacles.push(context.obstacleFactory.getNew('AspirinPill', 520, 375, Math.random() * 180));
+    obstacles.push(context.obstacleFactory.getNew('AspirinPill', 475, 250, Math.random() * 180));
+    obstacles.push(context.obstacleFactory.getNew('AspirinPill', 510, 260, Math.random() * 180));
 
     _.each(obstacles, function(obstacle) {
         obstacle.body.setCollisionGroup(context.collisionGroup);
@@ -34,6 +50,8 @@ CarDrivingState.prototype = Object.create(Phaser.State.prototype);
 CarDrivingState.prototype.preload = function()
 {
     this.obstacleFactory.loadAssets([
+       'AspirinBottle',
+       'AspirinPill',
        'Toothbrush',
        'Comb',
        'Floss'

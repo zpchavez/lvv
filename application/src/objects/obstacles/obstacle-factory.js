@@ -1,24 +1,28 @@
 'use strict';
 
-var _          = require('underscore');
-var ClownNose  = require('./clown-nose');
-var Comb       = require('./comb');
-var DynamicBox = require('./dynamic-box');
-var Floss      = require('./floss');
-var StaticBox  = require('./static-box');
-var Toothbrush = require('./toothbrush');
+var _             = require('underscore');
+var AspirinBottle = require('./aspirin-bottle');
+var AspirinPill   = require('./aspirin-pill');
+var ClownNose     = require('./clown-nose');
+var Comb          = require('./comb');
+var DynamicBox    = require('./dynamic-box');
+var Floss         = require('./floss');
+var StaticBox     = require('./static-box');
+var Toothbrush    = require('./toothbrush');
 
 var ObstacleFactory = function(state) {
     this.state      = state;
 };
 
 ObstacleFactory.prototype.types = {
-    'ClownNose'  : ClownNose,
-    'DynamicBox' : DynamicBox,
-    'StaticBox'  : StaticBox,
-    'Toothbrush' : Toothbrush,
-    'Comb'       : Comb,
-    'Floss'      : Floss
+    'AspirinBottle' : AspirinBottle,
+    'AspirinPill'   : AspirinPill,
+    'ClownNose'     : ClownNose,
+    'DynamicBox'    : DynamicBox,
+    'StaticBox'     : StaticBox,
+    'Toothbrush'    : Toothbrush,
+    'Comb'          : Comb,
+    'Floss'         : Floss
 };
 
 ObstacleFactory.prototype.loadAssets = function(types)
