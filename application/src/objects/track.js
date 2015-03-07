@@ -9,6 +9,37 @@ var Track = function(state)
     this.markers            = [];
     this.finish             = null;
     this.trackMarkerFactory = new TrackMarkerFactory(state);
+    this.debug              = false;
+};
+
+Track.prototype.enableDebug = function()
+{
+    this.debug = true;
+
+    this.trackMarkerFactory.enableDebug();
+
+    _(this.markers).each(function (marker) {
+        marker.renderable = true;
+    });
+
+    if (this.finish) {
+        this.finish.renderable = true;
+    }
+};
+
+Track.prototype.disableDebug = function()
+{
+    this.debug = false;
+
+    this.trackMarkerFactory.disableDebug();
+
+    _(this.markers).each(function (marker) {
+        marker.renderable = false;
+    });
+
+    if (this.finish) {
+        this.finish.renderable = false;
+    }
 };
 
 Track.prototype.loadAssets = function()
