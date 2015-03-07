@@ -11,6 +11,8 @@ var TrackMarkerState = function()
     this.carFactory = new CarFactory(this);
     this.track      = new Track(this);
 
+    this.track.enableDebug();
+
     this.lapNumber = 1;
 };
 
@@ -48,9 +50,7 @@ TrackMarkerState.prototype.create = function()
     this.car.body.setCollisionGroup(this.collisionGroup);
     this.car.body.collides(this.collisionGroup);
 
-    this.cursors  = this.game.input.keyboard.createCursorKeys();
-    this.spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-    this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR ]);
+    this.cursors = this.game.input.keyboard.createCursorKeys();
 
     this.showLapCounter();
 

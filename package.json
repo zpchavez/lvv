@@ -21,11 +21,14 @@
         "gulp-streamify"               : "0.0.5",
         "gulp-uglify"                  : "0.3.1",
         "gulp-util"                    : "3.0.1",
+        "react-tools"                  : "0.12.2",
+        "reactify"                     : "1.0.0",
         "vinyl-source-stream"          : "1.0.0",
         "watchify"                     : "1.0.2"
     },
     "dependencies" : {
-        "phaser"     : "2.2.1",
+        "phaser"     : "2.2.2",
+        "react"      : "0.12.2",
         "underscore" : "1.7.0"
     },
     "browser" : {

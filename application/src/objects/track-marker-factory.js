@@ -6,6 +6,18 @@ var FinishMarker = require('./finish-marker');
 var TrackMarkerFactory = function(state)
 {
     this.state = state;
+
+    this.debug = false;
+};
+
+TrackMarkerFactory.prototype.enableDebug = function()
+{
+    this.debug = true;
+};
+
+TrackMarkerFactory.prototype.disableDebug = function()
+{
+    this.debug = false;
 };
 
 TrackMarkerFactory.prototype.loadAssets = function()
@@ -26,6 +38,8 @@ TrackMarkerFactory.prototype.createMarker = function(x, y, angle, length)
         length
     );
 
+    sprite.renderable = this.debug;
+
     return sprite;
 };
 
@@ -39,6 +53,8 @@ TrackMarkerFactory.prototype.createFinishLine = function(x, y, angle, length)
         angle,
         length
     );
+
+    sprite.renderable = this.debug;
 
     return sprite;
 };
