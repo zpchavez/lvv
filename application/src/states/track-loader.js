@@ -8,14 +8,17 @@ var React         = require('react');
 var TrackSelector = require('../components/track-selector');
 var _             = require('underscore');
 
-var TrackLoaderState = function(trackData)
+var TrackLoaderState = function(trackData, debug)
 {
     this.trackData = trackData || require('../../assets/tilemaps/maps/square-loop');
+
+    this.debug = _(debug).isUndefined() ? false : debug;
 
     Phaser.State.apply(this, arguments);
 
     this.carFactory = new CarFactory(this);
     this.track      = new Track(this);
+    this.track.setDebug(this.debug);
 
     this.lapNumber = 1;
 
@@ -216,15 +219,17 @@ TrackLoaderState.prototype.incrementLapCounter = function()
 
 TrackLoaderState.prototype.selectTrack = function(trackData)
 {
-    this.game.state.add('track-loader', new TrackLoaderState(trackData), true);
+    this.game.state.add('track-loader', new TrackLoaderState(trackData, this.debug), true);
 };
 
 TrackLoaderState.prototype.changeDebugMode = function(value)
 {
     if (value) {
         this.track.enableDebug();
+        this.debug = true;
     } else {
         this.track.disableDebug();
+        this.debug = false;
     }
 };
 
