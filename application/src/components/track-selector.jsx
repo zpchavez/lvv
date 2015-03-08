@@ -20,10 +20,7 @@ module.exports = React.createClass({
 
     selectTrack : function(event)
     {
-        this.props.onSelectTrack(
-            this.state.selectedTheme,
-            event.currentTarget.value
-        );
+        this.props.onSelectTrack(trackList[this.state.selectedTheme][event.currentTarget.value]);
     },
 
     selectDebugMode : function(event)
@@ -56,7 +53,7 @@ module.exports = React.createClass({
     {
         var tracks, options = [];
 
-        tracks = _(trackList[this.state.selectedTheme].tracks).keys();
+        tracks = _(trackList[this.state.selectedTheme]).keys();
 
         _(tracks).each(function (track) {
             options.push(

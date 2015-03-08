@@ -4,15 +4,13 @@
 var Phaser        = require('phaser');
 var CarFactory    = require('../objects/car-factory');
 var Track         = require('../objects/track');
-var trackList     = require('../../assets/tilemaps/maps/list');
 var React         = require('react');
 var TrackSelector = require('../components/track-selector');
 var _             = require('underscore');
 
-var TrackLoaderState = function(trackTheme, trackName)
+var TrackLoaderState = function(trackData)
 {
-    this.trackTheme = trackTheme || 'Desert';
-    this.trackName  = trackName  || 'Square Loop';
+    this.trackData = trackData || require('../../assets/tilemaps/maps/square-loop');
 
     Phaser.State.apply(this, arguments);
 
@@ -28,26 +26,36 @@ TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
 
 TrackLoaderState.prototype.preload = function()
 {
+    var state = this;
+
     this.carFactory.loadAssets();
     this.track.loadAssets();
 
     this.load.tilemap(
-        this.trackName,
-        trackList[this.trackTheme].tracks[this.trackName],
+        'track',
         null,
+        this.trackData,
         Phaser.Tilemap.TILED_JSON
     );
 
-    this.load.image(
-        'tiles',
-        trackList[this.trackTheme].tileset
-    );
+    // Load tilesets
+    this.trackData.tilesets.forEach(function (tileset) {
+        state.load.image(
+            tileset.name,
+            tileset.properties.path
+        );
+    });
 };
 
 TrackLoaderState.prototype.create = function()
 {
-    this.map = this.game.add.tilemap(this.trackName);
-    this.map.addTilesetImage(this.trackTheme, 'tiles');
+    var state = this;
+
+    this.map = this.game.add.tilemap('track');
+
+    this.trackData.tilesets.forEach(function (tileset) {
+        state.map.addTilesetImage(tileset.name, tileset.name);
+    });
 
     this.layer = this.map.createLayer('background');
 
@@ -194,9 +202,9 @@ TrackLoaderState.prototype.incrementLapCounter = function()
     this.lapDisplay.setText('Lap ' + this.lapNumber);
 };
 
-TrackLoaderState.prototype.selectTrack = function(theme, track)
+TrackLoaderState.prototype.selectTrack = function(trackData)
 {
-    this.game.state.add('track-loader', new TrackLoaderState(theme, track), true);
+    this.game.state.add('track-loader', new TrackLoaderState(trackData), true);
 };
 
 TrackLoaderState.prototype.changeDebugMode = function(value)

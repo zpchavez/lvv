@@ -136,7 +136,7 @@
          "name":"Desert",
          "properties":
             {
-
+                "path" : "assets/tilemaps/tiles/desert.png"
             },
          "spacing":1,
          "terrains":[
