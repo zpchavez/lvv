@@ -41,7 +41,7 @@ module.exports = React.createClass({
 
         _(themes).each(function (theme) {
             options.push(
-                <option value={theme}>{theme}</option>
+                <option value={theme} key={theme}>{theme}</option>
             );
         });
 
@@ -60,7 +60,7 @@ module.exports = React.createClass({
 
         _(tracks).each(function (track) {
             options.push(
-                <option value={track}>{track}</option>
+                <option value={track} key={track}>{track}</option>
             );
         });
 
