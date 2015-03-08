@@ -22,7 +22,6 @@
                  "name":"finish-line",
                  "properties":
                     {
-                     "angle":"0"
                     },
                  "rotation":0,
                  "type":"finish-line",
@@ -37,7 +36,6 @@
                  "name":"",
                  "properties":
                     {
-                     "angle":"0",
                      "index":"0"
                     },
                  "rotation":0,
@@ -53,7 +51,6 @@
                  "name":"",
                  "properties":
                     {
-                     "angle":"90",
                      "index":"1"
                     },
                  "rotation":90,
@@ -69,7 +66,6 @@
                  "name":"",
                  "properties":
                     {
-                     "angle":"90",
                      "index":"2"
                     },
                  "rotation":90,
@@ -85,7 +81,6 @@
                  "name":"",
                  "properties":
                     {
-                     "angle":"180",
                      "index":"3"
                     },
                  "rotation":180,
@@ -101,7 +96,6 @@
                  "name":"",
                  "properties":
                     {
-                     "angle":"180",
                      "index":"4"
                     },
                  "rotation":180,
@@ -117,7 +111,6 @@
                  "name":"",
                  "properties":
                     {
-                     "angle":"180",
                      "index":"5"
                     },
                  "rotation":180,
@@ -133,7 +126,6 @@
                  "name":"",
                  "properties":
                     {
-                     "angle":"270",
                      "index":"6"
                     },
                  "rotation":270,
@@ -149,7 +141,6 @@
                  "name":"",
                  "properties":
                     {
-                     "angle":"270",
                      "index":"7"
                     },
                  "rotation":270,
@@ -165,7 +156,6 @@
                  "name":"",
                  "properties":
                     {
-                     "angle":"270",
                      "index":"8"
                     },
                  "rotation":270,

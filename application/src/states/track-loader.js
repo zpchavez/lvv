@@ -90,17 +90,27 @@ TrackLoaderState.prototype.create = function()
 
 TrackLoaderState.prototype.placeTrackMarkers = function()
 {
-    var data, state = this;
+    var data, trackLayer, state = this;
 
     data = {
         markers : []
     };
 
-    _(this.map.objects.track).each(function (object) {
+    this.trackData.layers.forEach(function (layer) {
+        if (layer.name === 'track') {
+            trackLayer = layer;
+        }
+    });
+
+    if (! trackLayer) {
+        return;
+    }
+
+    _(trackLayer.objects).each(function (object) {
         var x, y;
         // Positions from file are the edge of the marker, but we
         // need the center.
-        switch (parseInt(object.properties.angle, 10)) {
+        switch (object.rotation) {
             case 0 :
                 x = object.x + (object.width / 2);
                 y = object.y;
@@ -117,13 +127,15 @@ TrackLoaderState.prototype.placeTrackMarkers = function()
                 x = object.x;
                 y = object.y - (object.width / 2);
                 break;
+            default :
+                throw new Error('Unsupported marker angle:' + object.rotation);
         }
 
         if (object.name === 'finish-line') {
             data.finishLine = [
                 x,
                 y,
-                parseInt(object.properties.angle, 10),
+                object.rotation,
                 object.width
             ];
 
@@ -132,7 +144,7 @@ TrackLoaderState.prototype.placeTrackMarkers = function()
             data.markers[object.properties.index] = [
                 x,
                 y,
-                parseInt(object.properties.angle, 10),
+                object.rotation,
                 object.width
             ];
         }

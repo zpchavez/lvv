@@ -22,7 +22,6 @@
                  "name":"finish-line",
                  "properties":
                     {
-                     "angle":"0"
                     },
                  "rotation":0,
                  "type":"finish-line",
@@ -37,7 +36,6 @@
                  "name":"marker",
                  "properties":
                     {
-                     "angle":"90",
                      "index":"0"
                     },
                  "rotation":90,
@@ -53,7 +51,6 @@
                  "name":"marker",
                  "properties":
                     {
-                     "angle":"90",
                      "index":"1"
                     },
                  "rotation":90,
@@ -69,7 +66,6 @@
                  "name":"marker",
                  "properties":
                     {
-                     "angle":"0",
                      "index":"2"
                     },
                  "rotation":0,
@@ -85,7 +81,6 @@
                  "name":"marker",
                  "properties":
                     {
-                     "angle":"180",
                      "index":"3"
                     },
                  "rotation":180,
@@ -101,7 +96,6 @@
                  "name":"marker",
                  "properties":
                     {
-                     "angle":"270",
                      "index":"4"
                     },
                  "rotation":270,
