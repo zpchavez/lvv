@@ -14,6 +14,7 @@ var gulp        = require('gulp'),
     source      = require('vinyl-source-stream'),
     browserify  = require('browserify'),
     reactify    = require('reactify'),
+    stringify   = require('stringify'),
     watchify    = require('watchify'),
     gulpif      = require('gulp-if'),
     paths;
@@ -60,7 +61,9 @@ gulp.task('compile', ['clean'], function () {
         entries    : [paths.entry],
         extensions : ['.js', '.jsx'],
         debug      : watching
-    }).transform(reactify);
+    })
+    .transform(reactify)
+    .transform(stringify(['.tmx']));
 
     var bundlee = function() {
         return bundler

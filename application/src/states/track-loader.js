@@ -10,17 +10,18 @@ var _             = require('underscore');
 
 var TrackLoaderState = function(trackData, debug)
 {
-    this.trackData = trackData || require('../../assets/tilemaps/maps/square-loop');
+    this.trackData = trackData;
 
     this.debug = _(debug).isUndefined() ? false : debug;
 
     Phaser.State.apply(this, arguments);
 
-    this.carFactory = new CarFactory(this);
-    this.track      = new Track(this);
-    this.track.setDebug(this.debug);
-
-    this.lapNumber = 1;
+    if (this.trackData) {
+        this.carFactory = new CarFactory(this);
+        this.track      = new Track(this);
+        this.track.setDebug(this.debug);
+        this.lapNumber = 1;
+    }
 
     this.showTrackSelectorOffCanvas();
 };
@@ -30,6 +31,10 @@ TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
 TrackLoaderState.prototype.preload = function()
 {
     var state = this;
+
+    if (! this.trackData) {
+        return;
+    }
 
     this.carFactory.loadAssets();
     this.track.loadAssets();
@@ -44,8 +49,8 @@ TrackLoaderState.prototype.preload = function()
     // Load tilesets
     this.trackData.tilesets.forEach(function (tileset) {
         state.load.image(
-            tileset.name,
-            tileset.properties.path
+            'tiles',
+            tileset.imagePath
         );
     });
 };
@@ -54,10 +59,14 @@ TrackLoaderState.prototype.create = function()
 {
     var state = this;
 
+    if (! this.trackData) {
+        return;
+    }
+
     this.map = this.game.add.tilemap('track');
 
     this.trackData.tilesets.forEach(function (tileset) {
-        state.map.addTilesetImage(tileset.name, tileset.name);
+        state.map.addTilesetImage(tileset.name, 'tiles');
     });
 
     this.layer = this.map.createLayer('background');
@@ -161,6 +170,10 @@ TrackLoaderState.prototype.placeTrackMarkers = function()
 
 TrackLoaderState.prototype.update = function()
 {
+    if (! this.trackData) {
+        return;
+    }
+
     this.car.applyForces();
 
     this.track.enforce(this.car);

@@ -23,6 +23,8 @@
         "gulp-util"                    : "3.0.1",
         "react-tools"                  : "0.12.2",
         "reactify"                     : "1.0.0",
+        "stringify"                    : "3.1.0",
+        "tmx-parser"                   : "1.2.3",
         "vinyl-source-stream"          : "1.0.0",
         "watchify"                     : "1.0.2"
     },
