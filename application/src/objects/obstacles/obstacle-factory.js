@@ -7,6 +7,7 @@ var ClownNose     = require('./clown-nose');
 var Comb          = require('./comb');
 var DynamicBox    = require('./dynamic-box');
 var Floss         = require('./floss');
+var Razor         = require('./razor');
 var StaticBox     = require('./static-box');
 var Toothbrush    = require('./toothbrush');
 
@@ -20,6 +21,7 @@ ObstacleFactory.prototype.types = {
     'AspirinPill'   : AspirinPill,
     'ClownNose'     : ClownNose,
     'DynamicBox'    : DynamicBox,
+    'Razor'         : Razor,
     'StaticBox'     : StaticBox,
     'Toothbrush'    : Toothbrush,
     'Comb'          : Comb,

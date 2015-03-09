@@ -8,7 +8,7 @@ var ObstacleFactory = require('../objects/obstacles/obstacle-factory');
 var makeObstacles = function(context) {
     var obstacles = [];
 
-    obstacles.push(context.obstacleFactory.getNew('Toothbrush', 450, 700, 0));
+    obstacles.push(context.obstacleFactory.getNew('Toothbrush', 450, 800, 0));
 
     obstacles.push(context.obstacleFactory.getNew('Comb', 100, 315, 90));
 
@@ -29,6 +29,8 @@ var makeObstacles = function(context) {
     obstacles.push(context.obstacleFactory.getNew('AspirinPill', 520, 375, Math.random() * 180));
     obstacles.push(context.obstacleFactory.getNew('AspirinPill', 475, 250, Math.random() * 180));
     obstacles.push(context.obstacleFactory.getNew('AspirinPill', 510, 260, Math.random() * 180));
+
+    obstacles.push(context.obstacleFactory.getNew('Razor', 490, 600, 90));
 
     _.each(obstacles, function(obstacle) {
         obstacle.body.setCollisionGroup(context.collisionGroup);
@@ -54,7 +56,8 @@ CarDrivingState.prototype.preload = function()
        'AspirinPill',
        'Toothbrush',
        'Comb',
-       'Floss'
+       'Floss',
+       'Razor'
     ]);
     this.carFactory.loadAssets();
 
@@ -63,8 +66,8 @@ CarDrivingState.prototype.preload = function()
 
 CarDrivingState.prototype.create = function()
 {
-    this.add.tileSprite(0, 0, 1200, 800, 'dirt');
-    this.game.world.setBounds(0, 0, 1200, 800);
+    this.add.tileSprite(0, 0, 1200, 900, 'dirt');
+    this.game.world.setBounds(0, 0, 1200, 900);
 
     this.game.physics.startSystem(Phaser.Physics.P2JS);
 
