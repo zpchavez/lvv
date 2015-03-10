@@ -31,10 +31,6 @@ TrackLoaderState.prototype.preload = function()
 {
     var state = this;
 
-    if (! this.trackData) {
-        return;
-    }
-
     this.carFactory.loadAssets();
     this.track.loadAssets();
 
@@ -59,10 +55,6 @@ TrackLoaderState.prototype.create = function()
     var state = this;
 
     this.showTrackSelectorOffCanvas();
-
-    if (! this.trackData) {
-        return;
-    }
 
     this.map = this.game.add.tilemap('track');
 
@@ -171,10 +163,6 @@ TrackLoaderState.prototype.placeTrackMarkers = function()
 
 TrackLoaderState.prototype.update = function()
 {
-    if (! this.trackData) {
-        return;
-    }
-
     this.car.applyForces();
 
     this.track.enforce(this.car);
