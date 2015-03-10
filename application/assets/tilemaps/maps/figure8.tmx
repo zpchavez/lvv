@@ -2,7 +2,6 @@
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" nextobjectid="9">
  <tileset firstgid="1" name="Desert" tilewidth="32" tileheight="32" spacing="1" margin="1">
   <properties>
-   <property name="path" value="assets/tilemaps/tiles/desert.png"/>
   </properties>
   <image source="../tiles/desert.png" width="265" height="199"/>
   <terraintypes>
