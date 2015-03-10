@@ -17,12 +17,10 @@ var TrackLoaderState = function(trackData, debug)
 
     Phaser.State.apply(this, arguments);
 
-    if (this.trackData) {
-        this.carFactory = new CarFactory(this);
-        this.track      = new Track(this);
-        this.track.setDebug(this.debug);
-        this.lapNumber = 1;
-    }
+    this.carFactory = new CarFactory(this);
+    this.track      = new Track(this);
+    this.track.setDebug(this.debug);
+    this.lapNumber = 1;
 };
 
 TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
