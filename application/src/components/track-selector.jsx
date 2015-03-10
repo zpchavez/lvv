@@ -8,6 +8,7 @@ var _         = require('underscore');
 module.exports = React.createClass({
 
     propTypes : {
+        phaserLoader      : React.PropTypes.object.isRequired,
         onSelectTrack     : React.PropTypes.func.isRequired,
         onChangeDebugMode : React.PropTypes.func.isRequired
     },
@@ -21,15 +22,21 @@ module.exports = React.createClass({
 
     selectTrack : function(event)
     {
-        var tmxData, component = this;
+        var loader, component = this;
 
-        tmxData = trackList[this.state.selectedTheme][event.currentTarget.value];
+        loader = this.props.phaserLoader;
 
-        tmxParser.parse(tmxData, null, function(err, map) {
-            var fixedMap = component.fixParsedMap(map)
+        loader.text('track-data', trackList[this.state.selectedTheme][event.currentTarget.value]);
+        loader.onLoadComplete.addOnce(function () {
+            var tmxData = loader.game.cache.getText('track-data');
 
-            component.props.onSelectTrack(map);
+            tmxParser.parse(tmxData, null, function(err, map) {
+                var fixedMap = component.fixParsedMap(map)
+                component.props.onSelectTrack(fixedMap);
+            });
         });
+
+        this.props.phaserLoader.start();
     },
 
     // The object created by tmx-parser is not quite valid, so it needs to be fixed
@@ -50,7 +57,7 @@ module.exports = React.createClass({
 
             tileset.imagewidth  = tileset.image.width;
             tileset.imageheight = tileset.image.height;
-            tileset.imagePath   = 'assets/tilemaps/' + tileset.image.source.replace(/[.\/]*/, '', 'g')
+            tileset.imagePath   = 'assets/tilemaps/' + tileset.image.source.replace(/[.\/]*/, '', 'g');
             return tileset;
         });
 
@@ -65,12 +72,12 @@ module.exports = React.createClass({
                 name    : layer.name,
                 x       : 0,
                 y       : 0
-            }
+            };
 
             if (layer.tiles) {
                 newLayer.data = layer.tiles.map(function (tile) {
                     return tile.id;
-                })
+                });
             }
             return newLayer;
         });

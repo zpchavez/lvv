@@ -22,8 +22,6 @@ var TrackLoaderState = function(trackData, debug)
         this.track.setDebug(this.debug);
         this.lapNumber = 1;
     }
-
-    this.showTrackSelectorOffCanvas();
 };
 
 TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
@@ -58,6 +56,8 @@ TrackLoaderState.prototype.preload = function()
 TrackLoaderState.prototype.create = function()
 {
     var state = this;
+
+    this.showTrackSelectorOffCanvas();
 
     if (! this.trackData) {
         return;
@@ -250,6 +250,7 @@ TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
 {
     React.render(
         React.createElement(TrackSelector, {
+            phaserLoader      : this.load,
             onSelectTrack     : this.selectTrack.bind(this),
             onChangeDebugMode : this.changeDebugMode.bind(this)
         }),

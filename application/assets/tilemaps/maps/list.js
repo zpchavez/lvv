@@ -1,8 +1,10 @@
 'use strict';
 
+var urlRoot = 'assets/tilemaps/maps/';
+
 module.exports = {
     'Desert' : {
-        'Square Loop' : require('./square-loop.tmx'),
-        'Figure 8'    : require('./figure8.tmx')
+        'Square Loop' : urlRoot + '/square-loop.tmx',
+        'Figure 8'    : urlRoot + '/figure8.tmx'
     }
 };
