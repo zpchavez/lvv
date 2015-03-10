@@ -6,6 +6,7 @@ var CarFactory    = require('../objects/car-factory');
 var Track         = require('../objects/track');
 var React         = require('react');
 var TrackSelector = require('../components/track-selector');
+var TrackLoader   = require('../objects/track-loader');
 var _             = require('underscore');
 
 var TrackLoaderState = function(trackData, debug)
@@ -230,9 +231,17 @@ TrackLoaderState.prototype.incrementLapCounter = function()
     this.lapDisplay.setText('Lap ' + this.lapNumber);
 };
 
-TrackLoaderState.prototype.selectTrack = function(trackData)
+TrackLoaderState.prototype.selectTrack = function(trackTheme, trackName)
 {
-    this.game.state.add('track-loader', new TrackLoaderState(trackData, this.debug), true);
+    var callback, trackLoader, state = this;
+
+    callback = function(data) {
+        state.game.state.add('track-loader', new TrackLoaderState(data, state.debug), true);
+    };
+
+    trackLoader = new TrackLoader(this.load);
+
+    trackLoader.load(trackTheme, trackName, callback);
 };
 
 TrackLoaderState.prototype.changeDebugMode = function(value)
