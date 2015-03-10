@@ -1,20 +1,31 @@
 'use strict';
 
-var _          = require('underscore');
-var ClownNose  = require('./clown-nose');
-var DynamicBox = require('./dynamic-box');
-var StaticBox  = require('./static-box');
-var Toothbrush = require('./toothbrush');
+var _             = require('underscore');
+var AspirinBottle = require('./aspirin-bottle');
+var AspirinPill   = require('./aspirin-pill');
+var ClownNose     = require('./clown-nose');
+var Comb          = require('./comb');
+var DynamicBox    = require('./dynamic-box');
+var Floss         = require('./floss');
+var Razor         = require('./razor');
+var StaticBox     = require('./static-box');
+var Toothbrush    = require('./toothbrush');
 
 var ObstacleFactory = function(state) {
-    this.state      = state;
+    this.state       = state;
+    this.loadedTypes = {};
 };
 
 ObstacleFactory.prototype.types = {
-    'ClownNose'  : ClownNose,
-    'DynamicBox' : DynamicBox,
-    'StaticBox'  : StaticBox,
-    'Toothbrush' : Toothbrush
+    'AspirinBottle' : AspirinBottle,
+    'AspirinPill'   : AspirinPill,
+    'ClownNose'     : ClownNose,
+    'DynamicBox'    : DynamicBox,
+    'Razor'         : Razor,
+    'StaticBox'     : StaticBox,
+    'Toothbrush'    : Toothbrush,
+    'Comb'          : Comb,
+    'Floss'         : Floss
 };
 
 ObstacleFactory.prototype.loadAssets = function(types)
@@ -22,9 +33,10 @@ ObstacleFactory.prototype.loadAssets = function(types)
     _.each(types, function(type) {
         if (this.types[type]) {
             this.state.load.image(type, this.types[type].prototype.getSpritePath());
+            this.loadedTypes[type] = true;
         } else {
-            throw new Error('Attempted to load assets for unknown class ' + type);
-        }        
+            throw new Error('Attempted to load assets for unknown class: ' + type);
+        }
     }, this);
 
     this.state.load.physics('Obstacles', 'assets/physics/obstacles.json');
@@ -33,9 +45,13 @@ ObstacleFactory.prototype.loadAssets = function(types)
 ObstacleFactory.prototype.getNew = function(type, x, y, angle)
 {
     if (this.types[type]) {
-        return new this.types[type](this.state, x, y, type, angle);
+        if (this.loadedTypes[type]) {
+            return new this.types[type](this.state, x, y, type, angle);
+        } else {
+            throw new Error('Attempted to create unloaded type. Add a call to load assets for ' + type + '.');
+        }
     } else {
-        throw new Error('Attempted to create unknown class ' + type);
+        throw new Error('Attempted to create unknown class: ' + type);
     }
 };
 

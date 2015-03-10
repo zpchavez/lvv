@@ -24,6 +24,7 @@ paths = {
     assets: [
         './application/assets/**/*.*',
         '!./application/assets/psds/**',
+        '!./application/assets/svgs/**',
         '!./application/assets/reference-images/**'
     ],
     css:    'application/css/*.css',
