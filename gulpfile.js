@@ -61,7 +61,8 @@ gulp.task('compile', ['clean'], function () {
         entries    : [paths.entry],
         extensions : ['.js', '.jsx'],
         debug      : watching
-    }).transform(reactify);
+    })
+    .transform(reactify);
 
     var bundlee = function() {
         return bundler

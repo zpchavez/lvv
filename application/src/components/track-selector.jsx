@@ -7,6 +7,7 @@ var _         = require('underscore');
 module.exports = React.createClass({
 
     propTypes : {
+        phaserLoader      : React.PropTypes.object.isRequired,
         onSelectTrack     : React.PropTypes.func.isRequired,
         onChangeDebugMode : React.PropTypes.func.isRequired
     },
@@ -41,7 +42,7 @@ module.exports = React.createClass({
 
         _(themes).each(function (theme) {
             options.push(
-                <option value={theme}>{theme}</option>
+                <option value={theme} key={theme}>{theme}</option>
             );
         });
 
@@ -56,11 +57,11 @@ module.exports = React.createClass({
     {
         var tracks, options = [];
 
-        tracks = _(trackList[this.state.selectedTheme].tracks).keys();
+        tracks = _(trackList[this.state.selectedTheme]).keys();
 
         _(tracks).each(function (track) {
             options.push(
-                <option value={track}>{track}</option>
+                <option value={track} key={track}>{track}</option>
             );
         });
 

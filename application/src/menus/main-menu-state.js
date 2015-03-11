@@ -2,11 +2,14 @@
 
 var Phaser = require('phaser');
 
-var DrawImageState = require('../examples/draw-image-state');
-var CarDrivingState = require('../examples/car-driving-state');
+var DrawImageState   = require('../examples/draw-image-state');
+var CarDrivingState  = require('../examples/car-driving-state');
 var TrackMarkerState = require('../examples/track-marker-state');
 var BathroomObstacleSetState = require('../examples/bathroom-obstacle-set-state');
 var TrackLoaderState = require('../states/track-loader');
+var TrackLoader      = require('../objects/track-loader');
+var trackList        = require('../../assets/tilemaps/maps/list');
+var _                = require('underscore');
 
 var MainMenuState = function()
 {
@@ -59,7 +62,17 @@ MainMenuState.prototype.onBathroomObstacleSetClick = function()
 
 MainMenuState.prototype.onTrackLoaderClick = function()
 {
-    this.game.state.add('track-loader', new TrackLoaderState(), true);
+    var trackLoader, firstTheme, firstTrack, stateManager = this.game.state;
+
+    trackLoader = new TrackLoader(this.game.load);
+
+    firstTheme = _(trackList).keys()[0];
+
+    firstTrack = _(trackList[firstTheme]).keys()[0];
+
+    trackLoader.load(firstTheme, firstTrack, function(data) {
+        stateManager.add('track-loader', new TrackLoaderState(data, false), true);
+    });
 };
 
 module.exports = MainMenuState;

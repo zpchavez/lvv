@@ -4,50 +4,61 @@
 var Phaser        = require('phaser');
 var CarFactory    = require('../objects/car-factory');
 var Track         = require('../objects/track');
-var trackList     = require('../../assets/tilemaps/maps/list');
 var React         = require('react');
 var TrackSelector = require('../components/track-selector');
+var TrackLoader   = require('../objects/track-loader');
 var _             = require('underscore');
 
-var TrackLoaderState = function(trackTheme, trackName)
+var TrackLoaderState = function(trackData, debug)
 {
-    this.trackTheme = trackTheme || 'Desert';
-    this.trackName  = trackName  || 'Square Loop';
+    this.trackData = trackData;
+
+    this.debug = _(debug).isUndefined() ? false : debug;
 
     Phaser.State.apply(this, arguments);
 
     this.carFactory = new CarFactory(this);
     this.track      = new Track(this);
-
+    this.track.setDebug(this.debug);
     this.lapNumber = 1;
-
-    this.showTrackSelectorOffCanvas();
 };
 
 TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
 
 TrackLoaderState.prototype.preload = function()
 {
+    var state = this;
+
     this.carFactory.loadAssets();
     this.track.loadAssets();
 
     this.load.tilemap(
-        this.trackName,
-        trackList[this.trackTheme].tracks[this.trackName],
+        'track',
         null,
+        this.trackData,
         Phaser.Tilemap.TILED_JSON
     );
 
-    this.load.image(
-        'tiles',
-        trackList[this.trackTheme].tileset
-    );
+    // Load tilesets
+    this.trackData.tilesets.forEach(function (tileset) {
+        state.load.image(
+            'tiles',
+            tileset.imagePath
+        );
+    });
 };
 
 TrackLoaderState.prototype.create = function()
 {
-    this.map = this.game.add.tilemap(this.trackName);
-    this.map.addTilesetImage(this.trackTheme, 'tiles');
+    var state = this;
+
+    this.showTrackSelectorOffCanvas();
+
+    this.map = this.game.add.tilemap('track');
+
+    this.trackData.tilesets.forEach(function (tileset) {
+        state.map.addTilesetImage(tileset.name, 'tiles');
+    });
 
     this.layer = this.map.createLayer('background');
 
@@ -82,17 +93,27 @@ TrackLoaderState.prototype.create = function()
 
 TrackLoaderState.prototype.placeTrackMarkers = function()
 {
-    var data, state = this;
+    var data, trackLayer, state = this;
 
     data = {
         markers : []
     };
 
-    _(this.map.objects.track).each(function (object) {
+    this.trackData.layers.forEach(function (layer) {
+        if (layer.name === 'track') {
+            trackLayer = layer;
+        }
+    });
+
+    if (! trackLayer) {
+        return;
+    }
+
+    _(trackLayer.objects).each(function (object) {
         var x, y;
         // Positions from file are the edge of the marker, but we
         // need the center.
-        switch (parseInt(object.properties.angle, 10)) {
+        switch (object.rotation) {
             case 0 :
                 x = object.x + (object.width / 2);
                 y = object.y;
@@ -109,13 +130,15 @@ TrackLoaderState.prototype.placeTrackMarkers = function()
                 x = object.x;
                 y = object.y - (object.width / 2);
                 break;
+            default :
+                throw new Error('Unsupported marker angle:' + object.rotation);
         }
 
         if (object.name === 'finish-line') {
             data.finishLine = [
                 x,
                 y,
-                parseInt(object.properties.angle, 10),
+                object.rotation,
                 object.width
             ];
 
@@ -124,7 +147,7 @@ TrackLoaderState.prototype.placeTrackMarkers = function()
             data.markers[object.properties.index] = [
                 x,
                 y,
-                parseInt(object.properties.angle, 10),
+                object.rotation,
                 object.width
             ];
         }
@@ -194,17 +217,27 @@ TrackLoaderState.prototype.incrementLapCounter = function()
     this.lapDisplay.setText('Lap ' + this.lapNumber);
 };
 
-TrackLoaderState.prototype.selectTrack = function(theme, track)
+TrackLoaderState.prototype.selectTrack = function(trackTheme, trackName)
 {
-    this.game.state.add('track-loader', new TrackLoaderState(theme, track), true);
+    var callback, trackLoader, state = this;
+
+    callback = function(data) {
+        state.game.state.add('track-loader', new TrackLoaderState(data, state.debug), true);
+    };
+
+    trackLoader = new TrackLoader(this.load);
+
+    trackLoader.load(trackTheme, trackName, callback);
 };
 
 TrackLoaderState.prototype.changeDebugMode = function(value)
 {
     if (value) {
         this.track.enableDebug();
+        this.debug = true;
     } else {
         this.track.disableDebug();
+        this.debug = false;
     }
 };
 
@@ -212,6 +245,7 @@ TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
 {
     React.render(
         React.createElement(TrackSelector, {
+            phaserLoader      : this.load,
             onSelectTrack     : this.selectTrack.bind(this),
             onChangeDebugMode : this.changeDebugMode.bind(this)
         }),
