@@ -1,14 +1,10 @@
 'use strict';
 
-var mapsRoot  = 'assets/tilemaps/maps/';
-var tilesRoot = 'assets/tilemaps/tiles/';
+var urlRoot = 'assets/tilemaps/maps/';
 
 module.exports = {
     'Desert' : {
-        'tileset' : tilesRoot + 'desert.png',
-        'tracks' : {
-            'Square Loop' : mapsRoot + 'square-loop.json',
-            'Figure 8'    : mapsRoot + 'figure8.json'
-        }
+        'Square Loop' : urlRoot + '/square-loop.tmx',
+        'Figure 8'    : urlRoot + '/figure8.tmx'
     }
 };

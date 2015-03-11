@@ -12,6 +12,15 @@ var Track = function(state)
     this.debug              = false;
 };
 
+Track.prototype.setDebug = function(value)
+{
+    if (value) {
+        this.enableDebug();
+    } else {
+        this.disableDebug();
+    }
+};
+
 Track.prototype.enableDebug = function()
 {
     this.debug = true;
