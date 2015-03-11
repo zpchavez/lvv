@@ -649,26 +649,38 @@
             {
              "0":
                 {
+                 "imageHeight":"551",
+                 "imageWidth":"315",
                  "Type":"AspirinBottle"
                 },
              "1":
                 {
+                 "imageHeight":"35",
+                 "imageWidth":"35",
                  "Type":"AspirinPill"
                 },
              "2":
                 {
+                 "imageHeight":"127",
+                 "imageWidth":"600",
                  "Type":"Comb"
                 },
              "3":
                 {
+                 "imageHeight":"300",
+                 "imageWidth":"300",
                  "Type":"Floss"
                 },
              "4":
                 {
+                 "imageHeight":"602",
+                 "imageWidth":"189",
                  "Type":"Razor"
                 },
              "5":
                 {
+                 "imageHeight":"135",
+                 "imageWidth":"827",
                  "Type":"Toothbrush"
                 }
             },
