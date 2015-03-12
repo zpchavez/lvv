@@ -4,7 +4,7 @@
   <properties>
    <property name="imageHeight" value="551"/>
    <property name="imageWidth" value="315"/>
-   <property name="Type" value="AspirinBottle"/>
+   <property name="type" value="AspirinBottle"/>
   </properties>
   <image width="315" height="551" source="../../img/aspirin-bottle.png"/>
  </tile>
@@ -12,7 +12,7 @@
   <properties>
    <property name="imageHeight" value="35"/>
    <property name="imageWidth" value="35"/>
-   <property name="Type" value="AspirinPill"/>
+   <property name="type" value="AspirinPill"/>
   </properties>
   <image width="35" height="35" source="../../img/aspirin-pill.png"/>
  </tile>
@@ -20,7 +20,7 @@
   <properties>
    <property name="imageHeight" value="127"/>
    <property name="imageWidth" value="600"/>
-   <property name="Type" value="Comb"/>
+   <property name="type" value="Comb"/>
   </properties>
   <image width="600" height="127" source="../../img/comb.png"/>
  </tile>
@@ -28,7 +28,7 @@
   <properties>
    <property name="imageHeight" value="300"/>
    <property name="imageWidth" value="300"/>
-   <property name="Type" value="Floss"/>
+   <property name="type" value="Floss"/>
   </properties>
   <image width="300" height="300" source="../../img/floss.png"/>
  </tile>
@@ -36,7 +36,7 @@
   <properties>
    <property name="imageHeight" value="602"/>
    <property name="imageWidth" value="189"/>
-   <property name="Type" value="Razor"/>
+   <property name="type" value="Razor"/>
   </properties>
   <image width="189" height="602" source="../../img/razor.png"/>
  </tile>
@@ -44,7 +44,7 @@
   <properties>
    <property name="imageHeight" value="135"/>
    <property name="imageWidth" value="827"/>
-   <property name="Type" value="Toothbrush"/>
+   <property name="type" value="Toothbrush"/>
   </properties>
   <image width="827" height="135" source="../../img/toothbrush.png"/>
  </tile>

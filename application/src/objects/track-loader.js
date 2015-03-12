@@ -2,6 +2,7 @@
 
 var _         = require('underscore');
 var trackList = require('../../assets/tilemaps/maps/list');
+var util      = require('../util');
 
 /**
  * @param {Phaser.Loader} loader
@@ -40,16 +41,36 @@ TrackLoader.prototype.load = function(theme, name, callback)
         });
         data.tilesets = tilesets;
 
-        console.log('object classes:');
-        console.log(objectClasses);
-
-        console.log('data:');
-        console.log(data);
-
-        // todo: step through all of data.layers and go through all of layer.objects
+        // Step through all of data.layers and go through all of layer.objects.
         // If object.gid matches something in objectClasses, then set object.type
         // to objectClass.type, and adjust object.x and object.y using the image dimensions
-        // (objectClass.imageHeight and objectClass.imageWidth) and object.rotation
+        // (objectClass.imageHeight and objectClass.imageWidth) and object.rotation.
+        data.layers.forEach(function (layer) {
+            if (layer.objects) {
+                layer.objects.forEach(function (tilemapObject) {
+                    var translationVector;
+
+                    if (tilemapObject.gid && objectClasses[tilemapObject.gid]) {
+                        tilemapObject.type = objectClasses[tilemapObject.gid].type;
+                        if (objectClasses[tilemapObject.gid].imageHeight &&
+                            objectClasses[tilemapObject.gid].imageWidth) {
+                            // The translation vector leads from the bottom-left corner of the object
+                            // to the object center
+                            translationVector = [
+                                parseInt(objectClasses[tilemapObject.gid].imageWidth, 10) / 2,
+                                - parseInt(objectClasses[tilemapObject.gid].imageHeight, 10) / 2
+                            ];
+                            translationVector = util.rotateVector(
+                                tilemapObject.rotation * Math.PI / 180,
+                                translationVector
+                            );
+                            tilemapObject.x += translationVector[0];
+                            tilemapObject.y += translationVector[1];
+                        }
+                    }
+                });
+            }
+        });
 
         callback(data);
     });
