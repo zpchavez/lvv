@@ -10,6 +10,7 @@ var Floss         = require('./floss');
 var Razor         = require('./razor');
 var StaticBox     = require('./static-box');
 var Toothbrush    = require('./toothbrush');
+var TuningFork    = require('./tuning-fork');
 
 var ObstacleFactory = function(state) {
     this.state       = state;
@@ -25,7 +26,8 @@ ObstacleFactory.prototype.types = {
     'StaticBox'     : StaticBox,
     'Toothbrush'    : Toothbrush,
     'Comb'          : Comb,
-    'Floss'         : Floss
+    'Floss'         : Floss,
+    'TuningFork'    : TuningFork
 };
 
 ObstacleFactory.prototype.loadAssets = function(types)
