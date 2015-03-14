@@ -1,13 +1,14 @@
 /* globals window */
 'use strict';
 
-var Phaser        = require('phaser');
-var CarFactory    = require('../objects/car-factory');
-var Track         = require('../objects/track');
-var React         = require('react');
-var TrackSelector = require('../components/track-selector');
-var TrackLoader   = require('../objects/track-loader');
-var _             = require('underscore');
+var Phaser          = require('phaser');
+var React           = require('react');
+var CarFactory      = require('../objects/car-factory');
+var ObstacleFactory = require('../objects/obstacles/obstacle-factory');
+var Track           = require('../objects/track');
+var TrackSelector   = require('../components/track-selector');
+var TrackLoader     = require('../objects/track-loader');
+var _               = require('underscore');
 
 var TrackLoaderState = function(trackData, debug)
 {
@@ -17,8 +18,9 @@ var TrackLoaderState = function(trackData, debug)
 
     Phaser.State.apply(this, arguments);
 
-    this.carFactory = new CarFactory(this);
-    this.track      = new Track(this);
+    this.carFactory      = new CarFactory(this);
+    this.obstacleFactory = new ObstacleFactory(this);
+    this.track           = new Track(this);
     this.track.setDebug(this.debug);
     this.lapNumber = 1;
 };
@@ -48,6 +50,8 @@ TrackLoaderState.prototype.preload = function()
             );
         }
     });
+
+    this.obstacleFactory.loadAssets(_.keys(this.trackData.placedObjectClasses));
 };
 
 TrackLoaderState.prototype.create = function()
@@ -83,6 +87,8 @@ TrackLoaderState.prototype.create = function()
     this.car = this.carFactory.getNew(this.startingPoint[0], this.startingPoint[1], 'car');
     this.game.world.addChild(this.car);
 
+    this.placeObstacles();
+
     this.car.bringToTop();
 
     this.car.body.setCollisionGroup(this.collisionGroup);
@@ -103,11 +109,7 @@ TrackLoaderState.prototype.placeTrackMarkers = function()
         markers : []
     };
 
-    this.trackData.layers.forEach(function (layer) {
-        if (layer.name === 'track') {
-            trackLayer = layer;
-        }
-    });
+    trackLayer = _.findWhere(this.trackData.layers, {name : 'track'});
 
     if (! trackLayer) {
         return;
@@ -138,6 +140,32 @@ TrackLoaderState.prototype.placeTrackMarkers = function()
     this.track.setLapCompletedCallback(this.incrementLapCounter, this);
     this.track.setMarkerSkippedCallback(this.moveCarToLastActivatedMarker, this);
 };
+
+TrackLoaderState.prototype.placeObstacles = function()
+{
+    var obstacles = [], obstaclesLayer, state = this;
+
+    obstaclesLayer = _.findWhere(this.trackData.layers, {name : 'obstacles'});
+
+    if (! obstaclesLayer) {
+        return;
+    }
+
+    obstaclesLayer.objects.forEach(function(obstacle) {
+        obstacles.push(state.obstacleFactory.getNew(
+            obstacle.type,
+            obstacle.x,
+            obstacle.y,
+            obstacle.rotation
+        ));
+    });
+
+    obstacles.forEach(function(obstacle) {
+        obstacle.body.setCollisionGroup(state.collisionGroup);
+        obstacle.body.collides(state.collisionGroup);
+        state.add.existing(obstacle);
+    });
+}
 
 TrackLoaderState.prototype.update = function()
 {
