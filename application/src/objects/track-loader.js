@@ -41,6 +41,8 @@ TrackLoader.prototype.load = function(theme, name, callback)
         });
         data.tilesets = tilesets;
 
+        data.placedObjectClasses = {};
+
         // Step through all of data.layers and go through all of layer.objects.
         // If object.gid matches something in objectClasses, then set object.type
         // to objectClass.type, and adjust object.x and object.y using the image dimensions
@@ -52,6 +54,11 @@ TrackLoader.prototype.load = function(theme, name, callback)
 
                     if (tilemapObject.gid && objectClasses[tilemapObject.gid]) {
                         tilemapObject.type = objectClasses[tilemapObject.gid].type;
+
+                        if (! data.placedObjectClasses[tilemapObject.type]) {
+                            data.placedObjectClasses[tilemapObject.type] = true;
+                        }
+
                         if (objectClasses[tilemapObject.gid].imageHeight &&
                             objectClasses[tilemapObject.gid].imageWidth) {
                             // The translation vector leads from the bottom-left corner of the object
