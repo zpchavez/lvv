@@ -10,7 +10,7 @@ var makeObstacles = function(context) {
 
     obstacles.push(context.obstacleFactory.getNew('Toothbrush', 450, 800, 0));
 
-    obstacles.push(context.obstacleFactory.getNew('TuningFork', 200, 315, 120));
+    obstacles.push(context.obstacleFactory.getNew('Comb', 100, 315, 90));
 
     obstacles.push(context.obstacleFactory.getNew('Floss', 1000, 580, 45));
 
@@ -57,8 +57,7 @@ CarDrivingState.prototype.preload = function()
        'Toothbrush',
        'Comb',
        'Floss',
-       'Razor',
-       'TuningFork'
+       'Razor'
     ]);
     this.carFactory.loadAssets();
 
