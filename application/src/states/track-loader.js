@@ -77,6 +77,7 @@ TrackLoaderState.prototype.create = function()
     this.game.physics.p2.updateBoundsCollisionGroup();
 
     this.car = this.carFactory.getNew(this.startingPoint[0], this.startingPoint[1], 'car');
+    this.car.body.angle = this.startingPoint[2];
     this.game.world.addChild(this.car);
 
     this.car.bringToTop();
@@ -142,7 +143,7 @@ TrackLoaderState.prototype.placeTrackMarkers = function()
                 object.width
             ];
 
-            state.startingPoint = [x, y];
+            state.startingPoint = [x, y, object.rotation];
         } else {
             data.markers[object.properties.index] = [
                 x,
