@@ -52,7 +52,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup name="Obstacles">
+ <objectgroup name="obstacles">
   <object id="9" type="Toothbrush" gid="54" x="548.906" y="2167.36" rotation="-432.69"/>
   <object id="11" type="AspirinBottle" gid="49" x="1358" y="3046"/>
   <object id="12" type="AspirinPill" gid="50" x="1550" y="2486"/>

@@ -121,7 +121,7 @@
         {
          "draworder":"topdown",
          "height":0,
-         "name":"Obstacles",
+         "name":"obstacles",
          "objects":[
                 {
                  "gid":54,
