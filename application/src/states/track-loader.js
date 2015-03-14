@@ -114,43 +114,19 @@ TrackLoaderState.prototype.placeTrackMarkers = function()
     }
 
     _(trackLayer.objects).each(function (object) {
-        var x, y;
-        // Positions from file are the edge of the marker, but we
-        // need the center.
-        switch (object.rotation) {
-            case 0 :
-                x = object.x + (object.width / 2);
-                y = object.y;
-                break;
-            case 90 :
-                x = object.x;
-                y = object.y + (object.width / 2);
-                break;
-            case 180 :
-                x = object.x - (object.width / 2);
-                y = object.y;
-                break;
-            case 270 :
-                x = object.x;
-                y = object.y - (object.width / 2);
-                break;
-            default :
-                throw new Error('Unsupported marker angle:' + object.rotation);
-        }
-
         if (object.name === 'finish-line') {
             data.finishLine = [
-                x,
-                y,
+                object.x,
+                object.y,
                 object.rotation,
                 object.width
             ];
 
-            state.startingPoint = [x, y];
+            state.startingPoint = [object.x, object.y];
         } else {
             data.markers[object.properties.index] = [
-                x,
-                y,
+                object.x,
+                object.y,
                 object.rotation,
                 object.width
             ];

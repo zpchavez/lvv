@@ -67,6 +67,17 @@ TrackLoader.prototype.load = function(theme, name, callback)
                             tilemapObject.x += translationVector[0];
                             tilemapObject.y += translationVector[1];
                         }
+                    // Objects without gids and width and/or heigh defined are intead rotated around
+                    // the top-left corner
+                    } else if (tilemapObject.gid === undefined &&
+                        (tilemapObject.width !== 0 || tilemapObject.imageHeight !== 0)) {
+                        translationVector = [tilemapObject.width / 2, tilemapObject.height / 2];
+                        translationVector = util.rotateVector(
+                            tilemapObject.rotation * Math.PI / 180,
+                            translationVector
+                        );
+                        tilemapObject.x += translationVector[0];
+                        tilemapObject.y += translationVector[1];
                     }
                 });
             }
