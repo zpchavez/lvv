@@ -43,12 +43,10 @@ TrackLoaderState.prototype.preload = function()
 
     // Load tilesets
     this.trackData.tilesets.forEach(function (tileset) {
-        if (tileset.imagePath) {
-            state.load.image(
-                'tiles',
-                tileset.imagePath
-            );
-        }
+        state.load.image(
+            'tiles',
+            tileset.imagePath
+        );
     });
 
     this.obstacleFactory.loadAssets(_.keys(this.trackData.placedObjectClasses));
@@ -63,9 +61,7 @@ TrackLoaderState.prototype.create = function()
     this.map = this.game.add.tilemap('track');
 
     this.trackData.tilesets.forEach(function (tileset) {
-        if (tileset.imagePath) {
-            state.map.addTilesetImage(tileset.name, 'tiles');
-        }
+        state.map.addTilesetImage(tileset.name, 'tiles');
     });
 
     this.layer = this.map.createLayer('background');
@@ -165,7 +161,7 @@ TrackLoaderState.prototype.placeObstacles = function()
         obstacle.body.collides(state.collisionGroup);
         state.add.existing(obstacle);
     });
-}
+};
 
 TrackLoaderState.prototype.update = function()
 {
