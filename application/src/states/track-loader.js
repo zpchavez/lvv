@@ -96,6 +96,9 @@ TrackLoaderState.prototype.create = function()
     this.showLapCounter();
 
     this.game.camera.follow(this.car);
+
+    this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
+    this.game.input.onDown.add(this.toggleFullscreen, this);
 };
 
 TrackLoaderState.prototype.placeTrackMarkers = function()
@@ -256,6 +259,15 @@ TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
         }),
         window.document.getElementById('content')
     );
+};
+
+TrackLoaderState.prototype.toggleFullscreen = function()
+{
+    if (this.game.scale.isFullScreen) {
+        this.game.scale.stopFullScreen();
+    } else {
+        this.game.scale.startFullScreen(false);
+    }
 };
 
 module.exports = TrackLoaderState;
