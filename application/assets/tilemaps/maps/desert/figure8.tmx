@@ -3,7 +3,7 @@
  <tileset firstgid="1" name="Desert" tilewidth="32" tileheight="32" spacing="1" margin="1">
   <properties>
   </properties>
-  <image source="../tiles/desert.png" width="265" height="199"/>
+  <image source="../../tiles/desert.png" width="265" height="199"/>
   <terraintypes>
    <terrain name="Sand" tile="29"/>
    <terrain name="Cobblestone" tile="33"/>

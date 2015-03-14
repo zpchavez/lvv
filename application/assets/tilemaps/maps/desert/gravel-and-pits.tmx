@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" nextobjectid="10">
  <tileset firstgid="1" name="desert-with-pit" tilewidth="32" tileheight="32" spacing="1" margin="1">
-  <image source="../tiles/desert-with-pit.png" width="364" height="199"/>
+  <image source="../../tiles/desert-with-pit.png" width="364" height="199"/>
   <terraintypes>
    <terrain name="Sand" tile="38"/>
    <terrain name="Brick" tile="12"/>
@@ -101,4 +101,9 @@
    </properties>
   </object>
  </objectgroup>
+ <layer name="pits" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt21FuAiEYReFZkPtfX+PDxFaLYeQPnIvnS3gzCJxobcTbcRw3h8PRPaqs3kf6UB1bsNmDzxY89mCxB4vvWTy2YLEHjz147MFiDxZ7sNiDxR4s9mCxB4s9WOzBYg8We7DYg8UeLPZgsQeLPVjswWIPFnuw2KNOxZ1ce9SouiNtj3GVd9bfPa41l/0eqn9D0HpcxdzfwB4sM3rYol9li9/z9cyvVzN6tJ5Lr3rOf6SHrhk9/9Z8O5rx2q5+jh167PT5I229zyr/lhKkrfeZPTiqP2sSpK33dKVF0v7S1nuyB8uOLe7S1nz1dZG0t7ukNX/SImVvp7Q1/3fO9lintdb0Dqfkte/IHiz2YLEHiz1Y7DHfuzO3x3z2yGEPFnuw2IPFHiz2YLEHiz1Y7MFiDxZ7sCT2+PReQ8I9CHvYY5Q9WGb1WHEuiT1G2CMDocfq90r9ZQ8We7DYg8ceLPZgsQeLPVjs0bbif0R7sNiDxR4s9mCxB4s9WOzBYg+G1d9L6mH195IrkPf4rT169zvjnkPq/ZcqK3tUnb1jzfgBy8G7LQ==
+  </data>
+ </layer>
 </map>

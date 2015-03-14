@@ -4,8 +4,8 @@ var urlRoot = 'assets/tilemaps/maps/';
 
 module.exports = {
     'Desert' : {
-        'Square Loop'     : urlRoot + '/square-loop.tmx',
-        'Figure 8'        : urlRoot + '/figure8.tmx',
-        'Gravel and Pits' : urlRoot + '/gravel-and-pits.tmx'
+        'Square Loop'     : urlRoot + '/desert/square-loop.tmx',
+        'Figure 8'        : urlRoot + '/desert/figure8.tmx',
+        'Gravel and Pits' : urlRoot + '/desert/gravel-and-pits.tmx'
     }
 };
