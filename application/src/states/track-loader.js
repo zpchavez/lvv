@@ -1,13 +1,14 @@
 /* globals window */
 'use strict';
 
-var Phaser        = require('phaser');
-var CarFactory    = require('../objects/car-factory');
-var Track         = require('../objects/track');
-var React         = require('react');
-var TrackSelector = require('../components/track-selector');
-var TrackLoader   = require('../objects/track-loader');
-var _             = require('underscore');
+var Phaser          = require('phaser');
+var React           = require('react');
+var CarFactory      = require('../objects/car-factory');
+var ObstacleFactory = require('../objects/obstacles/obstacle-factory');
+var Track           = require('../objects/track');
+var TrackSelector   = require('../components/track-selector');
+var TrackLoader     = require('../objects/track-loader');
+var _               = require('underscore');
 
 var TrackLoaderState = function(trackData, debug)
 {
@@ -17,8 +18,9 @@ var TrackLoaderState = function(trackData, debug)
 
     Phaser.State.apply(this, arguments);
 
-    this.carFactory = new CarFactory(this);
-    this.track      = new Track(this);
+    this.carFactory      = new CarFactory(this);
+    this.obstacleFactory = new ObstacleFactory(this);
+    this.track           = new Track(this);
     this.track.setDebug(this.debug);
     this.lapNumber = 1;
 };
@@ -46,6 +48,8 @@ TrackLoaderState.prototype.preload = function()
             tileset.imagePath
         );
     });
+
+    this.obstacleFactory.loadAssets(_.keys(this.trackData.placedObjectClasses));
 };
 
 TrackLoaderState.prototype.create = function()
@@ -80,6 +84,8 @@ TrackLoaderState.prototype.create = function()
     this.car.body.angle = this.startingPoint[2];
     this.game.world.addChild(this.car);
 
+    this.placeObstacles();
+
     this.car.bringToTop();
 
     this.car.body.setCollisionGroup(this.collisionGroup);
@@ -100,54 +106,26 @@ TrackLoaderState.prototype.placeTrackMarkers = function()
         markers : []
     };
 
-    this.trackData.layers.forEach(function (layer) {
-        if (layer.name === 'track') {
-            trackLayer = layer;
-        }
-    });
+    trackLayer = _.findWhere(this.trackData.layers, {name : 'track'});
 
     if (! trackLayer) {
         return;
     }
 
     _(trackLayer.objects).each(function (object) {
-        var x, y;
-        // Positions from file are the edge of the marker, but we
-        // need the center.
-        switch (object.rotation) {
-            case 0 :
-                x = object.x + (object.width / 2);
-                y = object.y;
-                break;
-            case 90 :
-                x = object.x;
-                y = object.y + (object.width / 2);
-                break;
-            case 180 :
-                x = object.x - (object.width / 2);
-                y = object.y;
-                break;
-            case 270 :
-                x = object.x;
-                y = object.y - (object.width / 2);
-                break;
-            default :
-                throw new Error('Unsupported marker angle:' + object.rotation);
-        }
-
         if (object.name === 'finish-line') {
             data.finishLine = [
-                x,
-                y,
+                object.x,
+                object.y,
                 object.rotation,
                 object.width
             ];
 
-            state.startingPoint = [x, y, object.rotation];
+            state.startingPoint = [object.x, object.y, object.rotation];
         } else {
             data.markers[object.properties.index] = [
-                x,
-                y,
+                object.x,
+                object.y,
                 object.rotation,
                 object.width
             ];
@@ -158,6 +136,32 @@ TrackLoaderState.prototype.placeTrackMarkers = function()
 
     this.track.setLapCompletedCallback(this.incrementLapCounter, this);
     this.track.setMarkerSkippedCallback(this.moveCarToLastActivatedMarker, this);
+};
+
+TrackLoaderState.prototype.placeObstacles = function()
+{
+    var obstacles = [], obstaclesLayer, state = this;
+
+    obstaclesLayer = _.findWhere(this.trackData.layers, {name : 'obstacles'});
+
+    if (! obstaclesLayer) {
+        return;
+    }
+
+    obstaclesLayer.objects.forEach(function(obstacle) {
+        obstacles.push(state.obstacleFactory.getNew(
+            obstacle.type,
+            obstacle.x,
+            obstacle.y,
+            obstacle.rotation
+        ));
+    });
+
+    obstacles.forEach(function(obstacle) {
+        obstacle.body.setCollisionGroup(state.collisionGroup);
+        obstacle.body.collides(state.collisionGroup);
+        state.add.existing(obstacle);
+    });
 };
 
 TrackLoaderState.prototype.update = function()
