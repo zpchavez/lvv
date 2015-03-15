@@ -44,7 +44,7 @@ TrackLoaderState.prototype.preload = function()
     // Load tilesets
     this.trackData.tilesets.forEach(function (tileset) {
         state.load.image(
-            'tiles',
+            tileset.name,
             tileset.imagePath
         );
     });
@@ -61,7 +61,7 @@ TrackLoaderState.prototype.create = function()
     this.map = this.game.add.tilemap('track');
 
     this.trackData.tilesets.forEach(function (tileset) {
-        state.map.addTilesetImage(tileset.name, 'tiles');
+        state.map.addTilesetImage(tileset.name, tileset.name);
     });
 
     this.layer = this.map.createLayer('background');
