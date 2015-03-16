@@ -75,7 +75,7 @@ TrackLoaderState.prototype.create = function()
 
 TrackLoaderState.prototype.initTrack = function()
 {
-    var backgroundLayer, pitLayer, bodies, state = this;
+    var backgroundLayer, dropsLayer, bodies, state = this;
 
     this.map = this.game.add.tilemap('track');
 
@@ -91,11 +91,11 @@ TrackLoaderState.prototype.initTrack = function()
     this.game.physics.p2.updateBoundsCollisionGroup();
 
     // Init pit layer
-    if (this.map.getLayerIndex('pits')) {
-        pitLayer = this.map.createLayer('pits');
-        pitLayer.visible = false;
-        this.map.setCollision(this.trackData.metaTileGid, true, pitLayer);
-        bodies = this.game.physics.p2.convertTilemap(this.map, pitLayer);
+    if (this.map.getLayerIndex('drops')) {
+        dropsLayer = this.map.createLayer('drops');
+        dropsLayer.visible = false;
+        this.map.setCollision(this.trackData.metaTileGid, true, dropsLayer);
+        bodies = this.game.physics.p2.convertTilemap(this.map, dropsLayer);
         bodies.forEach(function (body) {
             body.setCollisionGroup(state.collisionGroup);
             body.collides(state.collisionGroup);
