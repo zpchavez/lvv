@@ -75,7 +75,7 @@ TrackLoaderState.prototype.create = function()
 
 TrackLoaderState.prototype.initTrack = function()
 {
-    var state = this;
+    var backgroundLayer, pitLayer, bodies, state = this;
 
     this.map = this.game.add.tilemap('track');
 
@@ -83,13 +83,24 @@ TrackLoaderState.prototype.initTrack = function()
         state.map.addTilesetImage(tileset.name, tileset.name);
     });
 
-    this.layer = this.map.createLayer('background');
-
-    this.layer.resizeWorld();
+    backgroundLayer = this.map.createLayer('background');
+    backgroundLayer.resizeWorld();
 
     // Now that world size is set, we can create the main collision group
     this.collisionGroup = this.game.physics.p2.createCollisionGroup();
     this.game.physics.p2.updateBoundsCollisionGroup();
+
+    // Init pit layer
+    if (this.map.getLayerIndex('pits')) {
+        pitLayer = this.map.createLayer('pits');
+        pitLayer.visible = false;
+        this.map.setCollision(this.trackData.metaTileGid, true, pitLayer);
+        bodies = this.game.physics.p2.convertTilemap(this.map, pitLayer);
+        bodies.forEach(function (body) {
+            body.setCollisionGroup(state.collisionGroup);
+            body.collides(state.collisionGroup);
+        });
+    }
 
     this.placeTrackMarkers();
 
