@@ -54,9 +54,28 @@ TrackLoaderState.prototype.preload = function()
 
 TrackLoaderState.prototype.create = function()
 {
-    var state = this;
-
     this.showTrackSelectorOffCanvas();
+
+    this.game.physics.startSystem(Phaser.Physics.P2JS);
+    this.game.physics.restitution = 0.8;
+
+    this.initTrack();
+
+    this.initPlayers();
+
+    this.showLapCounter();
+
+    this.game.camera.follow(this.car);
+
+    this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
+    this.game.input.onDown.add(this.toggleFullscreen, this);
+
+    this.game.add.graphics();
+};
+
+TrackLoaderState.prototype.initTrack = function()
+{
+    var state = this;
 
     this.map = this.game.add.tilemap('track');
 
@@ -68,23 +87,20 @@ TrackLoaderState.prototype.create = function()
 
     this.layer.resizeWorld();
 
-    this.game.add.graphics();
+    // Now that world size is set, we can create the main collision group
+    this.collisionGroup = this.game.physics.p2.createCollisionGroup();
+    this.game.physics.p2.updateBoundsCollisionGroup();
 
     this.placeTrackMarkers();
 
-    this.game.physics.startSystem(Phaser.Physics.P2JS);
+    this.placeObstacles();
+};
 
-    this.game.physics.restitution = 0.8;
-
-    this.collisionGroup = this.game.physics.p2.createCollisionGroup();
-
-    this.game.physics.p2.updateBoundsCollisionGroup();
-
+TrackLoaderState.prototype.initPlayers = function()
+{
     this.car = this.carFactory.getNew(this.startingPoint[0], this.startingPoint[1], 'car');
     this.car.body.angle = this.startingPoint[2];
     this.game.world.addChild(this.car);
-
-    this.placeObstacles();
 
     this.car.bringToTop();
 
@@ -92,13 +108,6 @@ TrackLoaderState.prototype.create = function()
     this.car.body.collides(this.collisionGroup);
 
     this.cursors = this.game.input.keyboard.createCursorKeys();
-
-    this.showLapCounter();
-
-    this.game.camera.follow(this.car);
-
-    this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
-    this.game.input.onDown.add(this.toggleFullscreen, this);
 };
 
 TrackLoaderState.prototype.placeTrackMarkers = function()
