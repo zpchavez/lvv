@@ -83,13 +83,10 @@ TrackLoaderState.prototype.create = function()
     this.cars = [];
 
     for (var i = 0; i < 2; i++) {
-        console.log('making a car (' + i + ')');
         this.cars.push(this.carFactory.getNew(this.startingPoint[0] + 60 * i, this.startingPoint[1], 'car'))
     };
 
     _.each(this.cars, function(car) {
-        console.log('attaching a car');
-
         this.game.world.addChild(car);
         car.bringToTop();
 
@@ -97,11 +94,17 @@ TrackLoaderState.prototype.create = function()
         car.body.collides(this.collisionGroup);
     }, this);
 
-    console.log('done making cars');
-
     this.placeObstacles();
 
     this.cursors = this.game.input.keyboard.createCursorKeys();
+
+    this.pads = [];
+
+    this.pads.push(this.game.input.gamepad.pad1);
+    this.pads.push(this.game.input.gamepad.pad2);
+
+    console.log('Pads:');
+    console.log(this.pads);
 
     this.showLapCounter();
 
@@ -192,6 +195,16 @@ TrackLoaderState.prototype.update = function()
     } else if (this.cursors.left.isDown) {
         this.cars[0].turnLeft();
     }
+
+    for (var i = 0; i < 2; i++) {
+        if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT) ||
+            this.pads[i].axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) < -0.1) {
+            this.cars[i].turnLeft();
+        } else if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_DPAD_RIGHT) ||
+            this.pads[i].axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) > 0.1) {
+            this.cars[i].turnRight();
+        }
+    };
 };
 
 TrackLoaderState.prototype.moveCarToLastActivatedMarker = function()
