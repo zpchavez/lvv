@@ -95,4 +95,9 @@ Car.prototype.applyForces = function()
     );
 };
 
+Car.prototype.fall = function()
+{
+    this.state.moveCarToLastActivatedMarker();
+};
+
 module.exports = Car;
