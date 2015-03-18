@@ -213,16 +213,18 @@ TrackLoaderState.prototype.update = function()
 
     this.track.enforce(this.car);
 
-    if (this.cursors.up.isDown) {
-        this.car.accelerate();
-    } else if (this.cursors.down.isDown) {
-        this.car.brake();
-    }
+    if (! this.car.falling) {
+        if (this.cursors.up.isDown) {
+            this.car.accelerate();
+        } else if (this.cursors.down.isDown) {
+            this.car.brake();
+        }
 
-    if (this.cursors.right.isDown) {
-        this.car.turnRight();
-    } else if (this.cursors.left.isDown) {
-        this.car.turnLeft();
+        if (this.cursors.right.isDown) {
+            this.car.turnRight();
+        } else if (this.cursors.left.isDown) {
+            this.car.turnLeft();
+        }
     }
 };
 
