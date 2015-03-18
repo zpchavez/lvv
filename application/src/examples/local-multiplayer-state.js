@@ -23,6 +23,7 @@ var TrackLoaderState = function(trackData, debug)
     this.track           = new Track(this);
     this.track.setDebug(this.debug);
     this.lapNumber = 1;
+    this.playerCount = 4;
 };
 
 TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
@@ -82,7 +83,7 @@ TrackLoaderState.prototype.create = function()
 
     this.cars = [];
 
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < this.playerCount; i++) {
         this.cars.push(this.carFactory.getNew(this.startingPoint[0] + 60 * i, this.startingPoint[1], 'car'))
     };
 
@@ -100,15 +101,16 @@ TrackLoaderState.prototype.create = function()
 
     this.pads = [];
 
-    this.pads.push(this.game.input.gamepad.pad1);
-    this.pads.push(this.game.input.gamepad.pad2);
+    for (var i = 0; i < this.playerCount; i++) {
+        this.pads.push(this.game.input.gamepad['pad' + (i + 1)]);
+    };
+
+    this.game.input.gamepad.start();
 
     console.log('Pads:');
     console.log(this.pads);
 
     this.showLapCounter();
-
-    this.game.camera.follow(this.cars[0]);
 };
 
 TrackLoaderState.prototype.placeTrackMarkers = function()
@@ -179,6 +181,8 @@ TrackLoaderState.prototype.placeObstacles = function()
 
 TrackLoaderState.prototype.update = function()
 {
+    var averagePlayerPosition = [0,0];
+
     _.each(this.cars, function(car) {
         car.applyForces();
         // this.track.enforce(car);
@@ -196,15 +200,33 @@ TrackLoaderState.prototype.update = function()
         this.cars[0].turnLeft();
     }
 
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < this.playerCount; i++) {
         if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT) ||
             this.pads[i].axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) < -0.1) {
             this.cars[i].turnLeft();
+            console.log('turning left');
         } else if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_DPAD_RIGHT) ||
             this.pads[i].axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) > 0.1) {
             this.cars[i].turnRight();
+            console.log('turning right');
         }
+
+        if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_A)) {
+            this.cars[i].accelerate();
+        }
+
+        if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_X)) {
+            this.cars[i].brake();
+        }
+
+        averagePlayerPosition[0] += this.cars[i].x;
+        averagePlayerPosition[1] += this.cars[i].y;
     };
+
+    averagePlayerPosition[0] /= this.playerCount;
+    averagePlayerPosition[1] /= this.playerCount;
+
+    this.game.camera.focusOnXY(averagePlayerPosition[0], averagePlayerPosition[1]);
 };
 
 TrackLoaderState.prototype.moveCarToLastActivatedMarker = function()
