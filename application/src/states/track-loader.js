@@ -116,7 +116,9 @@ TrackLoaderState.prototype.initTrack = function()
                 car  = body1;
                 drop = body2;
             }
-            state.car.fall();
+            if (! state.car.falling) {
+                state.car.fall();
+            }
         });
     }
 
