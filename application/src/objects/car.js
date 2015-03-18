@@ -101,6 +101,8 @@ Car.prototype.fall = function()
 {
     this.falling = true;
 
+    // Adjust car position slightly to avoid some cases where the falling
+    // effect is shown while not over a drop tile.
     if (Math.abs(this.body.velocity.x) > Math.abs(this.body.velocity.y)) {
         this.body.x += (50 * (this.body.velocity.x > 0 ? 1 : -1));
     }
