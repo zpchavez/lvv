@@ -96,35 +96,6 @@ TrackLoaderState.prototype.initTrack = function()
     if (this.map.getLayerIndex('drops')) {
         dropsLayer = this.map.createLayer('drops');
         dropsLayer.visible = false;
-
-        this.map.setCollision(this.trackData.metaTileGid, true, dropsLayer);
-        bodies = this.game.physics.p2.convertTilemap(this.map, dropsLayer, true, false);
-        bodies.forEach(function (body) {
-            body.setCollisionGroup(state.collisionGroup);
-            body.collides(state.collisionGroup);
-            body.name = 'drop';
-        });
-
-        // Workaround for setTileIndexCallback, which I think only works with arcade physics
-        this.game.physics.p2.setPostBroadphaseCallback(function (body1, body2) {
-            var car, drop;
-
-            if (body1.name === 'drop') {
-                drop = body1;
-                car  = body2;
-            } else if (body2.name === 'drop') {
-                car  = body1;
-                drop = body2;
-            } else {
-                return true;
-            }
-
-            if (! state.car.falling) {
-                state.car.fall(drop);
-            }
-
-            return false;
-        });
     }
 
     this.placeTrackMarkers();
@@ -215,6 +186,16 @@ TrackLoaderState.prototype.placeObstacles = function()
 TrackLoaderState.prototype.update = function()
 {
     this.car.applyForces();
+
+    if (this.map.getLayerIndex('drops')) {
+        if (this.map.getTileWorldXY(this.car.x, this.car.y, 32, 32, 'drops') && ! this.car.falling) {
+            this.car.fall({
+                // This determines the center of the pit tile the car is above
+                x : Math.floor(this.car.x / 32) * 32 + 16,
+                y : Math.floor(this.car.y / 32) * 32 + 16
+            })
+        }
+    }
 
     this.track.enforce(this.car);
 
