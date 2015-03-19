@@ -92,7 +92,7 @@ TrackLoaderState.prototype.initTrack = function()
     this.collisionGroup = this.game.physics.p2.createCollisionGroup();
     this.game.physics.p2.updateBoundsCollisionGroup();
 
-    // Init pit layer
+    // Init drop layer
     if (this.map.getLayerIndex('drops')) {
         dropsLayer = this.map.createLayer('drops');
         dropsLayer.visible = false;
