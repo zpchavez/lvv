@@ -113,12 +113,12 @@ Car.prototype.applyForces = function()
     );
 };
 
-Car.prototype.fall = function(dropBody)
+Car.prototype.fall = function(tileLocation)
 {
     this.falling = true;
 
-    this.body.x = dropBody.x;
-    this.body.y = dropBody.y;
+    this.body.x = tileLocation.x;
+    this.body.y = tileLocation.y;
 
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;

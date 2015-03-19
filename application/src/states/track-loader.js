@@ -77,7 +77,7 @@ TrackLoaderState.prototype.create = function()
 
 TrackLoaderState.prototype.initTrack = function()
 {
-    var backgroundLayer, dropsLayer, bodies, state = this;
+    var backgroundLayer, dropsLayer, state = this;
 
     this.map = this.game.add.tilemap('track');
 
@@ -193,7 +193,7 @@ TrackLoaderState.prototype.update = function()
                 // This determines the center of the pit tile the car is above
                 x : Math.floor(this.car.x / 32) * 32 + 16,
                 y : Math.floor(this.car.y / 32) * 32 + 16
-            })
+            });
         }
     }
 
