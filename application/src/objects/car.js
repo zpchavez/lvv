@@ -35,6 +35,10 @@ Car.prototype.getConstants = function()
 
 Car.prototype.accelerate = function()
 {
+    if (this.falling) {
+        return;
+    }
+
     this.body.applyForce(
         rotateVector(this.body.rotation, [0, this.constants.ACCELERATION_FORCE]),
         this.body.x,
@@ -44,6 +48,10 @@ Car.prototype.accelerate = function()
 
 Car.prototype.brake = function()
 {
+    if (this.falling) {
+        return;
+    }
+
     this.body.applyForce(
         rotateVector(this.body.rotation, [0, this.constants.BRAKE_FORCE]),
         this.body.x,
@@ -53,12 +61,20 @@ Car.prototype.brake = function()
 
 Car.prototype.turnRight = function()
 {
+    if (this.falling) {
+        return;
+    }
+
     this.body.rotateRight(this.constants.TURNING_VELOCITY);
 };
 
 
 Car.prototype.turnLeft = function()
 {
+    if (this.falling) {
+        return;
+    }
+
     this.body.rotateLeft(this.constants.TURNING_VELOCITY);
 };
 
