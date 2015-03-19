@@ -97,18 +97,12 @@ Car.prototype.applyForces = function()
     );
 };
 
-Car.prototype.fall = function()
+Car.prototype.fall = function(dropBody)
 {
     this.falling = true;
 
-    // Adjust car position slightly to avoid some cases where the falling
-    // effect is shown while not over a drop tile.
-    if (Math.abs(this.body.velocity.x) > Math.abs(this.body.velocity.y)) {
-        this.body.x += (50 * (this.body.velocity.x > 0 ? 1 : -1));
-    }
-    else if (Math.abs(this.body.velocity.y) > 0) {
-        this.body.y += (50 * (this.body.velocity.y > 0 ? 1 : -1));
-    }
+    this.body.x = dropBody.x;
+    this.body.y = dropBody.y;
 
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;

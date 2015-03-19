@@ -97,16 +97,15 @@ TrackLoaderState.prototype.initTrack = function()
         dropsLayer = this.map.createLayer('drops');
         dropsLayer.visible = false;
 
-        // This code should work but it doesn't
         this.map.setCollision(this.trackData.metaTileGid, true, dropsLayer);
-        bodies = this.game.physics.p2.convertTilemap(this.map, dropsLayer);
+        bodies = this.game.physics.p2.convertTilemap(this.map, dropsLayer, true, false);
         bodies.forEach(function (body) {
             body.setCollisionGroup(state.collisionGroup);
             body.collides(state.collisionGroup);
             body.name = 'drop';
         });
 
-        // Workaround for setTileIndexCallback, which for some reason isn't working
+        // Workaround for setTileIndexCallback, which I think only works with arcade physics
         this.game.physics.p2.setPostBroadphaseCallback(function (body1, body2) {
             var car, drop;
             if (body1.name === 'drop') {
@@ -117,7 +116,7 @@ TrackLoaderState.prototype.initTrack = function()
                 drop = body2;
             }
             if (! state.car.falling) {
-                state.car.fall();
+                state.car.fall(drop);
             }
         });
     }
