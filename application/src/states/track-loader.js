@@ -108,16 +108,22 @@ TrackLoaderState.prototype.initTrack = function()
         // Workaround for setTileIndexCallback, which I think only works with arcade physics
         this.game.physics.p2.setPostBroadphaseCallback(function (body1, body2) {
             var car, drop;
+
             if (body1.name === 'drop') {
                 drop = body1;
                 car  = body2;
             } else if (body2.name === 'drop') {
                 car  = body1;
                 drop = body2;
+            } else {
+                return true;
             }
+
             if (! state.car.falling) {
                 state.car.fall(drop);
             }
+
+            return false;
         });
     }
 
