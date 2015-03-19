@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="32" tileheight="32" nextobjectid="1">
  <tileset firstgid="1" source="../../tilesets/desert-with-pit.tsx"/>
- <tileset firstgid="67" name="meta-tile" tilewidth="32" tileheight="32">
-  <image source="../../tiles/meta-tile.png" width="32" height="32"/>
- </tileset>
+ <tileset firstgid="67" source="../../tilesets/meta-tile.tsx"/>
  <layer name="regions" width="10" height="10">
   <data encoding="base64" compression="zlib">
    eJxjYCAeqJOgdhSQBwA3zAAo
@@ -14,7 +12,7 @@
    eJxjYCAeiJKgdhSQBwAexAAW
   </data>
  </layer>
- <layer name="output_pits" width="10" height="10">
+ <layer name="output_drops" width="10" height="10">
   <data encoding="base64" compression="zlib">
    eJxjYCAeOJOgdhSQBwBevABE
   </data>
