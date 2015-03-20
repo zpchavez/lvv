@@ -199,6 +199,8 @@ TrackLoaderState.prototype.placeObstacles = function()
 
 TrackLoaderState.prototype.update = function()
 {
+    this.updateCamera();
+
     _.each(this.cars, function(car) {
         car.applyForces();
         this.track.enforce(car);
@@ -215,7 +217,6 @@ TrackLoaderState.prototype.update = function()
     }, this);
 
     this.handleInput();
-    this.updateCamera();
 };
 
 TrackLoaderState.prototype.handleInput = function()
@@ -255,17 +256,46 @@ TrackLoaderState.prototype.handleInput = function()
 
 TrackLoaderState.prototype.updateCamera = function()
 {
-    var averagePlayerPosition = [0,0];
+    var BUFFER_VALUE           = 100,
+        averagePlayerPosition  = [0,0],
+        nextMarker             = this.track.getLastActivatedMarker(),
+        closestCar,
+        closestSquaredDistance = Infinity,
+        squaredDistance;
 
     for (var i = 0; i < this.playerCount; i++) {
         averagePlayerPosition[0] += this.cars[i].x;
         averagePlayerPosition[1] += this.cars[i].y;
+
+        squaredDistance = Math.pow(this.cars[i].x - nextMarker.x, 2) +
+            Math.pow(this.cars[i].y - nextMarker.y, 2);
+
+        if (squaredDistance < closestSquaredDistance) {
+            closestSquaredDistance = squaredDistance;
+            closestCar             = {
+                x : this.cars[i].x,
+                y : this.cars[i].y
+            };
+        }
     };
 
     averagePlayerPosition[0] /= this.playerCount;
     averagePlayerPosition[1] /= this.playerCount;
 
     this.game.camera.focusOnXY(averagePlayerPosition[0], averagePlayerPosition[1]);
+
+    // Nudge camera position to always include car closest to the next checkpoint
+    if ((this.game.camera.x + BUFFER_VALUE) > closestCar.x) {
+        this.game.camera.x = closestCar.x - BUFFER_VALUE;
+    } else if ((this.game.camera.x + this.game.camera.width - BUFFER_VALUE) < closestCar.x) {
+        this.game.camera.x = closestCar.x - this.game.camera.width + BUFFER_VALUE;
+    }
+
+    if ((this.game.camera.y + BUFFER_VALUE) > closestCar.y) {
+        this.game.camera.y = closestCar.y - BUFFER_VALUE;
+    } else if ((this.game.camera.y + this.game.camera.height - BUFFER_VALUE) < closestCar.y) {
+        this.game.camera.y = closestCar.y - this.game.camera.height + BUFFER_VALUE;
+    }
 }
 
 TrackLoaderState.prototype.moveCarToLastActivatedMarker = function(car)

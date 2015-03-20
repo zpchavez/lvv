@@ -132,4 +132,13 @@ Track.prototype.enforce = function(car)
     });
 };
 
+Track.prototype.getLastActivatedMarker = function()
+{
+    if (this.lastActivatedMarker === (this.markers.length - 1)) {
+        return this.finish;
+    } else {
+        return this.markers[this.lastActivatedMarker + 1];
+    }
+}
+
 module.exports = Track;
