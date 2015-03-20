@@ -23,7 +23,7 @@ var TrackLoaderState = function(trackData, debug)
     this.track           = new Track(this);
     this.track.setDebug(this.debug);
     this.lapNumber = 1;
-    this.playerCount = 4;
+    this.playerCount = 1;
 };
 
 TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
@@ -101,14 +101,11 @@ TrackLoaderState.prototype.create = function()
 
     this.pads = [];
 
-    for (var i = 0; i < this.playerCount; i++) {
+    for (var i = 0; i < 4; i++) {
         this.pads.push(this.game.input.gamepad['pad' + (i + 1)]);
     };
 
     this.game.input.gamepad.start();
-
-    console.log('Pads:');
-    console.log(this.pads);
 
     this.showLapCounter();
 };
@@ -292,13 +289,37 @@ TrackLoaderState.prototype.changeDebugMode = function(value)
     }
 };
 
+TrackLoaderState.prototype.changeNumberOfPlayers = function(value)
+{
+    this.playerCount = value;
+
+    _.each(this.cars, function(car) {
+        car.destroy()
+    });
+
+    this.cars = [];
+
+    for (var i = 0; i < this.playerCount; i++) {
+        this.cars.push(this.carFactory.getNew(this.startingPoint[0] + 60 * i, this.startingPoint[1], 'car'))
+    };
+
+    _.each(this.cars, function(car) {
+        this.game.world.addChild(car);
+        car.bringToTop();
+
+        car.body.setCollisionGroup(this.collisionGroup);
+        car.body.collides(this.collisionGroup);
+    }, this);
+};
+
 TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
 {
     React.render(
         React.createElement(TrackSelector, {
-            phaserLoader      : this.load,
-            onSelectTrack     : this.selectTrack.bind(this),
-            onChangeDebugMode : this.changeDebugMode.bind(this)
+            phaserLoader            : this.load,
+            onSelectTrack           : this.selectTrack.bind(this),
+            onChangeDebugMode       : this.changeDebugMode.bind(this),
+            onChangeNumberOfPlayers : this.changeNumberOfPlayers.bind(this)
         }),
         window.document.getElementById('content')
     );
