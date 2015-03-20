@@ -23,6 +23,7 @@ var TrackLoaderState = function(trackData, debug)
     this.track           = new Track(this);
     this.track.setDebug(this.debug);
     this.lapNumber = 1;
+    this.playerCount = 1;
 };
 
 TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
@@ -60,14 +61,10 @@ TrackLoaderState.prototype.create = function()
     this.game.physics.restitution = 0.8;
 
     this.initTrack();
-
     this.initPlayers();
-
-    this.game.physics.enable(this.car);
+    this.initInputs();
 
     this.showLapCounter();
-
-    this.game.camera.follow(this.car);
 
     this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
     this.game.input.onDown.add(this.toggleFullscreen, this);
@@ -105,17 +102,34 @@ TrackLoaderState.prototype.initTrack = function()
 
 TrackLoaderState.prototype.initPlayers = function()
 {
-    this.car = this.carFactory.getNew(this.startingPoint[0], this.startingPoint[1], 'car');
-    this.car.body.angle = this.startingPoint[2];
-    this.game.world.addChild(this.car);
+    this.cars = [];
 
-    this.car.bringToTop();
+    for (var i = 0; i < this.playerCount; i++) {
+        this.cars.push(this.carFactory.getNew(this.startingPoint[0] + 60 * i, this.startingPoint[1], 'car'))
+    };
 
-    this.car.body.setCollisionGroup(this.collisionGroup);
-    this.car.body.collides(this.collisionGroup);
+    _.each(this.cars, function(car) {
+        car.body.angle = this.startingPoint[2];
+        this.game.world.addChild(car);
+        car.bringToTop();
 
-    this.cursors = this.game.input.keyboard.createCursorKeys();
+        car.body.setCollisionGroup(this.collisionGroup);
+        car.body.collides(this.collisionGroup);
+    }, this);
 };
+
+TrackLoaderState.prototype.initInputs = function()
+{
+    this.cursors = this.game.input.keyboard.createCursorKeys();
+
+    this.pads = [];
+
+    for (var i = 0; i < 4; i++) {
+        this.pads.push(this.game.input.gamepad['pad' + (i + 1)]);
+    };
+
+    this.game.input.gamepad.start();
+}
 
 TrackLoaderState.prototype.placeTrackMarkers = function()
 {
@@ -185,50 +199,92 @@ TrackLoaderState.prototype.placeObstacles = function()
 
 TrackLoaderState.prototype.update = function()
 {
-    this.car.applyForces();
+    _.each(this.cars, function(car) {
+        car.applyForces();
+        this.track.enforce(car);
 
-    if (this.map.getLayerIndex('drops')) {
-        if (this.map.getTileWorldXY(this.car.x, this.car.y, 32, 32, 'drops') && ! this.car.falling) {
-            this.car.fall({
-                // This determines the center of the pit tile the car is above
-                x : Math.floor(this.car.x / 32) * 32 + 16,
-                y : Math.floor(this.car.y / 32) * 32 + 16
-            });
+        if (this.map.getLayerIndex('drops')) {
+            if (this.map.getTileWorldXY(car.x, car.y, 32, 32, 'drops') && ! car.falling) {
+                car.fall({
+                    // This determines the center of the pit tile the car is above
+                    x : Math.floor(car.x / 32) * 32 + 16,
+                    y : Math.floor(car.y / 32) * 32 + 16
+                });
+            }
         }
-    }
+    }, this);
 
-    this.track.enforce(this.car);
+    this.handleInput();
+    this.updateCamera();
+};
 
+TrackLoaderState.prototype.handleInput = function()
+{
     if (this.cursors.up.isDown) {
-        this.car.accelerate();
+        this.cars[0].accelerate();
     } else if (this.cursors.down.isDown) {
-        this.car.brake();
+        this.cars[0].brake();
     }
 
     if (this.cursors.right.isDown) {
-        this.car.turnRight();
+        this.cars[0].turnRight();
     } else if (this.cursors.left.isDown) {
-        this.car.turnLeft();
+        this.cars[0].turnLeft();
     }
-};
 
-TrackLoaderState.prototype.moveCarToLastActivatedMarker = function()
+    for (var i = 0; i < this.playerCount; i++) {
+        if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT) ||
+            this.pads[i].axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) < -0.1) {
+            this.cars[i].turnLeft();
+            console.log('turning left');
+        } else if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_DPAD_RIGHT) ||
+            this.pads[i].axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) > 0.1) {
+            this.cars[i].turnRight();
+            console.log('turning right');
+        }
+
+        if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_A)) {
+            this.cars[i].accelerate();
+        }
+
+        if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_X)) {
+            this.cars[i].brake();
+        }
+    };
+}
+
+TrackLoaderState.prototype.updateCamera = function()
+{
+    var averagePlayerPosition = [0,0];
+
+    for (var i = 0; i < this.playerCount; i++) {
+        averagePlayerPosition[0] += this.cars[i].x;
+        averagePlayerPosition[1] += this.cars[i].y;
+    };
+
+    averagePlayerPosition[0] /= this.playerCount;
+    averagePlayerPosition[1] /= this.playerCount;
+
+    this.game.camera.focusOnXY(averagePlayerPosition[0], averagePlayerPosition[1]);
+}
+
+TrackLoaderState.prototype.moveCarToLastActivatedMarker = function(car)
 {
     // Negative one means the finish line
     if (this.track.lastActivatedMarker === -1) {
-        this.car.body.reset(
+        car.body.reset(
             this.track.finish.x,
             this.track.finish.y
         );
-        this.car.body.angle = this.track.finish.angle;
+        car.body.angle = this.track.finish.angle;
         return;
     }
 
-    this.car.body.reset(
+    car.body.reset(
         this.track.markers[this.track.lastActivatedMarker].x,
         this.track.markers[this.track.lastActivatedMarker].y
     );
-    this.car.body.angle = this.track.markers[this.track.lastActivatedMarker].angle;
+    car.body.angle = this.track.markers[this.track.lastActivatedMarker].angle;
 };
 
 TrackLoaderState.prototype.showLapCounter = function()
@@ -275,13 +331,25 @@ TrackLoaderState.prototype.changeDebugMode = function(value)
     }
 };
 
+TrackLoaderState.prototype.changeNumberOfPlayers = function(value)
+{
+    this.playerCount = value;
+
+    _.each(this.cars, function(car) {
+        car.destroy()
+    });
+
+    this.initPlayers();
+};
+
 TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
 {
     React.render(
         React.createElement(TrackSelector, {
             phaserLoader      : this.load,
             onSelectTrack     : this.selectTrack.bind(this),
-            onChangeDebugMode : this.changeDebugMode.bind(this)
+            onChangeDebugMode : this.changeDebugMode.bind(this),
+            onChangeNumberOfPlayers : this.changeNumberOfPlayers.bind(this)
         }),
         window.document.getElementById('content')
     );

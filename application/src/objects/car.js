@@ -132,7 +132,7 @@ Car.prototype.doneFalling = function()
     this.falling = false;
     this.scale.x = 1;
     this.scale.y = 1;
-    this.state.moveCarToLastActivatedMarker();
+    this.state.moveCarToLastActivatedMarker(this);
 };
 
 module.exports = Car;

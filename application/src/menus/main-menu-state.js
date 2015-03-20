@@ -6,7 +6,6 @@ var DrawImageState           = require('../examples/draw-image-state');
 var CarDrivingState          = require('../examples/car-driving-state');
 var TrackMarkerState         = require('../examples/track-marker-state');
 var BathroomObstacleSetState = require('../examples/bathroom-obstacle-set-state');
-var LocalMultiplayerState    = require('../examples/local-multiplayer-state');
 var TrackLoaderState         = require('../states/track-loader');
 var TrackLoader              = require('../objects/track-loader');
 var trackList                = require('../../assets/tilemaps/maps/list');
@@ -26,7 +25,6 @@ MainMenuState.prototype.preload = function()
     this.load.image('button-track-marker-example', 'assets/img/track-marker-example-button.png');
     this.load.image('button-bathroom-obstacle-set', 'assets/img/bathroom-obstacle-set-button.png');
     this.load.image('button-track-loader', 'assets/img/track-loader-button.png');
-    this.load.image('button-local-multiplayer-demo', 'assets/img/local-multiplayer-demo-button.png');
 };
 
 MainMenuState.prototype.create = function()
@@ -40,8 +38,6 @@ MainMenuState.prototype.create = function()
     this.add.button(400, 10, 'button-track-loader', this.onTrackLoaderClick);
 
     this.add.button(10, 120, 'button-bathroom-obstacle-set', this.onBathroomObstacleSetClick);
-
-    this.add.button(120, 120, 'button-local-multiplayer-demo', this.onMultiplayerDemoClick);
 };
 
 MainMenuState.prototype.onImageExampleClick = function()
@@ -62,21 +58,6 @@ MainMenuState.prototype.onTrackMarkerExampleClick = function()
 MainMenuState.prototype.onBathroomObstacleSetClick = function()
 {
     this.game.state.add('bathroom-obstacle-set-example', new BathroomObstacleSetState(), true);
-};
-
-MainMenuState.prototype.onMultiplayerDemoClick = function()
-{
-    var trackLoader, firstTheme, firstTrack, stateManager = this.game.state;
-
-    trackLoader = new TrackLoader(this.game.load);
-
-    firstTheme = _(trackList).keys()[0];
-
-    firstTrack = _(trackList[firstTheme]).keys()[0];
-
-    trackLoader.load(firstTheme, firstTrack, function(data) {
-        stateManager.add('local-multiplayer-example', new LocalMultiplayerState(data, false), true);
-    });
 };
 
 MainMenuState.prototype.onTrackLoaderClick = function()
