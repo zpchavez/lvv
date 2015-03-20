@@ -15,6 +15,8 @@ var Car = function(state, x, y, key)
     Object.freeze(this.constants);
 
     this.body.mass = this.constants.MASS;
+
+    this.falling = false;
 };
 
 Car.prototype = Object.create(Phaser.Sprite.prototype);
@@ -33,6 +35,10 @@ Car.prototype.getConstants = function()
 
 Car.prototype.accelerate = function()
 {
+    if (this.falling) {
+        return;
+    }
+
     this.body.applyForce(
         rotateVector(this.body.rotation, [0, this.constants.ACCELERATION_FORCE]),
         this.body.x,
@@ -42,6 +48,10 @@ Car.prototype.accelerate = function()
 
 Car.prototype.brake = function()
 {
+    if (this.falling) {
+        return;
+    }
+
     this.body.applyForce(
         rotateVector(this.body.rotation, [0, this.constants.BRAKE_FORCE]),
         this.body.x,
@@ -51,12 +61,20 @@ Car.prototype.brake = function()
 
 Car.prototype.turnRight = function()
 {
+    if (this.falling) {
+        return;
+    }
+
     this.body.rotateRight(this.constants.TURNING_VELOCITY);
 };
 
 
 Car.prototype.turnLeft = function()
 {
+    if (this.falling) {
+        return;
+    }
+
     this.body.rotateLeft(this.constants.TURNING_VELOCITY);
 };
 
@@ -93,6 +111,28 @@ Car.prototype.applyForces = function()
         this.body.x,
         this.body.y
     );
+};
+
+Car.prototype.fall = function(tileLocation)
+{
+    this.falling = true;
+
+    this.body.x = tileLocation.x;
+    this.body.y = tileLocation.y;
+
+    this.body.velocity.x = 0;
+    this.body.velocity.y = 0;
+
+    this.state.game.add.tween(this.scale).to({x : 0.1, y: 0.1}, 500, Phaser.Easing.Linear.None, true)
+        .onComplete.add(this.doneFalling, this);
+};
+
+Car.prototype.doneFalling = function()
+{
+    this.falling = false;
+    this.scale.x = 1;
+    this.scale.y = 1;
+    this.state.moveCarToLastActivatedMarker();
 };
 
 module.exports = Car;

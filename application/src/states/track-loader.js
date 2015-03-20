@@ -44,7 +44,7 @@ TrackLoaderState.prototype.preload = function()
     // Load tilesets
     this.trackData.tilesets.forEach(function (tileset) {
         state.load.image(
-            'tiles',
+            tileset.name,
             tileset.imagePath
         );
     });
@@ -54,36 +54,60 @@ TrackLoaderState.prototype.preload = function()
 
 TrackLoaderState.prototype.create = function()
 {
-    var state = this;
-
     this.showTrackSelectorOffCanvas();
+
+    this.game.physics.startSystem(Phaser.Physics.P2JS);
+    this.game.physics.restitution = 0.8;
+
+    this.initTrack();
+
+    this.initPlayers();
+
+    this.game.physics.enable(this.car);
+
+    this.showLapCounter();
+
+    this.game.camera.follow(this.car);
+
+    this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
+    this.game.input.onDown.add(this.toggleFullscreen, this);
+
+    this.game.add.graphics();
+};
+
+TrackLoaderState.prototype.initTrack = function()
+{
+    var backgroundLayer, dropsLayer, state = this;
 
     this.map = this.game.add.tilemap('track');
 
     this.trackData.tilesets.forEach(function (tileset) {
-        state.map.addTilesetImage(tileset.name, 'tiles');
+        state.map.addTilesetImage(tileset.name, tileset.name);
     });
 
-    this.layer = this.map.createLayer('background');
+    backgroundLayer = this.map.createLayer('background');
+    backgroundLayer.resizeWorld();
 
-    this.layer.resizeWorld();
+    // Now that world size is set, we can create the main collision group
+    this.collisionGroup = this.game.physics.p2.createCollisionGroup();
+    this.game.physics.p2.updateBoundsCollisionGroup();
 
-    this.game.add.graphics();
+    // Init drop layer
+    if (this.map.getLayerIndex('drops')) {
+        dropsLayer = this.map.createLayer('drops');
+        dropsLayer.visible = false;
+    }
 
     this.placeTrackMarkers();
 
-    this.game.physics.startSystem(Phaser.Physics.P2JS);
-
-    this.game.physics.restitution = 0.8;
-
-    this.collisionGroup = this.game.physics.p2.createCollisionGroup();
-
-    this.game.physics.p2.updateBoundsCollisionGroup();
-
-    this.car = this.carFactory.getNew(this.startingPoint[0], this.startingPoint[1], 'car');
-    this.game.world.addChild(this.car);
-
     this.placeObstacles();
+};
+
+TrackLoaderState.prototype.initPlayers = function()
+{
+    this.car = this.carFactory.getNew(this.startingPoint[0], this.startingPoint[1], 'car');
+    this.car.body.angle = this.startingPoint[2];
+    this.game.world.addChild(this.car);
 
     this.car.bringToTop();
 
@@ -91,10 +115,6 @@ TrackLoaderState.prototype.create = function()
     this.car.body.collides(this.collisionGroup);
 
     this.cursors = this.game.input.keyboard.createCursorKeys();
-
-    this.showLapCounter();
-
-    this.game.camera.follow(this.car);
 };
 
 TrackLoaderState.prototype.placeTrackMarkers = function()
@@ -120,7 +140,7 @@ TrackLoaderState.prototype.placeTrackMarkers = function()
                 object.width
             ];
 
-            state.startingPoint = [object.x, object.y];
+            state.startingPoint = [object.x, object.y, object.rotation];
         } else {
             data.markers[object.properties.index] = [
                 object.x,
@@ -166,6 +186,16 @@ TrackLoaderState.prototype.placeObstacles = function()
 TrackLoaderState.prototype.update = function()
 {
     this.car.applyForces();
+
+    if (this.map.getLayerIndex('drops')) {
+        if (this.map.getTileWorldXY(this.car.x, this.car.y, 32, 32, 'drops') && ! this.car.falling) {
+            this.car.fall({
+                // This determines the center of the pit tile the car is above
+                x : Math.floor(this.car.x / 32) * 32 + 16,
+                y : Math.floor(this.car.y / 32) * 32 + 16
+            });
+        }
+    }
 
     this.track.enforce(this.car);
 
@@ -255,6 +285,15 @@ TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
         }),
         window.document.getElementById('content')
     );
+};
+
+TrackLoaderState.prototype.toggleFullscreen = function()
+{
+    if (this.game.scale.isFullScreen) {
+        this.game.scale.stopFullScreen();
+    } else {
+        this.game.scale.startFullScreen(false);
+    }
 };
 
 module.exports = TrackLoaderState;

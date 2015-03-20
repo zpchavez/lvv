@@ -14,7 +14,7 @@ CarFactory.prototype.loadAssets = function()
 
 CarFactory.prototype.getSpritePath = function()
 {
-    return 'assets/img/bluebox.png';
+    return 'assets/img/yellowbox.png';
 };
 
 CarFactory.prototype.spritePrototype = CarSprite;
