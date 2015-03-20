@@ -14,6 +14,10 @@ var adjustTrackData = function(data) {
             // Set URL for tileset images
             tileset.imagePath = 'assets/tilemaps/' + tileset.image.replace(/[.\/]*/, '', 'g');
             tilesets.push(tileset);
+
+            if (tileset.name === 'meta-tile') {
+                data.metaTileGid = tileset.firstgid;
+            }
         } else if (tileset.tileproperties) {
             // Convert image collection tileset data to object data
             _.each(tileset.tileproperties, function(tile, index) {

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tileset name="desert-with-pit" tilewidth="32" tileheight="32" spacing="1" margin="1">
+ <image source="../tiles/desert-with-pit.png" width="364" height="199"/>
+ <terraintypes>
+  <terrain name="Sand" tile="38"/>
+  <terrain name="Cobblestone" tile="45"/>
+  <terrain name="Brick" tile="12"/>
+  <terrain name="Gravel" tile="17"/>
+  <terrain name="Pit" tile="20"/>
+ </terraintypes>
+ <tile id="0" terrain="0,0,0,2"/>
+ <tile id="1" terrain="0,0,2,2"/>
+ <tile id="2" terrain="0,0,2,0"/>
+ <tile id="3" terrain="3,3,3,0"/>
+ <tile id="4" terrain="3,3,0,3"/>
+ <tile id="5" terrain="0,0,0,3"/>
+ <tile id="6" terrain="0,0,3,3"/>
+ <tile id="7" terrain="0,0,3,0"/>
+ <tile id="8" terrain="0,0,0,4"/>
+ <tile id="9" terrain="0,0,4,4"/>
+ <tile id="10" terrain="0,0,4,0"/>
+ <tile id="11" terrain="0,2,0,2"/>
+ <tile id="12" terrain="2,2,2,2"/>
+ <tile id="13" terrain="2,0,2,0"/>
+ <tile id="14" terrain="3,0,3,3"/>
+ <tile id="15" terrain="0,3,3,3"/>
+ <tile id="16" terrain="0,3,0,3"/>
+ <tile id="17" terrain="3,3,3,3"/>
+ <tile id="18" terrain="3,0,3,0"/>
+ <tile id="19" terrain="0,4,0,4"/>
+ <tile id="20" terrain="4,4,4,4"/>
+ <tile id="21" terrain="4,0,4,0"/>
+ <tile id="22" terrain="0,2,0,0"/>
+ <tile id="23" terrain="2,2,0,0"/>
+ <tile id="24" terrain="2,0,0,0"/>
+ <tile id="25" terrain="2,2,2,"/>
+ <tile id="26" terrain="2,2,,2"/>
+ <tile id="27" terrain="0,3,0,0"/>
+ <tile id="28" terrain="3,3,0,0"/>
+ <tile id="29" terrain="3,0,0,0"/>
+ <tile id="30" terrain="0,4,0,0"/>
+ <tile id="31" terrain="4,4,0,0"/>
+ <tile id="32" terrain="4,0,0,0"/>
+ <tile id="33" terrain="0,0,0,1"/>
+ <tile id="34" terrain="0,0,1,1"/>
+ <tile id="35" terrain="0,0,1,0"/>
+ <tile id="36" terrain="2,,2,2"/>
+ <tile id="37" terrain=",2,2,2"/>
+ <tile id="38" terrain="0,0,0,0"/>
+ <tile id="41" terrain="4,4,4,0"/>
+ <tile id="42" terrain="4,4,0,4"/>
+ <tile id="44" terrain="0,1,0,1"/>
+ <tile id="45" terrain="1,1,1,1"/>
+ <tile id="46" terrain="1,0,1,0"/>
+ <tile id="47" terrain="1,1,1,0"/>
+ <tile id="48" terrain="1,1,0,1"/>
+ <tile id="52" terrain="4,0,4,4"/>
+ <tile id="53" terrain="0,4,4,4"/>
+ <tile id="55" terrain="0,1,0,0"/>
+ <tile id="56" terrain="1,1,0,0"/>
+ <tile id="57" terrain="1,0,0,0"/>
+ <tile id="58" terrain="1,0,1,1"/>
+ <tile id="59" terrain="0,1,1,1"/>
+</tileset>
