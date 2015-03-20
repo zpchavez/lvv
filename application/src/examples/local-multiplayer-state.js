@@ -182,8 +182,8 @@ TrackLoaderState.prototype.update = function()
 
     _.each(this.cars, function(car) {
         car.applyForces();
-        // this.track.enforce(car);
-    });
+        this.track.enforce(car);
+    }, this);
 
     if (this.cursors.up.isDown) {
         this.cars[0].accelerate();
@@ -226,23 +226,23 @@ TrackLoaderState.prototype.update = function()
     this.game.camera.focusOnXY(averagePlayerPosition[0], averagePlayerPosition[1]);
 };
 
-TrackLoaderState.prototype.moveCarToLastActivatedMarker = function()
+TrackLoaderState.prototype.moveCarToLastActivatedMarker = function(car)
 {
     // Negative one means the finish line
-    // if (this.track.lastActivatedMarker === -1) {
-    //     this.car.body.reset(
-    //         this.track.finish.x,
-    //         this.track.finish.y
-    //     );
-    //     this.car.body.angle = this.track.finish.angle;
-    //     return;
-    // }
+    if (this.track.lastActivatedMarker === -1) {
+        car.body.reset(
+            this.track.finish.x,
+            this.track.finish.y
+        );
+        car.body.angle = this.track.finish.angle;
+        return;
+    }
 
-    // this.car.body.reset(
-    //     this.track.markers[this.track.lastActivatedMarker].x,
-    //     this.track.markers[this.track.lastActivatedMarker].y
-    // );
-    // this.car.body.angle = this.track.markers[this.track.lastActivatedMarker].angle;
+    car.body.reset(
+        this.track.markers[this.track.lastActivatedMarker].x,
+        this.track.markers[this.track.lastActivatedMarker].y
+    );
+    car.body.angle = this.track.markers[this.track.lastActivatedMarker].angle;
 };
 
 TrackLoaderState.prototype.showLapCounter = function()
@@ -261,8 +261,8 @@ TrackLoaderState.prototype.showLapCounter = function()
 
 TrackLoaderState.prototype.incrementLapCounter = function()
 {
-    // this.lapNumber += 1;
-    // this.lapDisplay.setText('Lap ' + this.lapNumber);
+    this.lapNumber += 1;
+    this.lapDisplay.setText('Lap ' + this.lapNumber);
 };
 
 TrackLoaderState.prototype.selectTrack = function(trackTheme, trackName)

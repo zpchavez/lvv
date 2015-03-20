@@ -126,7 +126,7 @@ Track.prototype.enforce = function(car)
                 marker.activate();
                 track.lastActivatedMarker = index;
             } else {
-                track.markerSkippedCallback();
+                track.markerSkippedCallback(car);
             }
         }
     });
