@@ -135,4 +135,21 @@ Car.prototype.doneFalling = function()
     this.state.moveCarToLastActivatedMarker();
 };
 
+Car.prototype.jump = function()
+{
+    this.onRamp  = false;
+    this.airborne = true;
+
+    this.state.game.add.tween(this.scale)
+        .to({x : 2, y: 2}, 500, Phaser.Easing.Linear.None)
+        .to({x : 1, y : 1}, 500, Phaser.Easing.Linear.None)
+        .start()
+        .onComplete.add(this.land, this);
+};
+
+Car.prototype.land = function()
+{
+    this.airborne = false;
+};
+
 module.exports = Car;

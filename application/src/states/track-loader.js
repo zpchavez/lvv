@@ -187,15 +187,9 @@ TrackLoaderState.prototype.update = function()
 {
     this.car.applyForces();
 
-    if (this.map.getLayerIndex('drops')) {
-        if (this.map.getTileWorldXY(this.car.x, this.car.y, 32, 32, 'drops') && ! this.car.falling) {
-            this.car.fall({
-                // This determines the center of the pit tile the car is above
-                x : Math.floor(this.car.x / 32) * 32 + 16,
-                y : Math.floor(this.car.y / 32) * 32 + 16
-            });
-        }
-    }
+    this.handleDrops();
+
+    this.handleRamps();
 
     this.track.enforce(this.car);
 
@@ -209,6 +203,38 @@ TrackLoaderState.prototype.update = function()
         this.car.turnRight();
     } else if (this.cursors.left.isDown) {
         this.car.turnLeft();
+    }
+};
+
+TrackLoaderState.prototype.handleDrops = function()
+{
+    if (this.map.getLayerIndex('drops')) {
+        if (this.car.falling || this.car.airborne) {
+            return;
+        }
+
+        if (this.map.getTileWorldXY(this.car.x, this.car.y, 32, 32, 'drops')) {
+            this.car.fall({
+                // This determines the center of the pit tile the car is above
+                x : Math.floor(this.car.x / 32) * 32 + 16,
+                y : Math.floor(this.car.y / 32) * 32 + 16
+            });
+        }
+    }
+};
+
+TrackLoaderState.prototype.handleRamps = function()
+{
+    if (this.map.getLayerIndex('ramps')) {
+        if (this.car.falling || this.car.airborne) {
+            return;
+        }
+
+        if (this.map.getTileWorldXY(this.car.x, this.car.y, 32, 32, 'ramps')) {
+            this.car.onRamp = true;
+        } else if (this.car.onRamp) {
+            this.car.jump();
+        }
     }
 };
 
