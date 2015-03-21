@@ -199,22 +199,45 @@ TrackLoaderState.prototype.placeObstacles = function()
 
 TrackLoaderState.prototype.update = function()
 {
+    var visibleCars;
+
     this.updateCamera();
 
     _.each(this.cars, function(car) {
-        car.applyForces();
-        this.track.enforce(car);
+        if (car.visible) {
+            car.applyForces();
+            this.track.enforce(car);
 
-        if (this.map.getLayerIndex('drops')) {
-            if (this.map.getTileWorldXY(car.x, car.y, 32, 32, 'drops') && ! car.falling) {
-                car.fall({
-                    // This determines the center of the pit tile the car is above
-                    x : Math.floor(car.x / 32) * 32 + 16,
-                    y : Math.floor(car.y / 32) * 32 + 16
-                });
+            if (this.map.getLayerIndex('drops')) {
+                if (this.map.getTileWorldXY(car.x, car.y, 32, 32, 'drops') && ! car.falling) {
+                    car.fall({
+                        // This determines the center of the pit tile the car is above
+                        x : Math.floor(car.x / 32) * 32 + 16,
+                        y : Math.floor(car.y / 32) * 32 + 16
+                    });
+                }
+            }
+
+            // If playing multiplayer, eliminate cars that go off-screen
+            if (this.playerCount > 1 && (
+                car.x < this.game.camera.x ||
+                car.x > (this.game.camera.x + this.game.camera.width) ||
+                car.y < this.game.camera.y ||
+                car.y > (this.game.camera.y + this.game.camera.height)))
+            {
+                car.visible = false;
             }
         }
     }, this);
+
+    if (this.playerCount > 1) {
+        visibleCars = _.where(this.cars, {visible : true});
+
+        if (visibleCars.length === 1 && ! visibleCars[0].victorySpinning) {
+            visibleCars[0].setVictorySpinning(true);
+            setTimeout(_.bind(this.resetAllCarsToLastMarker, this), 2500);
+        }
+    }
 
     this.handleInput();
 };
@@ -237,11 +260,9 @@ TrackLoaderState.prototype.handleInput = function()
         if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT) ||
             this.pads[i].axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) < -0.1) {
             this.cars[i].turnLeft();
-            console.log('turning left');
         } else if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_DPAD_RIGHT) ||
             this.pads[i].axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) > 0.1) {
             this.cars[i].turnRight();
-            console.log('turning right');
         }
 
         if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_A)) {
@@ -302,7 +323,7 @@ TrackLoaderState.prototype.moveCarToLastActivatedMarker = function(car)
 {
     // Negative one means the finish line
     if (this.track.lastActivatedMarker === -1) {
-        car.body.reset(
+        car.reset(
             this.track.finish.x,
             this.track.finish.y
         );
@@ -310,12 +331,23 @@ TrackLoaderState.prototype.moveCarToLastActivatedMarker = function(car)
         return;
     }
 
-    car.body.reset(
+    car.reset(
         this.track.markers[this.track.lastActivatedMarker].x,
         this.track.markers[this.track.lastActivatedMarker].y
     );
     car.body.angle = this.track.markers[this.track.lastActivatedMarker].angle;
 };
+
+TrackLoaderState.prototype.resetAllCarsToLastMarker = function()
+{
+    _.each(this.cars, function(car, i) {
+        car.visible = true;
+        car.setVictorySpinning(false);
+        this.moveCarToLastActivatedMarker(car);
+    }, this);
+
+    this.updateCamera();
+}
 
 TrackLoaderState.prototype.showLapCounter = function()
 {

@@ -17,6 +17,7 @@ var Car = function(state, x, y, key)
     this.body.mass = this.constants.MASS;
 
     this.falling = false;
+    this.victorySpinning = false;
 };
 
 Car.prototype = Object.create(Phaser.Sprite.prototype);
@@ -33,9 +34,17 @@ Car.prototype.getConstants = function()
     };
 };
 
+Car.prototype.controlsLocked = function()
+{
+    return (
+        this.falling ||
+        this.victorySpinning
+    );
+}
+
 Car.prototype.accelerate = function()
 {
-    if (this.falling) {
+    if (this.controlsLocked()) {
         return;
     }
 
@@ -48,7 +57,7 @@ Car.prototype.accelerate = function()
 
 Car.prototype.brake = function()
 {
-    if (this.falling) {
+    if (this.controlsLocked()) {
         return;
     }
 
@@ -61,7 +70,7 @@ Car.prototype.brake = function()
 
 Car.prototype.turnRight = function()
 {
-    if (this.falling) {
+    if (this.controlsLocked()) {
         return;
     }
 
@@ -71,7 +80,7 @@ Car.prototype.turnRight = function()
 
 Car.prototype.turnLeft = function()
 {
-    if (this.falling) {
+    if (this.controlsLocked()) {
         return;
     }
 
@@ -111,6 +120,10 @@ Car.prototype.applyForces = function()
         this.body.x,
         this.body.y
     );
+
+    if (this.victorySpinning) {
+        this.body.rotateRight(150);
+    }
 };
 
 Car.prototype.fall = function(tileLocation)
@@ -133,6 +146,11 @@ Car.prototype.doneFalling = function()
     this.scale.x = 1;
     this.scale.y = 1;
     this.state.moveCarToLastActivatedMarker(this);
+};
+
+Car.prototype.setVictorySpinning = function(value)
+{
+    this.victorySpinning = value;
 };
 
 module.exports = Car;
