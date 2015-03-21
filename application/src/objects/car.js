@@ -29,7 +29,8 @@ Car.prototype.getConstants = function()
         SKID_FRICTION_MULTIPLIER    : 0.25,
         ACCELERATION_FORCE          : 1600,
         BRAKE_FORCE                 : -500,
-        TURNING_VELOCITY            : 80
+        TURNING_VELOCITY            : 80,
+        JUMP_HEIGHT_MULTIPLIER      : 0.003
     };
 };
 
@@ -137,12 +138,22 @@ Car.prototype.doneFalling = function()
 
 Car.prototype.jump = function()
 {
+    var speed, height, timeToVertex;
+
     this.onRamp  = false;
     this.airborne = true;
 
+    speed = Math.sqrt(
+        Math.pow(this.body.velocity.x, 2) +
+        Math.pow(this.body.velocity.y, 2)
+    );
+
+    height       = this.constants.JUMP_HEIGHT_MULTIPLIER * speed;
+    timeToVertex = height * 200;
+
     this.state.game.add.tween(this.scale)
-        .to({x : 2, y: 2}, 500, Phaser.Easing.Linear.None)
-        .to({x : 1, y : 1}, 500, Phaser.Easing.Linear.None)
+        .to({x : height, y: height}, timeToVertex, Phaser.Easing.Quadratic.Out)
+        .to({x : 1, y : 1}, timeToVertex, Phaser.Easing.Quadratic.In)
         .start()
         .onComplete.add(this.land, this);
 };
