@@ -30,7 +30,7 @@ Car.prototype.getConstants = function()
         ACCELERATION_FORCE          : 1600,
         BRAKE_FORCE                 : -500,
         TURNING_VELOCITY            : 80,
-        JUMP_HEIGHT_MULTIPLIER      : 0.003
+        JUMP_HEIGHT_MULTIPLIER      : 0.002
     };
 };
 
