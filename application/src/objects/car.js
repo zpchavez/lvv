@@ -16,7 +16,8 @@ var Car = function(state, x, y, key)
 
     this.body.mass = this.constants.MASS;
 
-    this.falling = false;
+    this.falling  = false;
+    this.airborne = false;
 };
 
 Car.prototype = Object.create(Phaser.Sprite.prototype);
