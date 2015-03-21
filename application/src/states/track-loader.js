@@ -1,6 +1,7 @@
 /* globals window */
 'use strict';
 
+var _               = require('underscore');
 var Phaser          = require('phaser');
 var React           = require('react');
 var CarFactory      = require('../objects/car-factory');
@@ -8,7 +9,7 @@ var ObstacleFactory = require('../objects/obstacles/obstacle-factory');
 var Track           = require('../objects/track');
 var TrackSelector   = require('../components/track-selector');
 var TrackLoader     = require('../objects/track-loader');
-var _               = require('underscore');
+var util            = require('../util');
 
 var TrackLoaderState = function(trackData, debug)
 {
@@ -61,6 +62,7 @@ TrackLoaderState.prototype.create = function()
     this.game.physics.restitution = 0.8;
 
     this.initTrack();
+    this.createStartingPointVectors();
     this.initPlayers();
     this.initInputs();
 
@@ -100,12 +102,44 @@ TrackLoaderState.prototype.initTrack = function()
     this.placeObstacles();
 };
 
+TrackLoaderState.prototype.createStartingPointVectors = function()
+{
+    var xOffset = 20;
+    var yOffset = 30;
+
+    if (this.playerCount > 1) {
+        if (this.playerCount === 2) {
+            this.startingPointVectors = _.shuffle([
+                [xOffset, 0],
+                [-xOffset, 0]
+            ]);
+        } else {
+            this.startingPointVectors = _.shuffle([
+                [xOffset, yOffset],
+                [-xOffset, yOffset],
+                [-xOffset, -yOffset],
+                [xOffset, -yOffset]
+            ]);
+        }
+    } else {
+        this.startingPointVectors = [[0,0]];
+    }
+}
+
 TrackLoaderState.prototype.initPlayers = function()
 {
+    var offsetVector;
+
     this.cars = [];
 
     for (var i = 0; i < this.playerCount; i++) {
-        this.cars.push(this.carFactory.getNew(this.startingPoint[0] + 60 * i, this.startingPoint[1], 'car'))
+        offsetVector = util.rotateVector(this.startingPoint[2] * Math.PI / 180, this.startingPointVectors[i]);
+
+        this.cars.push(this.carFactory.getNew(
+            this.startingPoint[0] + offsetVector[0],
+            this.startingPoint[1] + offsetVector[1],
+            'car'
+        ));
     };
 
     _.each(this.cars, function(car) {
@@ -279,14 +313,18 @@ TrackLoaderState.prototype.updateCamera = function()
 {
     var BUFFER_VALUE           = 100,
         averagePlayerPosition  = [0,0],
+        carCount               = 0,
         nextMarker             = this.track.getLastActivatedMarker(),
         closestCar,
         closestSquaredDistance = Infinity,
         squaredDistance;
 
     for (var i = 0; i < this.playerCount; i++) {
-        averagePlayerPosition[0] += this.cars[i].x;
-        averagePlayerPosition[1] += this.cars[i].y;
+        if (this.cars[i].visible) {
+            averagePlayerPosition[0] += this.cars[i].x;
+            averagePlayerPosition[1] += this.cars[i].y;
+            carCount += 1;
+        }
 
         squaredDistance = Math.pow(this.cars[i].x - nextMarker.x, 2) +
             Math.pow(this.cars[i].y - nextMarker.y, 2);
@@ -300,8 +338,8 @@ TrackLoaderState.prototype.updateCamera = function()
         }
     };
 
-    averagePlayerPosition[0] /= this.playerCount;
-    averagePlayerPosition[1] /= this.playerCount;
+    averagePlayerPosition[0] /= carCount;
+    averagePlayerPosition[1] /= carCount;
 
     this.game.camera.focusOnXY(averagePlayerPosition[0], averagePlayerPosition[1]);
 
@@ -321,21 +359,37 @@ TrackLoaderState.prototype.updateCamera = function()
 
 TrackLoaderState.prototype.moveCarToLastActivatedMarker = function(car)
 {
-    // Negative one means the finish line
-    if (this.track.lastActivatedMarker === -1) {
-        car.reset(
-            this.track.finish.x,
-            this.track.finish.y
-        );
-        car.body.angle = this.track.finish.angle;
-        return;
+    var carIndex, offsetVector;
+
+    carIndex = _.indexOf(this.cars, car);
+    if (carIndex !== -1) {
+        offsetVector = this.startingPointVectors[carIndex];
+    } else {
+        offsetVector = [0,0];
     }
 
-    car.reset(
-        this.track.markers[this.track.lastActivatedMarker].x,
-        this.track.markers[this.track.lastActivatedMarker].y
-    );
-    car.body.angle = this.track.markers[this.track.lastActivatedMarker].angle;
+    // Negative one means the finish line
+    if (this.track.lastActivatedMarker === -1) {
+        offsetVector = util.rotateVector(
+            this.track.finish.angle * Math.PI / 180,
+            offsetVector
+        );
+        car.reset(
+            this.track.finish.x + offsetVector[0],
+            this.track.finish.y + offsetVector[1]
+        );
+        car.body.angle = this.track.finish.angle;
+    } else {
+        offsetVector = util.rotateVector(
+            this.track.markers[this.track.lastActivatedMarker].angle * Math.PI / 180,
+            offsetVector
+        );
+        car.reset(
+            this.track.markers[this.track.lastActivatedMarker].x + offsetVector[0],
+            this.track.markers[this.track.lastActivatedMarker].y + offsetVector[1]
+        );
+        car.body.angle = this.track.markers[this.track.lastActivatedMarker].angle;
+    }
 };
 
 TrackLoaderState.prototype.resetAllCarsToLastMarker = function()
@@ -401,6 +455,7 @@ TrackLoaderState.prototype.changeNumberOfPlayers = function(value)
         car.destroy()
     });
 
+    this.createStartingPointVectors();
     this.initPlayers();
 };
 
