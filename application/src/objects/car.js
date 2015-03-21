@@ -49,7 +49,7 @@ Car.prototype.accelerate = function()
 
 Car.prototype.brake = function()
 {
-    if (this.falling || this.airborne) {
+    if (this.falling) {
         return;
     }
 
@@ -62,7 +62,7 @@ Car.prototype.brake = function()
 
 Car.prototype.turnRight = function()
 {
-    if (this.falling || this.airborne) {
+    if (this.falling) {
         return;
     }
 
@@ -72,7 +72,7 @@ Car.prototype.turnRight = function()
 
 Car.prototype.turnLeft = function()
 {
-    if (this.falling || this.airborne) {
+    if (this.falling) {
         return;
     }
 
