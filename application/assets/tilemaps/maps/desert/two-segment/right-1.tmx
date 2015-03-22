@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" nextobjectid="7">
+ <tileset firstgid="1" source="../../../tilesets/desert-with-pit.tsx"/>
+ <tileset firstgid="67" source="../../../tilesets/meta-tile.tsx"/>
+ <tileset firstgid="68" source="../../../tilesets/bathroom-obstacles.tsx"/>
+ <layer name="background" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztmckOwiAQhrm4n1zqyV0TD8btYury/s8lJCUhdUplK4PO4bs1bT8KA/0nY4xlBBpWiXMoPPYR2XC2Duw4EwQeR87JgTN5kIeBx4VzL3FN0EO8X4/TLxhUXKt62NSINqcD0GVmNeil8ZDvJ5h+4WEzJ4ecEcBYM8a28z6kx4wzB1gk5hGyBjXpoVsfKXlgXB/lOl3Hg+nXR25xT+gZph4h9gW19ttyQ+ChjqUPyIM8BEvm959vHckjBOSBC/LABXnggjxwQR64IA9c/IuHS//BJIMM7eGSa0B5MpQv12VesT10WZZA5lkpeFRlWWqelYJHOctqJejxZJ/rWfWSuXUTHqZZH9QXqvKSPY4mPHzcz/S72QD1fFw8ZH6r+y5N4WM/zxG4+DqXxHbxeb6KOc9CnBN99D1c+iSufYrYqH2SX+ANwXdt9g==
+  </data>
+ </layer>
+ <objectgroup name="obstacles">
+  <object id="1" gid="73" x="884.034" y="646.653" rotation="192.793"/>
+  <object id="5" gid="71" x="843" y="1064"/>
+ </objectgroup>
+ <objectgroup name="track">
+  <object id="2" type="marker" x="548" y="35" width="590" height="37" rotation="90">
+   <properties>
+    <property name="finish-line-candidate" value="0"/>
+    <property name="index" value="0"/>
+   </properties>
+  </object>
+  <object id="4" type="marker" x="1599" y="840" width="484" height="37" rotation="180">
+   <properties>
+    <property name="finish-line-candidate" value="1"/>
+    <property name="index" value="1"/>
+   </properties>
+  </object>
+  <object id="6" type="marker" x="862" y="1569" width="484" height="37" rotation="270">
+   <properties>
+    <property name="finish-line-candidate" value="0"/>
+    <property name="index" value="2"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer name="rough" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt2KENAEAIA0B2+/13QrxFkwB3SQeoqGkEAHDVKwJ89gEAAADAFNWXteHP2tIDAOiVyJEEtw==
+  </data>
+ </layer>
+ <layer name="drops" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt2MEJACEMAEF7s/+ergUfkltkFvIV5yVmr7W2ycwLcbTiaMXRqu44fRs4ZuJoxdGK4/4dJv4WHGdnv+CYjKMVRyuOVhytOFpxtOJoxdGKoxVHK45WHK04WnG0urkT/3s+glBGqw==
+  </data>
+ </layer>
+</map>
