@@ -143,24 +143,26 @@ Car.prototype.doneFalling = function()
 
 Car.prototype.jump = function()
 {
-    var speed, height, timeToVertex;
-
-    this.onRamp  = false;
-    this.airborne = true;
+    var speed, jumpHeight, timeToVertex;
 
     speed = Math.sqrt(
         Math.pow(this.body.velocity.x, 2) +
         Math.pow(this.body.velocity.y, 2)
     );
 
-    height       = this.constants.JUMP_HEIGHT_MULTIPLIER * speed;
-    timeToVertex = height * 200;
+    jumpHeight   = this.constants.JUMP_HEIGHT_MULTIPLIER * speed;
+    timeToVertex = jumpHeight * 200;
 
-    this.state.game.add.tween(this.scale)
-        .to({x : height, y: height}, timeToVertex, Phaser.Easing.Quadratic.Out)
-        .to({x : 1, y : 1}, timeToVertex, Phaser.Easing.Quadratic.In)
-        .start()
-        .onComplete.add(this.land, this);
+    if (jumpHeight > 1) {
+        this.onRamp  = false;
+        this.airborne = true;
+
+        this.state.game.add.tween(this.scale)
+            .to({x : jumpHeight, y: jumpHeight}, timeToVertex, Phaser.Easing.Quadratic.Out)
+            .to({x : 1, y : 1}, timeToVertex, Phaser.Easing.Quadratic.In)
+            .start()
+            .onComplete.add(this.land, this);
+        }
 };
 
 Car.prototype.land = function()
