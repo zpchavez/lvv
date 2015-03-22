@@ -3,11 +3,11 @@
 
 var Phaser          = require('phaser');
 var React           = require('react');
-var CarFactory      = require('../objects/car-factory');
-var ObstacleFactory = require('../objects/obstacles/obstacle-factory');
-var Track           = require('../objects/track');
-var TrackSelector   = require('../components/track-selector');
-var TrackLoader     = require('../objects/track-loader');
+var CarFactory      = require('../car-factory');
+var ObstacleFactory = require('../obstacles/obstacle-factory');
+var Track           = require('../track');
+var TrackSelector   = require('../../components/track-selector');
+var TrackLoader     = require('../track-loader');
 var _               = require('underscore');
 
 var TrackLoaderState = function(trackData, debug)
