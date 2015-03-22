@@ -124,7 +124,7 @@ TrackLoaderState.prototype.createStartingPointVectors = function()
     } else {
         this.startingPointVectors = [[0,0]];
     }
-}
+};
 
 TrackLoaderState.prototype.initPlayers = function()
 {
@@ -132,7 +132,7 @@ TrackLoaderState.prototype.initPlayers = function()
 
     this.cars = [];
 
-    for (var i = 0; i < this.playerCount; i++) {
+    for (var i = 0; i < this.playerCount; i += 1) {
         offsetVector = util.rotateVector(this.startingPoint[2] * Math.PI / 180, this.startingPointVectors[i]);
 
         this.cars.push(this.carFactory.getNew(
@@ -140,7 +140,7 @@ TrackLoaderState.prototype.initPlayers = function()
             this.startingPoint[1] + offsetVector[1],
             'car'
         ));
-    };
+    }
 
     _.each(this.cars, function(car) {
         car.body.angle = this.startingPoint[2];
@@ -158,12 +158,12 @@ TrackLoaderState.prototype.initInputs = function()
 
     this.pads = [];
 
-    for (var i = 0; i < 4; i++) {
+    for (var i = 0; i < 4; i += 1) {
         this.pads.push(this.game.input.gamepad['pad' + (i + 1)]);
-    };
+    }
 
     this.game.input.gamepad.start();
-}
+};
 
 TrackLoaderState.prototype.placeTrackMarkers = function()
 {
@@ -269,7 +269,7 @@ TrackLoaderState.prototype.update = function()
 
         if (visibleCars.length === 1 && ! visibleCars[0].victorySpinning) {
             visibleCars[0].setVictorySpinning(true);
-            setTimeout(_.bind(this.resetAllCarsToLastMarker, this), 2500);
+            window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), 2500);
         }
     }
 
@@ -290,7 +290,7 @@ TrackLoaderState.prototype.handleInput = function()
         this.cars[0].turnLeft();
     }
 
-    for (var i = 0; i < this.playerCount; i++) {
+    for (var i = 0; i < this.playerCount; i += 1) {
         if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT) ||
             this.pads[i].axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) < -0.1) {
             this.cars[i].turnLeft();
@@ -306,8 +306,8 @@ TrackLoaderState.prototype.handleInput = function()
         if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_X)) {
             this.cars[i].brake();
         }
-    };
-}
+    }
+};
 
 TrackLoaderState.prototype.updateCamera = function()
 {
@@ -319,7 +319,7 @@ TrackLoaderState.prototype.updateCamera = function()
         closestSquaredDistance = Infinity,
         squaredDistance;
 
-    for (var i = 0; i < this.playerCount; i++) {
+    for (var i = 0; i < this.playerCount; i += 1) {
         if (this.cars[i].visible) {
             averagePlayerPosition[0] += this.cars[i].x;
             averagePlayerPosition[1] += this.cars[i].y;
@@ -336,7 +336,7 @@ TrackLoaderState.prototype.updateCamera = function()
                 y : this.cars[i].y
             };
         }
-    };
+    }
 
     averagePlayerPosition[0] /= carCount;
     averagePlayerPosition[1] /= carCount;
@@ -355,7 +355,7 @@ TrackLoaderState.prototype.updateCamera = function()
     } else if ((this.game.camera.y + this.game.camera.height - BUFFER_VALUE) < closestCar.y) {
         this.game.camera.y = closestCar.y - this.game.camera.height + BUFFER_VALUE;
     }
-}
+};
 
 TrackLoaderState.prototype.moveCarToLastActivatedMarker = function(car)
 {
@@ -401,7 +401,7 @@ TrackLoaderState.prototype.resetAllCarsToLastMarker = function()
     }, this);
 
     this.updateCamera();
-}
+};
 
 TrackLoaderState.prototype.showLapCounter = function()
 {
@@ -452,7 +452,7 @@ TrackLoaderState.prototype.changeNumberOfPlayers = function(value)
     this.playerCount = value;
 
     _.each(this.cars, function(car) {
-        car.destroy()
+        car.destroy();
     });
 
     this.createStartingPointVectors();
@@ -463,9 +463,9 @@ TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
 {
     React.render(
         React.createElement(TrackSelector, {
-            phaserLoader      : this.load,
-            onSelectTrack     : this.selectTrack.bind(this),
-            onChangeDebugMode : this.changeDebugMode.bind(this),
+            phaserLoader            : this.load,
+            onSelectTrack           : this.selectTrack.bind(this),
+            onChangeDebugMode       : this.changeDebugMode.bind(this),
             onChangeNumberOfPlayers : this.changeNumberOfPlayers.bind(this)
         }),
         window.document.getElementById('content')
