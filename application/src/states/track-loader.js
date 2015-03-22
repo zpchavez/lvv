@@ -343,7 +343,7 @@ TrackLoaderState.prototype.updateCamera = function()
     averagePlayerPosition[0] /= carCount;
     averagePlayerPosition[1] /= carCount;
 
-    this.game.camera.focusOnXY(averagePlayerPosition[0], averagePlayerPosition[1]);
+    this.easeCamera(averagePlayerPosition[0], averagePlayerPosition[1]);
 
     // Nudge camera position to always include car closest to the next checkpoint
     if ((this.game.camera.x + BUFFER_VALUE) > closestCar.x) {
@@ -358,6 +358,29 @@ TrackLoaderState.prototype.updateCamera = function()
         this.game.camera.y = closestCar.y - this.game.camera.height + BUFFER_VALUE;
     }
 };
+
+// Move camera towards a target point instead of directly to it for a less abrupt transition
+TrackLoaderState.prototype.easeCamera = function(x, y)
+{
+    var currentCenter,
+        differenceVector,
+        easingMultiplier = 0.2;
+
+    currentCenter = [
+        this.game.camera.x + this.game.camera.width / 2,
+        this.game.camera.y + this.game.camera.height / 2
+    ];
+
+    differenceVector = [
+        x - currentCenter[0],
+        y - currentCenter[1]
+    ];
+
+    this.game.camera.focusOnXY(
+        currentCenter[0] + differenceVector[0] * easingMultiplier,
+        currentCenter[1] + differenceVector[1] * easingMultiplier
+    );
+}
 
 TrackLoaderState.prototype.moveCarToLastActivatedMarker = function(car)
 {
