@@ -162,7 +162,7 @@ Car.prototype.jump = function()
             .to({x : 1, y : 1}, timeToVertex, Phaser.Easing.Quadratic.In)
             .start()
             .onComplete.add(this.land, this);
-        }
+    }
 };
 
 Car.prototype.land = function()
