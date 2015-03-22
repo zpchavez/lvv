@@ -290,6 +290,20 @@ TrackLoaderState.prototype.handleInput = function()
         this.cars[0].turnLeft();
     }
 
+    if (this.playerCount > 1) {
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+            this.cars[1].accelerate();
+        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.S)) {
+            this.cars[1].brake();
+        }
+
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.D)) {
+            this.cars[1].turnRight();
+        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.A)) {
+            this.cars[1].turnLeft();
+        }
+    }
+
     for (var i = 0; i < this.playerCount; i += 1) {
         if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT) ||
             this.pads[i].axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) < -0.1) {
