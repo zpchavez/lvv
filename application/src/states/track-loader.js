@@ -326,8 +326,10 @@ TrackLoaderState.prototype.updateCamera = function()
             carCount += 1;
         }
 
-        squaredDistance = Math.pow(this.cars[i].x - nextMarker.x, 2) +
-            Math.pow(this.cars[i].y - nextMarker.y, 2);
+        squaredDistance = (
+            Math.pow(this.cars[i].x - nextMarker.x, 2) +
+            Math.pow(this.cars[i].y - nextMarker.y, 2)
+        );
 
         if (squaredDistance < closestSquaredDistance) {
             closestSquaredDistance = squaredDistance;
