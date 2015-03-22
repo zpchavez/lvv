@@ -112,7 +112,8 @@ Car.prototype.applyForces = function()
         rotateVector(
             this.body.rotation,
             [
-                carRefVelocity[0] * this.constants.SKID_FRICTION_MULTIPLIER * this.body.mass, 0
+                carRefVelocity[0] * this.constants.SKID_FRICTION_MULTIPLIER * this.body.mass,
+                0
             ]
         ),
         this.body.x,
