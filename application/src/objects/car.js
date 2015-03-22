@@ -16,8 +16,9 @@ var Car = function(state, x, y, key)
 
     this.body.mass = this.constants.MASS;
 
-    this.falling  = false;
-    this.airborne = false;
+    this.falling        = false;
+    this.airborne       = false;
+    this.onRoughTerrain = false;
 };
 
 Car.prototype = Object.create(Phaser.Sprite.prototype);
@@ -27,6 +28,7 @@ Car.prototype.getConstants = function()
     return {
         MASS                        : 10,
         ROLLING_FRICTION_MULTIPLIER : 0.175,
+        ROUGH_TERRAIN_MULTIPLIER    : 2,
         SKID_FRICTION_MULTIPLIER    : 0.25,
         ACCELERATION_FORCE          : 1600,
         BRAKE_FORCE                 : -500,
@@ -95,7 +97,10 @@ Car.prototype.applyForces = function()
             this.body.rotation,
             [
                 0,
-                carRefVelocity[1] * this.constants.ROLLING_FRICTION_MULTIPLIER * this.body.mass
+                carRefVelocity[1] *
+                this.constants.ROLLING_FRICTION_MULTIPLIER *
+                (this.onRoughTerrain ? this.constants.ROUGH_TERRAIN_MULTIPLIER : 1) *
+                this.body.mass
             ]
         ),
         this.body.x,

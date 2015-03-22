@@ -191,6 +191,8 @@ TrackLoaderState.prototype.update = function()
 
     this.handleRamps();
 
+    this.handleRoughTerrain();
+
     this.track.enforce(this.car);
 
     if (this.cursors.up.isDown) {
@@ -234,6 +236,21 @@ TrackLoaderState.prototype.handleRamps = function()
             this.car.onRamp = true;
         } else if (this.car.onRamp) {
             this.car.jump();
+        }
+    }
+};
+
+TrackLoaderState.prototype.handleRoughTerrain = function()
+{
+    if (this.map.getLayerIndex('rough')) {
+        if (this.car.airborne) {
+            return;
+        }
+
+        if (this.map.getTileWorldXY(this.car.x, this.car.y, 32, 32, 'rough')) {
+            this.car.onRoughTerrain = true;
+        } else {
+            this.car.onRoughTerrain = false;
         }
     }
 };
