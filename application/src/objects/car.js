@@ -37,7 +37,7 @@ Car.prototype.getConstants = function()
 
 Car.prototype.accelerate = function()
 {
-    if (this.falling) {
+    if (this.falling || this.airborne) {
         return;
     }
 
@@ -50,7 +50,7 @@ Car.prototype.accelerate = function()
 
 Car.prototype.brake = function()
 {
-    if (this.falling) {
+    if (this.falling || this.airborne) {
         return;
     }
 
@@ -83,6 +83,10 @@ Car.prototype.turnLeft = function()
 Car.prototype.applyForces = function()
 {
     this.body.setZeroRotation();
+
+    if (this.airborne) {
+        return;
+    }
 
     var carRefVelocity = rotateVector(
         -this.body.rotation,
