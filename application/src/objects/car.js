@@ -16,7 +16,8 @@ var Car = function(state, x, y, key)
 
     this.body.mass = this.constants.MASS;
 
-    this.falling = false;
+    this.falling  = false;
+    this.airborne = false;
 };
 
 Car.prototype = Object.create(Phaser.Sprite.prototype);
@@ -29,13 +30,14 @@ Car.prototype.getConstants = function()
         SKID_FRICTION_MULTIPLIER    : 0.25,
         ACCELERATION_FORCE          : 1600,
         BRAKE_FORCE                 : -500,
-        TURNING_VELOCITY            : 80
+        TURNING_VELOCITY            : 80,
+        JUMP_HEIGHT_MULTIPLIER      : 0.002
     };
 };
 
 Car.prototype.accelerate = function()
 {
-    if (this.falling) {
+    if (this.falling || this.airborne) {
         return;
     }
 
@@ -48,7 +50,7 @@ Car.prototype.accelerate = function()
 
 Car.prototype.brake = function()
 {
-    if (this.falling) {
+    if (this.falling || this.airborne) {
         return;
     }
 
@@ -81,6 +83,10 @@ Car.prototype.turnLeft = function()
 Car.prototype.applyForces = function()
 {
     this.body.setZeroRotation();
+
+    if (this.airborne) {
+        return;
+    }
 
     var carRefVelocity = rotateVector(
         -this.body.rotation,
@@ -133,6 +139,34 @@ Car.prototype.doneFalling = function()
     this.scale.x = 1;
     this.scale.y = 1;
     this.state.moveCarToLastActivatedMarker();
+};
+
+Car.prototype.jump = function()
+{
+    var speed, jumpHeight, timeToVertex;
+
+    speed = Math.sqrt(
+        Math.pow(this.body.velocity.x, 2) +
+        Math.pow(this.body.velocity.y, 2)
+    );
+
+    jumpHeight   = this.constants.JUMP_HEIGHT_MULTIPLIER * speed;
+    timeToVertex = jumpHeight * 200;
+
+    if (jumpHeight > 1) {
+        this.airborne = true;
+
+        this.state.game.add.tween(this.scale)
+            .to({x : jumpHeight, y: jumpHeight}, timeToVertex, Phaser.Easing.Quadratic.Out)
+            .to({x : 1, y : 1}, timeToVertex, Phaser.Easing.Quadratic.In)
+            .start()
+            .onComplete.add(this.land, this);
+    }
+};
+
+Car.prototype.land = function()
+{
+    this.airborne = false;
 };
 
 module.exports = Car;
