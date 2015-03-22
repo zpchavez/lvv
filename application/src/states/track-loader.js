@@ -314,7 +314,7 @@ TrackLoaderState.prototype.updateCamera = function()
     var BUFFER_VALUE           = 100,
         averagePlayerPosition  = [0,0],
         carCount               = 0,
-        nextMarker             = this.track.getLastActivatedMarker(),
+        nextMarker             = this.track.getNextMarker(),
         closestCar,
         closestSquaredDistance = Infinity,
         squaredDistance;
