@@ -240,17 +240,12 @@ TrackLoaderState.prototype.update = function()
     _.each(this.cars, function(car) {
         if (car.visible) {
             car.applyForces();
+
             this.track.enforce(car);
 
-            if (this.map.getLayerIndex('drops')) {
-                if (this.map.getTileWorldXY(car.x, car.y, 32, 32, 'drops') && ! car.falling) {
-                    car.fall({
-                        // This determines the center of the pit tile the car is above
-                        x : Math.floor(car.x / 32) * 32 + 16,
-                        y : Math.floor(car.y / 32) * 32 + 16
-                    });
-                }
-            }
+            this.handleDrops(car);
+            this.handleRamps(car);
+            this.handleRoughTerrain(car);
 
             // If playing multiplayer, eliminate cars that go off-screen
             if (this.playerCount > 1 && (
@@ -373,6 +368,54 @@ TrackLoaderState.prototype.updateCamera = function()
     }
 };
 
+TrackLoaderState.prototype.handleDrops = function(car)
+{
+    if (this.map.getLayerIndex('drops')) {
+        if (car.falling || car.airborne) {
+            return;
+        }
+
+        if (this.map.getTileWorldXY(car.x, car.y, 32, 32, 'drops')) {
+            car.fall({
+                // This determines the center of the pit tile the car is above
+                x : Math.floor(car.x / 32) * 32 + 16,
+                y : Math.floor(car.y / 32) * 32 + 16
+            });
+        }
+    }
+};
+
+TrackLoaderState.prototype.handleRamps = function(car)
+{
+    if (this.map.getLayerIndex('ramps')) {
+        if (car.falling || car.airborne) {
+            return;
+        }
+
+        if (this.map.getTileWorldXY(car.x, car.y, 32, 32, 'ramps')) {
+            car.onRamp = true;
+        } else if (car.onRamp) { // If a car has just left a ramp tile, then call jump
+            car.onRamp = false;
+            car.jump();
+        }
+    }
+};
+
+TrackLoaderState.prototype.handleRoughTerrain = function(car)
+{
+    if (this.map.getLayerIndex('rough')) {
+        if (car.airborne) {
+            return;
+        }
+
+        if (this.map.getTileWorldXY(car.x, car.y, 32, 32, 'rough')) {
+            car.onRoughTerrain = true;
+        } else {
+            car.onRoughTerrain = false;
+        }
+    }
+};
+
 // Move camera towards a target point instead of directly to it for a less abrupt transition
 TrackLoaderState.prototype.easeCamera = function(x, y)
 {
@@ -394,7 +437,7 @@ TrackLoaderState.prototype.easeCamera = function(x, y)
         currentCenter[0] + differenceVector[0] * easingMultiplier,
         currentCenter[1] + differenceVector[1] * easingMultiplier
     );
-}
+};
 
 TrackLoaderState.prototype.moveCarToLastActivatedMarker = function(car)
 {
