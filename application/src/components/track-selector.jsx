@@ -1,7 +1,7 @@
 'use strict';
 
 var React     = require('react');
-var trackList = require('../../assets/tilemaps/maps/list');
+var trackList = require('../track-list');
 var _         = require('underscore');
 
 module.exports = React.createClass({

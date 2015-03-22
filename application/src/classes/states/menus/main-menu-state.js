@@ -8,7 +8,7 @@ var TrackMarkerState = require('../examples/track-marker-state');
 var BathroomObstacleSetState = require('../examples/bathroom-obstacle-set-state');
 var TrackLoaderState = require('../track-loader');
 var TrackLoader      = require('../../track-loader');
-var trackList        = require('../../../../assets/tilemaps/maps/list');
+var trackList        = require('../../../track-list');
 var _                = require('underscore');
 
 var MainMenuState = function()

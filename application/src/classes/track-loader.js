@@ -1,7 +1,7 @@
 'use strict';
 
 var _         = require('underscore');
-var trackList = require('../../assets/tilemaps/maps/list');
+var trackList = require('../track-list');
 var util      = require('../util');
 
 var adjustTrackData = function(data) {
