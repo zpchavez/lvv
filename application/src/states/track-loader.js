@@ -233,6 +233,7 @@ TrackLoaderState.prototype.handleRamps = function()
         if (this.map.getTileWorldXY(this.car.x, this.car.y, 32, 32, 'ramps')) {
             this.car.onRamp = true;
         } else if (this.car.onRamp) { // If a car has just left a ramp tile, then call jump
+            this.car.onRamp = false;
             this.car.jump();
         }
     }

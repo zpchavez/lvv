@@ -154,7 +154,6 @@ Car.prototype.jump = function()
     timeToVertex = jumpHeight * 200;
 
     if (jumpHeight > 1) {
-        this.onRamp  = false;
         this.airborne = true;
 
         this.state.game.add.tween(this.scale)
