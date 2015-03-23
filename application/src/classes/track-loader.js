@@ -1,8 +1,60 @@
 'use strict';
 
 var _         = require('underscore');
+var RNG       = require('../rng');
 var trackList = require('../track-list');
 var util      = require('../util');
+
+var assembleTrackData = function(segmentData)
+{
+    var firstSegment, segmentHeight, segmentWidth, numCols, numRows, tileLayers = [], objectLayers = [], finalData;
+
+    firstSegment = segmentData[0][0];
+
+    numRows = segmentData.length;
+    numCols = segmentData[0].length;
+
+    finalData = _.extend({}, firstSegment);
+
+    segmentHeight = firstSegment.height;
+    segmentWidth  = firstSegment.width;
+
+    firstSegment.layers.forEach(function (layer) {
+        if (layer.type === 'tilelayer') {
+            segmentData.forEach(function (row) {
+                var rowData = [];
+                _.range(0, segmentHeight).forEach(function (layerRowNumber) {
+                    row.forEach(function (segment) {
+                        var segmentData = _(segment.layers).findWhere({name : layer.name}).data;
+                        rowData = rowData.concat(
+                            segmentData.slice(
+                                layerRowNumber * segmentWidth,
+                                layerRowNumber * segmentWidth + segmentWidth
+                            )
+                        );
+                    });
+                });
+                layer.data = rowData;
+            });
+            tileLayers.push(layer);
+        } else if (layer.type === 'objectgroup') {
+            layer.objects.forEach(function(object) {
+                segmentData.forEach(function (row, rowNum) {
+                    row.forEach(function (segment, colNum) {
+
+                    });
+                });
+            });
+            objectLayers.push(layer);
+        }
+    });
+
+    finalData.layers = tileLayers.concat(objectLayers);
+
+    console.log('tileLayers', tileLayers);
+
+    return finalData;
+};
 
 var adjustTrackData = function(data) {
     var tilesets, objectClasses;
@@ -88,20 +140,43 @@ var adjustTrackData = function(data) {
 var TrackLoader = function(loader)
 {
     this.phaserLoader = loader;
+    this.rng          = new RNG(Date.now());
 };
 
 // Load track data by theme and track name and pass track data object to callback
 TrackLoader.prototype.load = function(theme, name, callback)
 {
-    var trackUrl, trackLoader = this;
+    var trackInstructions, trackSegmentData = [], trackLoader = this;
 
-    trackUrl = trackList[theme][name];
+    trackInstructions = trackList[theme][name];
 
-    this.phaserLoader.json('track-data', trackUrl);
+    if (_(trackInstructions).isString()) {
+        trackInstructions = [
+            [trackInstructions]
+        ];
+    }
+
+    // Iterate over segments and shuffle through choices
+    trackInstructions.forEach(function (row, rowIndex) {
+        row.forEach(function (segmentChoices, segmentIndex) {
+            var selectedUrl = trackLoader.rng.pickValueFromArray(segmentChoices);
+            trackLoader.phaserLoader.json(rowIndex + '-' + segmentIndex, selectedUrl);
+        });
+    });
+
     this.phaserLoader.onLoadComplete.addOnce(function () {
-        var data = trackLoader.phaserLoader.game.cache.getJSON('track-data');
+        var assembledTrackData;
 
-        callback(adjustTrackData(data));
+        trackInstructions.forEach(function (row, rowIndex) {
+            trackSegmentData[rowIndex] = [];
+            row.forEach(function (segment, segmentIndex) {
+                trackSegmentData[rowIndex][segmentIndex] = trackLoader.phaserLoader.game.cache.getJSON(rowIndex + '-' + segmentIndex);
+            });
+        });
+
+        assembledTrackData = assembleTrackData(trackSegmentData);
+
+        callback(adjustTrackData(assembledTrackData));
     });
 
     this.phaserLoader.start();
