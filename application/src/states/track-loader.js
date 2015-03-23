@@ -349,8 +349,15 @@ TrackLoaderState.prototype.updateCamera = function()
         }
     }
 
-    averagePlayerPosition[0] /= carCount;
-    averagePlayerPosition[1] /= carCount;
+    if (carCount > 0) {
+        averagePlayerPosition[0] /= carCount;
+        averagePlayerPosition[1] /= carCount;
+    } else {
+        averagePlayerPosition[0] = this.track.getLastActivatedMarker().x;
+        averagePlayerPosition[1] = this.track.getLastActivatedMarker().y;
+    }
+
+
 
     this.easeCamera(averagePlayerPosition[0], averagePlayerPosition[1]);
 
@@ -441,7 +448,7 @@ TrackLoaderState.prototype.easeCamera = function(x, y)
 
 TrackLoaderState.prototype.moveCarToLastActivatedMarker = function(car)
 {
-    var carIndex, offsetVector;
+    var carIndex, offsetVector, lastActivatedMarker;
 
     carIndex = _.indexOf(this.cars, car);
     if (carIndex !== -1) {
@@ -450,28 +457,19 @@ TrackLoaderState.prototype.moveCarToLastActivatedMarker = function(car)
         offsetVector = [0,0];
     }
 
-    // Negative one means the finish line
-    if (this.track.lastActivatedMarker === -1) {
-        offsetVector = util.rotateVector(
-            this.track.finish.angle * Math.PI / 180,
-            offsetVector
-        );
-        car.reset(
-            this.track.finish.x + offsetVector[0],
-            this.track.finish.y + offsetVector[1]
-        );
-        car.body.angle = this.track.finish.angle;
-    } else {
-        offsetVector = util.rotateVector(
-            this.track.markers[this.track.lastActivatedMarker].angle * Math.PI / 180,
-            offsetVector
-        );
-        car.reset(
-            this.track.markers[this.track.lastActivatedMarker].x + offsetVector[0],
-            this.track.markers[this.track.lastActivatedMarker].y + offsetVector[1]
-        );
-        car.body.angle = this.track.markers[this.track.lastActivatedMarker].angle;
-    }
+    lastActivatedMarker = this.track.getLastActivatedMarker();
+
+    offsetVector = util.rotateVector(
+        lastActivatedMarker.angle * Math.PI / 180,
+        offsetVector
+    );
+
+    car.reset(
+        lastActivatedMarker.x + offsetVector[0],
+        lastActivatedMarker.y + offsetVector[1]
+    );
+
+    car.body.angle = lastActivatedMarker.angle;
 };
 
 TrackLoaderState.prototype.resetAllCarsToLastMarker = function()
