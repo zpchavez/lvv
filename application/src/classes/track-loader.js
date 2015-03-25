@@ -7,7 +7,16 @@ var util      = require('../util');
 
 var assembleTrackData = function(segmentData)
 {
-    var firstSegment, segmentHeight, segmentWidth, numCols, numRows, tileLayers = [], objectLayers = [], finalData;
+    var firstSegment,
+        segmentHeight,
+        segmentWidth,
+        numCols,
+        numRows,
+        tileLayers = [],
+        objectLayers = [],
+        finalData,
+        segmentPixelWidth,
+        segmentPixelHeight;
 
     firstSegment = segmentData[0][0];
 
@@ -18,6 +27,9 @@ var assembleTrackData = function(segmentData)
 
     segmentHeight = firstSegment.height;
     segmentWidth  = firstSegment.width;
+
+    segmentPixelWidth = segmentWidth * firstSegment.tilewidth;
+    segmentPixelHeight = segmentHeight * firstSegment.tileheight;
 
     firstSegment.layers.forEach(function (layer) {
         if (layer.type === 'tilelayer') {
@@ -38,20 +50,23 @@ var assembleTrackData = function(segmentData)
             });
             tileLayers.push(layer);
         } else if (layer.type === 'objectgroup') {
-            layer.objects.forEach(function(object) {
-                segmentData.forEach(function (row, rowNum) {
-                    row.forEach(function (segment, colNum) {
-
+            var updatedObjects = [];
+            segmentData.forEach(function (row, rowNum) {
+                row.forEach(function (segment, colNum) {
+                    var segmentObjects = _(segment.layers).findWhere({name : layer.name}).objects;
+                    segmentObjects.forEach(function (object) {
+                        object.x = object.x + (segmentPixelWidth * colNum);
+                        object.y = object.y + (segmentPixelHeight * rowNum);
+                        updatedObjects.push(object);
                     });
                 });
             });
+            layer.objects = updatedObjects;
             objectLayers.push(layer);
         }
     });
 
     finalData.layers = tileLayers.concat(objectLayers);
-
-    console.log('tileLayers', tileLayers);
 
     return finalData;
 };
