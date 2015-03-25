@@ -2,14 +2,14 @@
 
 var Phaser = require('phaser');
 
-var DrawImageState   = require('../examples/draw-image-state');
-var CarDrivingState  = require('../examples/car-driving-state');
-var TrackMarkerState = require('../examples/track-marker-state');
+var DrawImageState           = require('../examples/draw-image-state');
+var CarDrivingState          = require('../examples/car-driving-state');
+var TrackMarkerState         = require('../examples/track-marker-state');
 var BathroomObstacleSetState = require('../examples/bathroom-obstacle-set-state');
-var TrackLoaderState = require('../states/track-loader');
-var TrackLoader      = require('../objects/track-loader');
-var trackList        = require('../../assets/tilemaps/maps/list');
-var _                = require('underscore');
+var TrackLoaderState         = require('../states/track-loader');
+var TrackLoader              = require('../objects/track-loader');
+var trackList                = require('../../assets/tilemaps/maps/list');
+var _                        = require('underscore');
 
 var MainMenuState = function()
 {
@@ -35,9 +35,9 @@ MainMenuState.prototype.create = function()
 
     this.add.button(230, 10, 'button-track-marker-example', this.onTrackMarkerExampleClick);
 
-    this.add.button(10, 120, 'button-bathroom-obstacle-set', this.onBathroomObstacleSetClick);
-
     this.add.button(400, 10, 'button-track-loader', this.onTrackLoaderClick);
+
+    this.add.button(10, 120, 'button-bathroom-obstacle-set', this.onBathroomObstacleSetClick);
 };
 
 MainMenuState.prototype.onImageExampleClick = function()
