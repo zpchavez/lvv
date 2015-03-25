@@ -7,9 +7,10 @@ var _         = require('underscore');
 module.exports = React.createClass({
 
     propTypes : {
-        phaserLoader      : React.PropTypes.object.isRequired,
-        onSelectTrack     : React.PropTypes.func.isRequired,
-        onChangeDebugMode : React.PropTypes.func.isRequired
+        phaserLoader            : React.PropTypes.object.isRequired,
+        onSelectTrack           : React.PropTypes.func.isRequired,
+        onChangeDebugMode       : React.PropTypes.func.isRequired,
+        onChangeNumberOfPlayers : React.PropTypes.func.isRequired
     },
 
     getInitialState : function()
@@ -31,6 +32,13 @@ module.exports = React.createClass({
     {
         this.props.onChangeDebugMode(
             !! parseInt(event.currentTarget.value, 10)
+        );
+    },
+
+    selectNumberOfPlayers : function(event)
+    {
+        this.props.onChangeNumberOfPlayers(
+            parseInt(event.currentTarget.value, 10)
         );
     },
 
@@ -89,6 +97,15 @@ module.exports = React.createClass({
                     <select id="debug" onChange={this.selectDebugMode}>
                         <option value={0}>off</option>
                         <option value={1}>on</option>
+                    </select>
+                </div>
+                <div>
+                    <label htmlFor="numPlayers">Number of Players</label>
+                    <select id="numPlayers" onChange={this.selectNumberOfPlayers}>
+                        <option value={1}>1</option>
+                        <option value={2}>2</option>
+                        <option value={3}>3</option>
+                        <option value={4}>4</option>
                     </select>
                 </div>
             </div>
