@@ -30,7 +30,7 @@
         "phaser"     : "2.2.2",
         "react"      : "0.12.2",
         "seedrandom" : "2.3.11",
-        "underscore" : "1.7.0"
+        "underscore" : "1.8.2"
     },
     "browser" : {
         "phaser" : "./shims/phaser.js"
