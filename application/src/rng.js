@@ -11,7 +11,7 @@ var RNG = function(seed)
 
 RNG.prototype.getIntBetween = function(min, max)
 {
-    return Math.floor(this.rng() * (max - min) + min);
+    return Math.round(this.rng() * (max - min) + min);
 };
 
 RNG.prototype.pickValueFromArray = function(array)
