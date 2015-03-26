@@ -32,6 +32,9 @@ var assembleTrackData = function(segmentData)
     segmentHeight = firstSegment.height;
     segmentWidth  = firstSegment.width;
 
+    finalData.height = segmentHeight * numRows;
+    finalData.width  = segmentWidth * numCols;
+
     segmentPixelWidth = segmentWidth * firstSegment.tilewidth;
     segmentPixelHeight = segmentHeight * firstSegment.tileheight;
 
@@ -66,6 +69,8 @@ var assembleTrackData = function(segmentData)
     }
 
     firstSegment.layers.forEach(function (layer) {
+        layer.width  = finalData.width;
+        layer.height = finalData.height;
         if (layer.type === 'tilelayer') {
             segmentData.forEach(function (row) {
                 var rowData = [];
@@ -234,10 +239,15 @@ TrackLoader.prototype.load = function(theme, name, callback)
 
     trackInstructions = trackList[theme][name];
 
+    // Not a multi-segment track
     if (_(trackInstructions).isString()) {
-        trackInstructions = [
-            [trackInstructions]
-        ];
+        this.phaserLoader.json('track-data', trackInstructions);
+        this.phaserLoader.onLoadComplete.addOnce(function () {
+            var data = trackLoader.phaserLoader.game.cache.getJSON('track-data');
+            callback(adjustTrackData(data));
+        });
+        this.phaserLoader.start();
+        return;
     }
 
     // Iterate over segments and shuffle through choices
