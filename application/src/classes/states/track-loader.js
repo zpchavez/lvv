@@ -1,6 +1,7 @@
 /* globals window */
 'use strict';
 
+var _               = require('underscore');
 var Phaser          = require('phaser');
 var React           = require('react');
 var CarFactory      = require('../car-factory');
@@ -9,6 +10,7 @@ var Track           = require('../track');
 var TrackSelector   = require('../../components/track-selector');
 var TrackLoader     = require('../track-loader');
 var _               = require('underscore');
+var util            = require('../../util');
 
 var TrackLoaderState = function(trackData, debug)
 {
@@ -23,6 +25,7 @@ var TrackLoaderState = function(trackData, debug)
     this.track           = new Track(this);
     this.track.setDebug(this.debug);
     this.lapNumber = 1;
+    this.playerCount = 1;
 };
 
 TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
@@ -60,14 +63,11 @@ TrackLoaderState.prototype.create = function()
     this.game.physics.restitution = 0.8;
 
     this.initTrack();
-
+    this.createStartingPointVectors();
     this.initPlayers();
-
-    this.game.physics.enable(this.car);
+    this.initInputs();
 
     this.showLapCounter();
-
-    this.game.camera.follow(this.car);
 
     this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
     this.game.input.onDown.add(this.toggleFullscreen, this);
@@ -103,18 +103,67 @@ TrackLoaderState.prototype.initTrack = function()
     this.placeObstacles();
 };
 
+TrackLoaderState.prototype.createStartingPointVectors = function()
+{
+    var xOffset = 20;
+    var yOffset = 30;
+
+    if (this.playerCount > 1) {
+        if (this.playerCount === 2) {
+            this.startingPointVectors = _.shuffle([
+                [xOffset, 0],
+                [-xOffset, 0]
+            ]);
+        } else {
+            this.startingPointVectors = _.shuffle([
+                [xOffset, yOffset],
+                [-xOffset, yOffset],
+                [-xOffset, -yOffset],
+                [xOffset, -yOffset]
+            ]);
+        }
+    } else {
+        this.startingPointVectors = [[0,0]];
+    }
+};
+
 TrackLoaderState.prototype.initPlayers = function()
 {
-    this.car = this.carFactory.getNew(this.startingPoint[0], this.startingPoint[1], 'car');
-    this.car.body.angle = this.startingPoint[2];
-    this.game.world.addChild(this.car);
+    var offsetVector;
 
-    this.car.bringToTop();
+    this.cars = [];
 
-    this.car.body.setCollisionGroup(this.collisionGroup);
-    this.car.body.collides(this.collisionGroup);
+    for (var i = 0; i < this.playerCount; i += 1) {
+        offsetVector = util.rotateVector(this.startingPoint[2] * Math.PI / 180, this.startingPointVectors[i]);
 
+        this.cars.push(this.carFactory.getNew(
+            this.startingPoint[0] + offsetVector[0],
+            this.startingPoint[1] + offsetVector[1],
+            'car'
+        ));
+    }
+
+    _.each(this.cars, function(car) {
+        car.body.angle = this.startingPoint[2];
+        this.game.world.addChild(car);
+        car.bringToTop();
+
+        car.body.setCollisionGroup(this.collisionGroup);
+        car.body.collides(this.collisionGroup);
+    }, this);
+};
+
+TrackLoaderState.prototype.initInputs = function()
+{
     this.cursors = this.game.input.keyboard.createCursorKeys();
+
+    this.pads = [];
+
+    for (var i = 0; i < 4; i += 1) {
+        this.pads.push(this.game.input.gamepad['pad' + (i + 1)]);
+    }
+
+    this.game.input.gamepad.start();
 };
 
 TrackLoaderState.prototype.placeTrackMarkers = function()
@@ -185,94 +234,254 @@ TrackLoaderState.prototype.placeObstacles = function()
 
 TrackLoaderState.prototype.update = function()
 {
-    this.car.applyForces();
+    var visibleCars;
 
-    this.handleDrops();
+    this.updateCamera();
 
-    this.handleRamps();
+    _.each(this.cars, function(car) {
+        if (car.visible) {
+            car.applyForces();
 
-    this.handleRoughTerrain();
+            this.track.enforce(car);
 
-    this.track.enforce(this.car);
+            this.handleDrops(car);
+            this.handleRamps(car);
+            this.handleRoughTerrain(car);
 
+            // If playing multiplayer, eliminate cars that go off-screen
+            if (this.playerCount > 1 && (
+                car.x < this.game.camera.x ||
+                car.x > (this.game.camera.x + this.game.camera.width) ||
+                car.y < this.game.camera.y ||
+                car.y > (this.game.camera.y + this.game.camera.height)))
+            {
+                car.visible = false;
+            }
+        }
+    }, this);
+
+    if (this.playerCount > 1) {
+        visibleCars = _.where(this.cars, {visible : true});
+
+        if (visibleCars.length === 1 && ! visibleCars[0].victorySpinning) {
+            visibleCars[0].setVictorySpinning(true);
+            window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), 2500);
+        }
+    }
+
+    this.handleInput();
+};
+
+TrackLoaderState.prototype.handleInput = function()
+{
     if (this.cursors.up.isDown) {
-        this.car.accelerate();
+        this.cars[0].accelerate();
     } else if (this.cursors.down.isDown) {
-        this.car.brake();
+        this.cars[0].brake();
     }
 
     if (this.cursors.right.isDown) {
-        this.car.turnRight();
+        this.cars[0].turnRight();
     } else if (this.cursors.left.isDown) {
-        this.car.turnLeft();
+        this.cars[0].turnLeft();
+    }
+
+    if (this.playerCount > 1) {
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+            this.cars[1].accelerate();
+        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.S)) {
+            this.cars[1].brake();
+        }
+
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.D)) {
+            this.cars[1].turnRight();
+        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.A)) {
+            this.cars[1].turnLeft();
+        }
+    }
+
+    for (var i = 0; i < this.playerCount; i += 1) {
+        if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT) ||
+            this.pads[i].axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) < -0.1) {
+            this.cars[i].turnLeft();
+        } else if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_DPAD_RIGHT) ||
+            this.pads[i].axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) > 0.1) {
+            this.cars[i].turnRight();
+        }
+
+        if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_A)) {
+            this.cars[i].accelerate();
+        }
+
+        if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_X)) {
+            this.cars[i].brake();
+        }
     }
 };
 
-TrackLoaderState.prototype.handleDrops = function()
+TrackLoaderState.prototype.updateCamera = function()
+{
+    var BUFFER_VALUE           = 100,
+        averagePlayerPosition  = [0,0],
+        carCount               = 0,
+        nextMarker             = this.track.getNextMarker(),
+        closestCar,
+        closestSquaredDistance = Infinity,
+        squaredDistance;
+
+    for (var i = 0; i < this.playerCount; i += 1) {
+        if (this.cars[i].visible) {
+            averagePlayerPosition[0] += this.cars[i].x;
+            averagePlayerPosition[1] += this.cars[i].y;
+            carCount += 1;
+        }
+
+        squaredDistance = (
+            Math.pow(this.cars[i].x - nextMarker.x, 2) +
+            Math.pow(this.cars[i].y - nextMarker.y, 2)
+        );
+
+        if (squaredDistance < closestSquaredDistance) {
+            closestSquaredDistance = squaredDistance;
+            closestCar             = {
+                x : this.cars[i].x,
+                y : this.cars[i].y
+            };
+        }
+    }
+
+    if (carCount > 0) {
+        averagePlayerPosition[0] /= carCount;
+        averagePlayerPosition[1] /= carCount;
+    } else {
+        averagePlayerPosition[0] = this.track.getLastActivatedMarker().x;
+        averagePlayerPosition[1] = this.track.getLastActivatedMarker().y;
+    }
+
+
+
+    this.easeCamera(averagePlayerPosition[0], averagePlayerPosition[1]);
+
+    // Nudge camera position to always include car closest to the next checkpoint
+    if ((this.game.camera.x + BUFFER_VALUE) > closestCar.x) {
+        this.game.camera.x = closestCar.x - BUFFER_VALUE;
+    } else if ((this.game.camera.x + this.game.camera.width - BUFFER_VALUE) < closestCar.x) {
+        this.game.camera.x = closestCar.x - this.game.camera.width + BUFFER_VALUE;
+    }
+
+    if ((this.game.camera.y + BUFFER_VALUE) > closestCar.y) {
+        this.game.camera.y = closestCar.y - BUFFER_VALUE;
+    } else if ((this.game.camera.y + this.game.camera.height - BUFFER_VALUE) < closestCar.y) {
+        this.game.camera.y = closestCar.y - this.game.camera.height + BUFFER_VALUE;
+    }
+};
+
+TrackLoaderState.prototype.handleDrops = function(car)
 {
     if (this.map.getLayerIndex('drops')) {
-        if (this.car.falling || this.car.airborne) {
+        if (car.falling || car.airborne) {
             return;
         }
 
-        if (this.map.getTileWorldXY(this.car.x, this.car.y, 32, 32, 'drops')) {
-            this.car.fall({
+        if (this.map.getTileWorldXY(car.x, car.y, 32, 32, 'drops')) {
+            car.fall({
                 // This determines the center of the pit tile the car is above
-                x : Math.floor(this.car.x / 32) * 32 + 16,
-                y : Math.floor(this.car.y / 32) * 32 + 16
+                x : Math.floor(car.x / 32) * 32 + 16,
+                y : Math.floor(car.y / 32) * 32 + 16
             });
         }
     }
 };
 
-TrackLoaderState.prototype.handleRamps = function()
+TrackLoaderState.prototype.handleRamps = function(car)
 {
     if (this.map.getLayerIndex('ramps')) {
-        if (this.car.falling || this.car.airborne) {
+        if (car.falling || car.airborne) {
             return;
         }
 
-        if (this.map.getTileWorldXY(this.car.x, this.car.y, 32, 32, 'ramps')) {
-            this.car.onRamp = true;
-        } else if (this.car.onRamp) { // If a car has just left a ramp tile, then call jump
-            this.car.onRamp = false;
-            this.car.jump();
+        if (this.map.getTileWorldXY(car.x, car.y, 32, 32, 'ramps')) {
+            car.onRamp = true;
+        } else if (car.onRamp) { // If a car has just left a ramp tile, then call jump
+            car.onRamp = false;
+            car.jump();
         }
     }
 };
 
-TrackLoaderState.prototype.handleRoughTerrain = function()
+TrackLoaderState.prototype.handleRoughTerrain = function(car)
 {
     if (this.map.getLayerIndex('rough')) {
-        if (this.car.airborne) {
+        if (car.airborne) {
             return;
         }
 
-        if (this.map.getTileWorldXY(this.car.x, this.car.y, 32, 32, 'rough')) {
-            this.car.onRoughTerrain = true;
+        if (this.map.getTileWorldXY(car.x, car.y, 32, 32, 'rough')) {
+            car.onRoughTerrain = true;
         } else {
-            this.car.onRoughTerrain = false;
+            car.onRoughTerrain = false;
         }
     }
 };
 
-TrackLoaderState.prototype.moveCarToLastActivatedMarker = function()
+// Move camera towards a target point instead of directly to it for a less abrupt transition
+TrackLoaderState.prototype.easeCamera = function(x, y)
 {
-    // Negative one means the finish line
-    if (this.track.lastActivatedMarker === -1) {
-        this.car.body.reset(
-            this.track.finish.x,
-            this.track.finish.y
-        );
-        this.car.body.angle = this.track.finish.angle;
-        return;
+    var currentCenter,
+        differenceVector,
+        easingMultiplier = 0.2;
+
+    currentCenter = [
+        this.game.camera.x + this.game.camera.width / 2,
+        this.game.camera.y + this.game.camera.height / 2
+    ];
+
+    differenceVector = [
+        x - currentCenter[0],
+        y - currentCenter[1]
+    ];
+
+    this.game.camera.focusOnXY(
+        currentCenter[0] + differenceVector[0] * easingMultiplier,
+        currentCenter[1] + differenceVector[1] * easingMultiplier
+    );
+};
+
+TrackLoaderState.prototype.moveCarToLastActivatedMarker = function(car)
+{
+    var carIndex, offsetVector, lastActivatedMarker;
+
+    carIndex = _.indexOf(this.cars, car);
+    if (carIndex !== -1) {
+        offsetVector = this.startingPointVectors[carIndex];
+    } else {
+        offsetVector = [0,0];
     }
 
-    this.car.body.reset(
-        this.track.markers[this.track.lastActivatedMarker].x,
-        this.track.markers[this.track.lastActivatedMarker].y
+    lastActivatedMarker = this.track.getLastActivatedMarker();
+
+    offsetVector = util.rotateVector(
+        lastActivatedMarker.angle * Math.PI / 180,
+        offsetVector
     );
-    this.car.body.angle = this.track.markers[this.track.lastActivatedMarker].angle;
+
+    car.reset(
+        lastActivatedMarker.x + offsetVector[0],
+        lastActivatedMarker.y + offsetVector[1]
+    );
+
+    car.body.angle = lastActivatedMarker.angle;
+};
+
+TrackLoaderState.prototype.resetAllCarsToLastMarker = function()
+{
+    _.each(this.cars, function(car, i) {
+        car.visible = true;
+        car.setVictorySpinning(false);
+        this.moveCarToLastActivatedMarker(car);
+    }, this);
+
+    this.updateCamera();
 };
 
 TrackLoaderState.prototype.showLapCounter = function()
@@ -319,13 +528,26 @@ TrackLoaderState.prototype.changeDebugMode = function(value)
     }
 };
 
+TrackLoaderState.prototype.changeNumberOfPlayers = function(value)
+{
+    this.playerCount = value;
+
+    _.each(this.cars, function(car) {
+        car.destroy();
+    });
+
+    this.createStartingPointVectors();
+    this.initPlayers();
+};
+
 TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
 {
     React.render(
         React.createElement(TrackSelector, {
-            phaserLoader      : this.load,
-            onSelectTrack     : this.selectTrack.bind(this),
-            onChangeDebugMode : this.changeDebugMode.bind(this)
+            phaserLoader            : this.load,
+            onSelectTrack           : this.selectTrack.bind(this),
+            onChangeDebugMode       : this.changeDebugMode.bind(this),
+            onChangeNumberOfPlayers : this.changeNumberOfPlayers.bind(this)
         }),
         window.document.getElementById('content')
     );
