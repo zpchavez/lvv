@@ -1,17 +1,17 @@
 'use strict';
 
-var seedrandom = require('seedrandom');
+var randomSeed = require('random-seed');
 
 var RNG = function(seed)
 {
     seed = seed || Date.now();
 
-    this.rng = seedrandom(seed);
+    this.rng = randomSeed.create(seed);
 };
 
 RNG.prototype.getIntBetween = function(min, max)
 {
-    return Math.round(this.rng() * (max - min) + min);
+    return Math.round(this.rng.random() * (max - min) + min);
 };
 
 RNG.prototype.pickValueFromArray = function(array)
