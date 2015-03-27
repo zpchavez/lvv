@@ -11,7 +11,7 @@ var TrackLoader     = require('../track-loader');
 var _               = require('underscore');
 var util            = require('../../util');
 
-var TrackLoaderState = function(trackData, debug)
+var TrackLoaderState = function(trackData, playerCount, debug)
 {
     this.trackData = trackData;
 
@@ -24,7 +24,7 @@ var TrackLoaderState = function(trackData, debug)
     this.track           = new Track(this);
     this.track.setDebug(this.debug);
     this.lapNumber = 1;
-    this.playerCount = 1;
+    this.playerCount = playerCount || 1;
 };
 
 TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
@@ -508,7 +508,7 @@ TrackLoaderState.prototype.selectTrack = function(trackTheme, trackName)
     var callback, trackLoader, state = this;
 
     callback = function(data) {
-        state.game.state.add('track-loader', new TrackLoaderState(data, state.debug), true);
+        state.game.state.add('track-loader', new TrackLoaderState(data, state.playerCount, state.debug), true);
     };
 
     trackLoader = new TrackLoader(this.load);
