@@ -25,4 +25,4 @@ RNG.prototype.pickValueFromArray = function(array)
     return array[selectedIndex];
 };
 
-module.exports = RNG;
+module.exports = new RNG();

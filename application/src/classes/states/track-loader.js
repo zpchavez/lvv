@@ -1,7 +1,6 @@
 /* globals window */
 'use strict';
 
-var _               = require('underscore');
 var Phaser          = require('phaser');
 var React           = require('react');
 var CarFactory      = require('../car-factory');

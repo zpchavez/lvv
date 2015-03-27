@@ -1,11 +1,10 @@
 'use strict';
 
-var _         = require('underscore');
-var RNG       = require('../rng');
-var trackList = require('../track-list');
-var util      = require('../util');
-
-var rng = new RNG(Date.now());
+var _              = require('underscore');
+var rng            = require('../rng');
+var trackList      = require('../track-list');
+var util           = require('../util');
+var TrackAssembler = require('./track-assembler');
 
 /**
  * @param {Phaser.Loader} loader
@@ -13,145 +12,6 @@ var rng = new RNG(Date.now());
 var TrackLoader = function(loader)
 {
     this.phaserLoader = loader;
-};
-
-TrackLoader.prototype.assembleTrackData = function(segmentData)
-{
-    var firstSegment,
-        segmentHeight,
-        segmentWidth,
-        numCols,
-        numRows,
-        tileLayers = [],
-        objectLayers = [],
-        finalData,
-        segmentPixelWidth,
-        segmentPixelHeight,
-        trackLayer,
-        finishLineCandidateIndexes = [];
-
-    firstSegment = segmentData[0][0];
-
-    numRows = segmentData.length;
-    numCols = segmentData[0].length;
-
-    finalData = _.extend({}, firstSegment);
-
-    segmentHeight = firstSegment.height;
-    segmentWidth  = firstSegment.width;
-
-    finalData.height = segmentHeight * numRows;
-    finalData.width  = segmentWidth * numCols;
-
-    segmentPixelWidth = segmentWidth * firstSegment.tilewidth;
-    segmentPixelHeight = segmentHeight * firstSegment.tileheight;
-
-    // Go clockwise around the segments, numbering them along the way
-    var segmentCounter = 0;
-    var colCounter = 0;
-    var rowCounter = 0;
-    for (colCounter = 0; colCounter < numCols; colCounter += 1) {
-        segmentData[rowCounter][colCounter].segmentNumber = segmentCounter;
-        segmentCounter += 1;
-    }
-    for (rowCounter = 0; rowCounter < numRows; rowCounter += 1) {
-        if (_(segmentData[rowCounter][colCounter]).isUndefined()) {
-            break;
-        }
-        segmentData[rowCounter][colCounter].segmentNumber = segmentCounter;
-        segmentCounter += 1;
-    }
-    for (;colCounter >= 0; colCounter -= 1) {
-        if (_(segmentData[rowCounter][colCounter]).isUndefined()) {
-            break;
-        }
-        segmentData[rowCounter][colCounter].segmentNumber = segmentCounter;
-        segmentCounter += 1;
-    }
-    for (;rowCounter >= 0; rowCounter -= 1) {
-        if (_(segmentData[rowCounter][colCounter]).isUndefined()) {
-            break;
-        }
-        segmentData[rowCounter][colCounter].segmentNumber = segmentCounter;
-        segmentCounter += 1;
-    }
-
-    firstSegment.layers.forEach(function (layer) {
-        layer.width  = finalData.width;
-        layer.height = finalData.height;
-        if (layer.type === 'tilelayer') {
-            segmentData.forEach(function (row) {
-                var rowData = [];
-                _.range(0, segmentHeight).forEach(function (layerRowNumber) {
-                    row.forEach(function (segment) {
-                        var segmentData = _(segment.layers).findWhere({name : layer.name}).data;
-                        rowData = rowData.concat(
-                            segmentData.slice(
-                                layerRowNumber * segmentWidth,
-                                layerRowNumber * segmentWidth + segmentWidth
-                            )
-                        );
-                    });
-                });
-                layer.data = rowData;
-            });
-            tileLayers.push(layer);
-        } else if (layer.type === 'objectgroup') {
-            var updatedObjects = [];
-            segmentData.forEach(function (row, rowNum) {
-                row.forEach(function (segment, colNum) {
-                    var segmentObjects = _(segment.layers).findWhere({name : layer.name}).objects;
-                    segmentObjects.forEach(function (object) {
-                        object.x = object.x + (segmentPixelWidth * colNum);
-                        object.y = object.y + (segmentPixelHeight * rowNum);
-                        object.segmentNumber = segment.segmentNumber;
-                        updatedObjects.push(object);
-                    });
-                });
-            });
-            layer.objects = updatedObjects;
-            objectLayers.push(layer);
-        }
-    });
-
-    // Pick a finish line and number the markers accordingly.
-    trackLayer = _(objectLayers).findWhere({name : 'track'});
-    trackLayer.objects.forEach(function (marker, index) {
-        if (parseInt(marker.properties['finish-line-candidate'], 10)) {
-            finishLineCandidateIndexes.push(index);
-        }
-    });
-    var selectedFinishLineMarkerIndex = rng.pickValueFromArray(finishLineCandidateIndexes);
-
-    // Set the finish line as a finish line
-    trackLayer.objects[selectedFinishLineMarkerIndex].name = 'finish-line';
-
-    // Set track marker indexes
-    var sortedTrackObjects = _(trackLayer.objects).sortBy(function (marker) {
-        // Ensure that all the markers from one segment precede any from the next segment.
-        // The 100 multiplier ensures this will work unless there are more than 100 markers
-        // in one segment.
-        return marker.segmentNumber * 100 * marker.properties.index;
-    });
-
-    // Find where the finish line appears in the sorted list.
-    var finishLineIndex = _(sortedTrackObjects).findIndex({name : 'finish-line'});
-    var totalMarkers = trackLayer.objects.length;
-
-    var finalTrackObjects = sortedTrackObjects.map(function (object, index) {
-        if (index < finishLineIndex) {
-            object.properties.index = totalMarkers - 1 - finishLineIndex + index;
-        } else if (index > finishLineIndex) {
-            object.properties.index = index - finishLineIndex - 1;
-        }
-        return object;
-    });
-
-    trackLayer.object = finalTrackObjects;
-
-    finalData.layers = tileLayers.concat(objectLayers);
-
-    return finalData;
 };
 
 TrackLoader.prototype.adjustTrackData = function(data)
@@ -260,7 +120,7 @@ TrackLoader.prototype.load = function(theme, name, callback)
     });
 
     this.phaserLoader.onLoadComplete.addOnce(function () {
-        var assembledTrackData;
+        var assembledTrackData, trackAssembler;
 
         trackInstructions.forEach(function (row, rowIndex) {
             trackSegmentData[rowIndex] = [];
@@ -269,7 +129,9 @@ TrackLoader.prototype.load = function(theme, name, callback)
             });
         });
 
-        assembledTrackData = trackLoader.assembleTrackData(trackSegmentData);
+        trackAssembler = new TrackAssembler(trackSegmentData);
+
+        assembledTrackData = trackAssembler.assemble();
 
         callback(trackLoader.adjustTrackData(assembledTrackData));
     });
