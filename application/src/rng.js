@@ -1,10 +1,18 @@
+/* globals window */
 'use strict';
 
 var randomSeed = require('random-seed');
 
-var RNG = function(seed)
+var RNG = function()
 {
-    seed = seed || Date.now();
+    var seed, matches;
+
+    matches = /seed=([^&]+)/.exec(window.location.search);
+    if (matches) {
+        seed = matches[1];
+    } else {
+        seed = Date.now();
+    }
 
     this.rng = randomSeed.create(seed);
 };
