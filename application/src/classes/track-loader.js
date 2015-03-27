@@ -7,7 +7,15 @@ var util      = require('../util');
 
 var rng = new RNG(Date.now());
 
-var assembleTrackData = function(segmentData)
+/**
+ * @param {Phaser.Loader} loader
+ */
+var TrackLoader = function(loader)
+{
+    this.phaserLoader = loader;
+};
+
+TrackLoader.prototype.assembleTrackData = function(segmentData)
 {
     var firstSegment,
         segmentHeight,
@@ -146,7 +154,8 @@ var assembleTrackData = function(segmentData)
     return finalData;
 };
 
-var adjustTrackData = function(data) {
+TrackLoader.prototype.adjustTrackData = function(data)
+{
     var tilesets, objectClasses;
 
     tilesets      = [];
@@ -224,14 +233,6 @@ var adjustTrackData = function(data) {
     return data;
 };
 
-/**
- * @param {Phaser.Loader} loader
- */
-var TrackLoader = function(loader)
-{
-    this.phaserLoader = loader;
-};
-
 // Load track data by theme and track name and pass track data object to callback
 TrackLoader.prototype.load = function(theme, name, callback)
 {
@@ -244,7 +245,7 @@ TrackLoader.prototype.load = function(theme, name, callback)
         this.phaserLoader.json('track-data', trackInstructions);
         this.phaserLoader.onLoadComplete.addOnce(function () {
             var data = trackLoader.phaserLoader.game.cache.getJSON('track-data');
-            callback(adjustTrackData(data));
+            callback(trackLoader.adjustTrackData(data));
         });
         this.phaserLoader.start();
         return;
@@ -268,9 +269,9 @@ TrackLoader.prototype.load = function(theme, name, callback)
             });
         });
 
-        assembledTrackData = assembleTrackData(trackSegmentData);
+        assembledTrackData = trackLoader.assembleTrackData(trackSegmentData);
 
-        callback(adjustTrackData(assembledTrackData));
+        callback(trackLoader.adjustTrackData(assembledTrackData));
     });
 
     this.phaserLoader.start();
