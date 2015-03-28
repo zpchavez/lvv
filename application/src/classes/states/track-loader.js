@@ -47,7 +47,7 @@ TrackLoaderState.prototype.preload = function()
     this.trackData.tilesets.forEach(function (tileset) {
         state.load.image(
             tileset.name,
-            tileset.imagePath
+            tileset.imageUrl
         );
     });
 
@@ -56,7 +56,7 @@ TrackLoaderState.prototype.preload = function()
         if (layer.type === 'imagelayer') {
             state.load.image(
                 layer.name,
-                layer.imagePath
+                layer.imageUrl
             );
         }
     });

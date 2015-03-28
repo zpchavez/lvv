@@ -23,7 +23,7 @@ TrackLoader.prototype.adjustTrackData = function(data)
     data.tilesets.forEach(function (tileset) {
         if (tileset.image) {
             // Set URL for tileset images
-            tileset.imagePath = 'assets/tilemaps/' + tileset.image.replace(/[.\/]*/, '', 'g');
+            tileset.imageUrl = 'assets/tilemaps/' + tileset.image.replace(/[.\/]*/, '', 'g');
             tilesets.push(tileset);
 
             if (tileset.name === 'meta-tile') {
@@ -47,7 +47,7 @@ TrackLoader.prototype.adjustTrackData = function(data)
     data.layers.forEach(function (layer) {
         // As long as we're looping through layers, convert imagelayer paths to URLs
         if (layer.type === 'imagelayer') {
-            layer.imagePath = 'assets/' + layer.image.replace(/[.\/]*/, '', 'g');
+            layer.imageUrl = 'assets/' + layer.image.replace(/[.\/]*/, '', 'g');
         }
 
         if (! layer.objects) {
