@@ -113,9 +113,9 @@ TrackLoader.prototype.load = function(theme, name, callback)
 
     // Iterate over segments and shuffle through choices
     trackInstructions.forEach(function (row, rowIndex) {
-        row.forEach(function (segmentChoices, segmentIndex) {
+        row.forEach(function (segmentChoices, columnIndex) {
             var selectedUrl = rng.pickValueFromArray(segmentChoices);
-            trackLoader.phaserLoader.json(rowIndex + '-' + segmentIndex, selectedUrl);
+            trackLoader.phaserLoader.json(rowIndex + '-' + columnIndex, selectedUrl);
         });
     });
 
@@ -124,8 +124,8 @@ TrackLoader.prototype.load = function(theme, name, callback)
 
         trackInstructions.forEach(function (row, rowIndex) {
             trackSegmentData[rowIndex] = [];
-            row.forEach(function (segment, segmentIndex) {
-                trackSegmentData[rowIndex][segmentIndex] = trackLoader.phaserLoader.game.cache.getJSON(rowIndex + '-' + segmentIndex);
+            row.forEach(function (segment, columnIndex) {
+                trackSegmentData[rowIndex][columnIndex] = trackLoader.phaserLoader.game.cache.getJSON(rowIndex + '-' + columnIndex);
             });
         });
 
