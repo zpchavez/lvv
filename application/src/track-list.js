@@ -23,5 +23,8 @@ module.exports = {
         'Square Loop'        : urlRoot + 'desert/square-loop.json',
         'Figure 8'           : urlRoot + 'desert/figure8.json',
         'Bathroom Obstacles' : urlRoot + 'desert/figure8wObs.json'
+    },
+    'Misc' : {
+        'Hardwood' : urlRoot + 'misc/hardwood.json'
     }
 };
