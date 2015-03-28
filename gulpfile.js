@@ -11,6 +11,7 @@ var jshint      = require('gulp-jshint');
 var minifycss   = require('gulp-minify-css');
 var minifyhtml  = require('gulp-minify-html');
 var processhtml = require('gulp-processhtml');
+var proxyquire  = require('proxyquireify');
 var reactify    = require('reactify');
 var rename      = require('gulp-rename');
 var rimraf      = require('gulp-rimraf');
@@ -103,6 +104,7 @@ gulp.task('compile:test', ['clean'], function () {
         extensions : ['.js'],
         debug      : watching
     })
+    .plugin(proxyquire.plugin)
     .transform(reactify);
 
     var bundlee = function() {

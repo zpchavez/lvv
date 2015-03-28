@@ -3,7 +3,22 @@
 'use strict';
 
 var TrackAssembler = require('../../../../application/src/classes/track-assembler');
-var expect = require('chai').expect;
+var expect         = require('chai').expect;
+var proxyquire     = require('proxyquireify')(require);
+
+var getTrackAssemblerWithMockedRngThatReturnsIndex = function(index) {
+    return proxyquire(
+        '../../../../application/src/classes/track-assembler',
+        {
+            // Return not-so-random RNG object
+            '../rng' : {
+                pickValueFromArray : function (array) {
+                    return array[index];
+                }
+            }
+        }
+    );
+};
 
 describe('TrackAssembler', function () {
     beforeEach(function () {
@@ -38,7 +53,16 @@ describe('TrackAssembler', function () {
                                     x : 0,
                                     y : 0,
                                     properties : {
-                                        'finish-line-candidate' : '1'
+                                        'finish-line-candidate' : '1',
+                                        index                   : '0'
+                                    }
+                                },
+                                {
+                                    x : 10,
+                                    y : 10,
+                                    properties : {
+                                        'finish-line-candidate' : '1',
+                                        index                   : '1'
                                     }
                                 }
                             ]
@@ -69,7 +93,16 @@ describe('TrackAssembler', function () {
                                     x : 0,
                                     y : 0,
                                     properties : {
-                                        'finish-line-candidate' : '1'
+                                        'finish-line-candidate' : '1',
+                                        index                   : '0'
+                                    }
+                                },
+                                {
+                                    x : 10,
+                                    y : 10,
+                                    properties : {
+                                        'finish-line-candidate' : '1',
+                                        index                   : '1'
                                     }
                                 }
                             ]
@@ -101,8 +134,36 @@ describe('TrackAssembler', function () {
             expect(assembledData.layers[2].objects[0].x).to.equal(0);
             expect(assembledData.layers[2].objects[0].y).to.equal(0);
             // objects in second column have x values adjusted
-            expect(assembledData.layers[2].objects[1].x).to.equal(64);
-            expect(assembledData.layers[2].objects[1].y).to.equal(0);
+            expect(assembledData.layers[2].objects[2].x).to.equal(64);
+            expect(assembledData.layers[2].objects[2].y).to.equal(0);
+            expect(assembledData.layers[2].objects[3].x).to.equal(74);
+            expect(assembledData.layers[2].objects[3].y).to.equal(10);
+        });
+
+        it('sets indexes on track segments correctly if finish line in first segment', function() {
+            var TrackAssembler, trackAssembler, assembledData;
+
+            TrackAssembler = getTrackAssemblerWithMockedRngThatReturnsIndex(0);
+            trackAssembler = new TrackAssembler(getSegmentDataWithOneRowAndTwoColumns());
+            assembledData  = trackAssembler.assemble();
+
+            expect(assembledData.layers[2].objects[0].name).to.equal('finish-line');
+            expect(assembledData.layers[2].objects[1].properties.index).to.equal(0);
+            expect(assembledData.layers[2].objects[2].properties.index).to.equal(1);
+            expect(assembledData.layers[2].objects[3].properties.index).to.equal(2);
+        });
+
+        it('sets indexes on track segments correctly if finish line in second segment', function() {
+            var TrackAssembler, trackAssembler, assembledData;
+
+            TrackAssembler = getTrackAssemblerWithMockedRngThatReturnsIndex(2);
+            trackAssembler = new TrackAssembler(getSegmentDataWithOneRowAndTwoColumns());
+            assembledData  = trackAssembler.assemble();
+
+            expect(assembledData.layers[2].objects[0].properties.index).to.equal(1);
+            expect(assembledData.layers[2].objects[1].properties.index).to.equal(2);
+            expect(assembledData.layers[2].objects[2].name).to.equal('finish-line');
+            expect(assembledData.layers[2].objects[3].properties.index).to.equal(0);
         });
     });
 });

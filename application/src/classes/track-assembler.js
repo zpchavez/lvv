@@ -123,6 +123,7 @@ TrackAssembler.prototype._setUpTrackMarkers = function()
 
     // Set the finish line as a finish line
     trackLayer.objects[selectedFinishLineMarkerIndex].name = 'finish-line';
+    delete trackLayer.objects[selectedFinishLineMarkerIndex].properties.index;
 
     // Set track marker indexes
     sortedTrackObjects = _(trackLayer.objects).sortBy(function (marker) {
@@ -144,8 +145,6 @@ TrackAssembler.prototype._setUpTrackMarkers = function()
         }
         return object;
     });
-
-    trackLayer.object = finalTrackObjects;
 };
 
 TrackAssembler.prototype.assemble = function()
