@@ -99,10 +99,12 @@ gulp.task('compile:test', ['clean'], function () {
     var entries = glob.sync(path);
 
     var bundler = browserify({
-        cache      : {}, packageCache: {}, fullPaths: true,
-        entries    : entries,
-        extensions : ['.js'],
-        debug      : watching
+        cache        : {},
+        packageCache : {},
+        fullPaths    : true,
+        entries      : entries,
+        extensions   : ['.js'],
+        debug        : watching
     })
     .plugin(proxyquire.plugin)
     .transform(reactify);

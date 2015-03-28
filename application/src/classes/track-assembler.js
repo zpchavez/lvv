@@ -30,27 +30,34 @@ TrackAssembler.prototype._numberSegmentsInClockwiseOrder = function()
         colCounter     = 0,
         rowCounter     = 0;
 
+    // From top left to top right
     for (colCounter = 0; colCounter < this.numCols; colCounter += 1) {
         this.segmentData[rowCounter][colCounter].segmentNumber = segmentCounter;
         segmentCounter += 1;
     }
-    for (rowCounter = 0; rowCounter < this.numRows; rowCounter += 1) {
-        if (_(this.segmentData[rowCounter][colCounter]).isUndefined()) {
-            break;
-        }
+
+    // From top right to bottom right
+    colCounter = this.numCols - 1;
+    for (rowCounter = 1; rowCounter < this.numRows; rowCounter += 1) {
         this.segmentData[rowCounter][colCounter].segmentNumber = segmentCounter;
         segmentCounter += 1;
     }
+
+    // From bottom right to bottom left
+    rowCounter = this.numRows - 1;
     for (;colCounter >= 0; colCounter -= 1) {
-        if (_(this.segmentData[rowCounter][colCounter]).isUndefined()) {
-            break;
+        if (_(this.segmentData[rowCounter][colCounter].segmentNumber).isNumber()) {
+            continue;
         }
         this.segmentData[rowCounter][colCounter].segmentNumber = segmentCounter;
         segmentCounter += 1;
     }
+
+    // From bottom left to top left
+    colCounter = 0;
     for (;rowCounter >= 0; rowCounter -= 1) {
-        if (_(this.segmentData[rowCounter][colCounter]).isUndefined()) {
-            break;
+        if (_(this.segmentData[rowCounter][colCounter].segmentNumber).isNumber()) {
+            continue;
         }
         this.segmentData[rowCounter][colCounter].segmentNumber = segmentCounter;
         segmentCounter += 1;
@@ -65,8 +72,8 @@ TrackAssembler.prototype._combineLayers = function()
         layer.width  = self.finalData.width;
         layer.height = self.finalData.height;
         if (layer.type === 'tilelayer') {
+            var rowData = [];
             self.segmentData.forEach(function (row) {
-                var rowData = [];
                 _.range(0, self.segmentHeight).forEach(function (layerRowNumber) {
                     row.forEach(function (segment) {
                         var segmentData = _(segment.layers).findWhere({name : layer.name}).data;
@@ -78,8 +85,8 @@ TrackAssembler.prototype._combineLayers = function()
                         );
                     });
                 });
-                layer.data = rowData;
             });
+            layer.data = rowData;
             tileLayers.push(layer);
         } else if (layer.type === 'objectgroup') {
             var updatedObjects = [];
@@ -123,14 +130,14 @@ TrackAssembler.prototype._setUpTrackMarkers = function()
 
     // Set the finish line as a finish line
     trackLayer.objects[selectedFinishLineMarkerIndex].name = 'finish-line';
-    delete trackLayer.objects[selectedFinishLineMarkerIndex].properties.index;
 
     // Set track marker indexes
+
     sortedTrackObjects = _(trackLayer.objects).sortBy(function (marker) {
         // Ensure that all the markers from one segment precede any from the next segment.
         // The 100 multiplier ensures this will work unless there are more than 100 markers
         // in one segment.
-        return marker.segmentNumber * 100 * marker.properties.index;
+        return marker.segmentNumber * (100 + parseInt(marker.properties.index, 10) + 1);
     });
 
     // Find where the finish line appears in the sorted list.
