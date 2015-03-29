@@ -76,7 +76,7 @@ TrackLoaderState.prototype.create = function()
 
 TrackLoaderState.prototype.initTrack = function()
 {
-    var backgroundLayer, dropsLayer, state = this;
+    var backgroundLayer, state = this;
 
     this.map = this.game.add.tilemap('track');
 
