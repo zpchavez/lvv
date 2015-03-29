@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" nextobjectid="21">
+ <tileset firstgid="1" source="../../../tilesets/desert-with-pit.tsx"/>
+ <tileset firstgid="67" source="../../../tilesets/meta-tile.tsx"/>
+ <tileset firstgid="68" source="../../../tilesets/bathroom-obstacles.tsx"/>
+ <layer name="background" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztmU1PwzAMQH0YMMaBQhmnsQ9AmoQE2wUJBv//d+FItXCj1E030jrUh6etVbv6NXasZHMAmBvqeEHWGUMe98g2Y8xDF+ahi7F5PCJPion1eEXeFGMeujAPXZzqsUc+FXCqx67lPm39I8bjHLlgTAfykOKI8bhBbhnXPTpxDz+O8kiPCfKAnHlOKV3+0mNRxU4x03EfLrEeHxCeJw7sGpeXBdRzqhB+sy8Pen+XyEzgynOQGMKDnnvHrgvRdC9B9eJYZuxRQn0uTFEjPBa/Lrt4hO7l+VlA2tzy+wc9b1LFFeuxbRmT1DXSlBtldew+VyDvgW0gvs6H8qA5q2ld+9xxLNw4p6j1Ng/67vrgDn7rdcrODZ1TkgevTe4Rcov1SDUWkof/Drt60DzRh8MxHm5+pX7GPeg873cLSN//Qh5+LDwGF/MX1Gv8G/7nOipnD3+MbD/R9n3MQx9j82han2thbP9Hacc8dGEeuiCPd5D3DLUj7efkxA/js1iE
+  </data>
+ </layer>
+ <objectgroup name="obstacles">
+  <object id="9" gid="68" x="1272" y="1091"/>
+  <object id="10" gid="69" x="1392" y="420"/>
+  <object id="11" gid="69" x="1291" y="357"/>
+  <object id="12" gid="69" x="1507" y="371"/>
+  <object id="13" gid="69" x="1358" y="468"/>
+  <object id="14" gid="69" x="1383" y="360"/>
+  <object id="15" gid="69" x="1474" y="451"/>
+  <object id="16" gid="69" x="1338" y="285"/>
+  <object id="17" gid="69" x="1439" y="285"/>
+  <object id="18" gid="69" x="1543" y="462"/>
+  <object id="19" gid="69" x="1506" y="270"/>
+  <object id="20" gid="69" x="1292" y="477"/>
+ </objectgroup>
+ <objectgroup name="track">
+  <object id="6" type="marker" x="1181" y="1560" width="662" height="47" rotation="270">
+   <properties>
+    <property name="finish-line-candidate" value="1"/>
+    <property name="index" value="0"/>
+   </properties>
+  </object>
+  <object id="7" type="marker" x="73" y="630" width="734" height="54">
+   <properties>
+    <property name="finish-line-candidate" value="0"/>
+    <property name="index" value="1"/>
+   </properties>
+  </object>
+  <object id="8" type="marker" x="1234" y="69" width="698" height="53" rotation="90">
+   <properties>
+    <property name="finish-line-candidate" value="1"/>
+    <property name="index" value="2"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer name="ramps" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztwwEJAAAMA6B1e/9Ob7AAQ8EEAAAAAIBlVwIAAAAseUaNAdY=
+  </data>
+ </layer>
+ <layer name="rough" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt1FEKgCAQBUDv1v3v1K9IGrHmKsxAH0VL75VZCgAAAMRd1XFyjnYuq9Mf7zOjy4wevW+yssuMdTU6Vok8Nzv7KEtkNnvfimQY9chYW5HZHf6RGXvV6T126VBnqc+/zp7So5dnlw69LE/3vM2211bLfo8AAACscQM9zSMT
+  </data>
+ </layer>
+ <layer name="drops" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt2LEJADEMBEH15v57cgsPj2FsduFyTao1M6txu70cVjmscljlsMphlcMqh1UOqxxWOay+OvQfRY4cJ5Ju+VMOqxxWOaxyWOWwymGVwyqHVQ6rHFavOW7fBqUoRzE=
+  </data>
+ </layer>
+</map>

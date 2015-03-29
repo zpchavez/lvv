@@ -2,8 +2,8 @@
 
 var Phaser          = require('phaser');
 var _               = require('underscore');
-var CarFactory      = require('../objects/car-factory');
-var ObstacleFactory = require('../objects/obstacles/obstacle-factory');
+var CarFactory      = require('../../car-factory');
+var ObstacleFactory = require('../../obstacles/obstacle-factory');
 
 var makeObstacles = function(context) {
     var obstacles = [];

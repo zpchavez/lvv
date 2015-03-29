@@ -688,27 +688,27 @@
             {
              "0":
                 {
-                 "image":"..\/..\/img\/aspirin-bottle.png"
+                 "image":"..\/..\/..\/img\/aspirin-bottle.png"
                 },
              "1":
                 {
-                 "image":"..\/..\/img\/aspirin-pill.png"
+                 "image":"..\/..\/..\/img\/aspirin-pill.png"
                 },
              "2":
                 {
-                 "image":"..\/..\/img\/comb.png"
+                 "image":"..\/..\/..\/img\/comb.png"
                 },
              "3":
                 {
-                 "image":"..\/..\/img\/floss.png"
+                 "image":"..\/..\/..\/img\/floss.png"
                 },
              "4":
                 {
-                 "image":"..\/..\/img\/razor.png"
+                 "image":"..\/..\/..\/img\/razor.png"
                 },
              "5":
                 {
-                 "image":"..\/..\/img\/toothbrush.png"
+                 "image":"..\/..\/..\/img\/toothbrush.png"
                 }
             },
          "tilewidth":827

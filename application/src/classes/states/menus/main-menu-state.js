@@ -6,10 +6,10 @@ var DrawImageState           = require('../examples/draw-image-state');
 var CarDrivingState          = require('../examples/car-driving-state');
 var TrackMarkerState         = require('../examples/track-marker-state');
 var BathroomObstacleSetState = require('../examples/bathroom-obstacle-set-state');
-var TrackLoaderState         = require('../states/track-loader');
-var TrackLoader              = require('../objects/track-loader');
-var trackList                = require('../../assets/tilemaps/maps/list');
-var _                        = require('underscore');
+var TrackLoaderState = require('../track-loader');
+var TrackLoader      = require('../../track-loader');
+var trackList        = require('../../../track-list');
+var _                = require('underscore');
 
 var MainMenuState = function()
 {
@@ -71,7 +71,7 @@ MainMenuState.prototype.onTrackLoaderClick = function()
     firstTrack = _(trackList[firstTheme]).keys()[0];
 
     trackLoader.load(firstTheme, firstTrack, function(data) {
-        stateManager.add('track-loader', new TrackLoaderState(data, false), true);
+        stateManager.add('track-loader', new TrackLoaderState(data, 1, false), true);
     });
 };
 
