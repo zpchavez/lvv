@@ -138,7 +138,7 @@ TrackLoaderState.prototype.initPlayers = function()
         this.cars.push(this.carFactory.getNew(
             this.startingPoint[0] + offsetVector[0],
             this.startingPoint[1] + offsetVector[1],
-            'car'
+            'player' + (i + 1)
         ));
     }
 
