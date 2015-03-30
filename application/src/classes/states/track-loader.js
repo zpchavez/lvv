@@ -17,8 +17,13 @@ var TrackLoaderState = function(trackData, options)
     options = options || {};
     _(options).defaults({
         debug       : false,
-        playerCount : 1
+        playerCount : 1,
+        teams       : false
     });
+
+    if (options.teams && options.playerCount !== 4) {
+        throw new Error('Invalid number of players for team mode');
+    }
 
     this.trackData = trackData;
 
@@ -26,13 +31,16 @@ var TrackLoaderState = function(trackData, options)
 
     Phaser.State.apply(this, arguments);
 
-    this.carFactory      = new CarFactory(this);
+    this.victorySpinning = false;
+    this.carFactory      = new CarFactory(this, {teams : options.teams});
     this.obstacleFactory = new ObstacleFactory(this);
     this.track           = new Track(this);
-    this.score           = new Score(this, options.playerCount);
+    this.teams           = options.teams;
+    this.score           = new Score(this, options.teams ? 2 : options.playerCount);
+    this.lapNumber       = 1;
+    this.playerCount     = options.playerCount || 1;
+
     this.track.setDebug(this.debug);
-    this.lapNumber = 1;
-    this.playerCount = options.playerCount || 1;
 };
 
 TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
@@ -132,7 +140,7 @@ TrackLoaderState.prototype.createStartingPointVectors = function()
 
 TrackLoaderState.prototype.initPlayers = function()
 {
-    var offsetVector;
+    var offsetVector, state = this;
 
     this.cars = [];
 
@@ -148,6 +156,11 @@ TrackLoaderState.prototype.initPlayers = function()
 
     _.each(this.cars, function(car, index) {
         car.playerNumber = index;
+
+        if (state.teams) {
+            car.teamNumber = [0, 0, 1, 1][index];
+        }
+
         car.body.angle = this.startingPoint[2];
         this.game.world.addChild(car);
         car.bringToTop();
@@ -243,7 +256,7 @@ TrackLoaderState.prototype.placeObstacles = function()
 
 TrackLoaderState.prototype.update = function()
 {
-    var visibleCars;
+    var visibleCars, winningCar;
 
     this.updateCamera();
 
@@ -272,15 +285,33 @@ TrackLoaderState.prototype.update = function()
     if (this.playerCount > 1) {
         visibleCars = _.where(this.cars, {visible : true});
 
-        if (visibleCars.length === 1 && ! visibleCars[0].victorySpinning) {
+        if (this.victorySpinning) {
+            return;
+        }
+
+        if (this.teams && visibleCars.length === 2 && visibleCars[0].teamNumber === visibleCars[1].teamNumber) {
             visibleCars[0].setVictorySpinning(true);
+            visibleCars[1].setVictorySpinning(true);
+
+            winningCar = visibleCars[0];
+        } else if (visibleCars.length === 1) {
+            visibleCars[0].setVictorySpinning(true);
+            winningCar = visibleCars[0];
+        }
+
+        if (winningCar) {
+            this.victorySpinning = true;
 
             if (this.playerCount === 2) {
-                this.score.awardTwoPlayerPointToPlayer(visibleCars[0].playerNumber);
+                this.score.awardTwoPlayerPointToPlayer(winningCar.playerNumber);
+            } else if (this.teams) {
+                this.score.awardTwoPlayerPointToPlayer(winningCar.teamNumber);
             }
 
             if (this.score.getWinner() === false) {
                 window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), 2500);
+            } else {
+                window.setTimeout(_.bind(this.reload, this), 5000);
             }
         }
     }
@@ -491,6 +522,8 @@ TrackLoaderState.prototype.moveCarToLastActivatedMarker = function(car)
 
 TrackLoaderState.prototype.resetAllCarsToLastMarker = function()
 {
+    this.victorySpinning = false;
+
     _.each(this.cars, function(car, i) {
         car.visible = true;
         car.setVictorySpinning(false);
@@ -531,7 +564,8 @@ TrackLoaderState.prototype.selectTrack = function(trackTheme, trackName)
                 data,
                 {
                     playerCount : state.playerCount,
-                    debug       : state.debug
+                    debug       : state.debug,
+                    teams       : state.teams
                 }
             ),
             true
@@ -554,17 +588,26 @@ TrackLoaderState.prototype.changeDebugMode = function(value)
     }
 };
 
-TrackLoaderState.prototype.changeNumberOfPlayers = function(value)
+TrackLoaderState.prototype.changeNumberOfPlayers = function(value, teams)
 {
-    this.playerCount = value;
+    teams = _(teams).isUndefined() ? false : teams;
 
+    this.playerCount = value;
+    this.teams       = teams;
+
+    this.reload();
+};
+
+TrackLoaderState.prototype.reload = function()
+{
     this.game.state.add(
         'track-loader',
         new TrackLoaderState(
             this.trackData,
             {
                 playerCount : this.playerCount,
-                debug       : this.debug
+                debug       : this.debug,
+                teams       : this.teams
             }
         ),
         true

@@ -1,11 +1,17 @@
 'use strict';
 
-var CarSprite        = require('./car');
-var playerColorNames = require('../player-color-names');
+var CarSprite            = require('./car');
+var playerColorNames     = require('../player-color-names');
+var teamPlayerColorNames = require('../team-player-color-names');
+var _                    = require('underscore');
 
-var CarFactory = function(state)
+var CarFactory = function(state, options)
 {
+    options = options || {};
+    _(options).defaults({teams : false});
+
     this.state = state;
+    this.teams = options.teams;
 };
 
 CarFactory.prototype.vehicleName = 'car';
@@ -20,10 +26,16 @@ CarFactory.prototype.loadAssets = function()
 
 CarFactory.prototype.getSpritePath = function(player)
 {
+    var colorNames;
+
+    colorNames = this.teams ? teamPlayerColorNames : playerColorNames;
+
+    console.log('colorNames', colorNames);
+
     return (
         'assets/img/vehicles/' +
         this.vehicleName + '/' +
-        playerColorNames[player] + '-' +
+        colorNames[player] + '-' +
         this.vehicleName + '.png'
     );
 };

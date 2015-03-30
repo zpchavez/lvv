@@ -58,9 +58,19 @@ module.exports = React.createClass({
 
     selectNumberOfPlayers : function(event)
     {
-        var playerCount = parseInt(event.currentTarget.value, 10);
+        var playerCount, value, teams;
 
-        this.props.onChangeNumberOfPlayers(playerCount);
+        value = event.currentTarget.value;
+
+        if (value === 'teams') {
+            playerCount = 4;
+            teams       = true;
+        } else {
+            playerCount = parseInt(value, 10);
+            teams       = false;
+        }
+
+        this.props.onChangeNumberOfPlayers(playerCount, teams);
 
         this.setState({playerCount : playerCount});
     },
@@ -129,6 +139,7 @@ module.exports = React.createClass({
                         <option value={2}>2</option>
                         <option value={3}>3</option>
                         <option value={4}>4</option>
+                        <option value='teams'>4 Teams</option>
                     </select>
                 </div>
                 <div>
