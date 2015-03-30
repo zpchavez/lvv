@@ -12,21 +12,27 @@ var Score           = require('../score');
 var _               = require('underscore');
 var util            = require('../../util');
 
-var TrackLoaderState = function(trackData, playerCount, debug)
+var TrackLoaderState = function(trackData, options)
 {
+    options = options || {};
+    _(options).defaults({
+        debug       : false,
+        playerCount : 1
+    });
+
     this.trackData = trackData;
 
-    this.debug = _(debug).isUndefined() ? false : debug;
+    this.debug = options.debug;
 
     Phaser.State.apply(this, arguments);
 
     this.carFactory      = new CarFactory(this);
     this.obstacleFactory = new ObstacleFactory(this);
     this.track           = new Track(this);
-    this.score           = new Score(this, playerCount);
+    this.score           = new Score(this, options.playerCount);
     this.track.setDebug(this.debug);
     this.lapNumber = 1;
-    this.playerCount = playerCount || 1;
+    this.playerCount = options.playerCount || 1;
 };
 
 TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
@@ -519,7 +525,17 @@ TrackLoaderState.prototype.selectTrack = function(trackTheme, trackName)
     var callback, trackLoader, state = this;
 
     callback = function(data) {
-        state.game.state.add('track-loader', new TrackLoaderState(data, state.playerCount, state.debug), true);
+        state.game.state.add(
+            'track-loader',
+            new TrackLoaderState(
+                data,
+                {
+                    playerCount : state.playerCount,
+                    debug       : state.debug
+                }
+            ),
+            true
+        );
     };
 
     trackLoader = new TrackLoader(this.load);
@@ -544,7 +560,14 @@ TrackLoaderState.prototype.changeNumberOfPlayers = function(value)
 
     this.game.state.add(
         'track-loader',
-        new TrackLoaderState(this.trackData, this.playerCount, this.debug), true
+        new TrackLoaderState(
+            this.trackData,
+            {
+                playerCount : this.playerCount,
+                debug       : this.debug
+            }
+        ),
+        true
     );
 };
 
