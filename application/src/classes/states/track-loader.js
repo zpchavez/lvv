@@ -542,15 +542,10 @@ TrackLoaderState.prototype.changeNumberOfPlayers = function(value)
 {
     this.playerCount = value;
 
-    _.each(this.cars, function(car) {
-        car.destroy();
-    });
-
-    this.createStartingPointVectors();
-    this.initPlayers();
-
-    this.score.reset(this.playerCount);
-    this.score.show();
+    this.game.state.add(
+        'track-loader',
+        new TrackLoaderState(this.trackData, this.playerCount, this.debug), true
+    );
 };
 
 TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
