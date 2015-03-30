@@ -140,7 +140,8 @@ TrackLoaderState.prototype.initPlayers = function()
         ));
     }
 
-    _.each(this.cars, function(car) {
+    _.each(this.cars, function(car, index) {
+        car.playerNumber = index;
         car.body.angle = this.startingPoint[2];
         this.game.world.addChild(car);
         car.bringToTop();
@@ -267,7 +268,14 @@ TrackLoaderState.prototype.update = function()
 
         if (visibleCars.length === 1 && ! visibleCars[0].victorySpinning) {
             visibleCars[0].setVictorySpinning(true);
-            window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), 2500);
+
+            if (this.playerCount === 2) {
+                this.score.awardTwoPlayerPointToPlayer(visibleCars[0].playerNumber);
+            }
+
+            if (this.score.getWinner() === false) {
+                window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), 2500);
+            }
         }
     }
 

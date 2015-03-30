@@ -64,4 +64,41 @@ Score.prototype.show = function()
     }
 };
 
+Score.prototype.awardTwoPlayerPointToPlayer = function(player)
+{
+    var otherPlayer, spriteIndexToChange;
+
+    if (player !== 0 && player !== 1) {
+        throw new Error('Invalid player number');
+    }
+
+    otherPlayer = (player === 0) ? 1 : 0;
+
+    if (this.playerScores[player] === 8) {
+        throw new Error('Score cannot exceed 8');
+    }
+
+    this.playerScores[player]      += 1;
+    this.playerScores[otherPlayer] -= 1;
+
+    if (player === 0) {
+        spriteIndexToChange = this.playerScores[0] - 1;
+    } else {
+        spriteIndexToChange = this.playerScores[0];
+    }
+
+    this.twoPlayerSprites[spriteIndexToChange].frame = player;
+};
+
+Score.prototype.getWinner = function()
+{
+    for (var i = 0; i <= 8; i += 1) {
+        if (this.playerScores[i] >= 8) {
+            return i;
+        }
+    }
+
+    return false;
+};
+
 module.exports = Score;
