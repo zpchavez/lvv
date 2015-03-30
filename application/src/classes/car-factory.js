@@ -1,17 +1,11 @@
 'use strict';
 
-var CarSprite = require('./car');
+var CarSprite        = require('./car');
+var playerColorNames = require('../player-color-names');
 
 var CarFactory = function(state)
 {
     this.state = state;
-
-    this.playerColorNames = [
-        'blue',
-        'red',
-        'yellow',
-        'green'
-    ];
 };
 
 CarFactory.prototype.vehicleName = 'car';
@@ -29,7 +23,7 @@ CarFactory.prototype.getSpritePath = function(player)
     return (
         'assets/img/vehicles/' +
         this.vehicleName + '/' +
-        this.playerColorNames[player] + '-' +
+        playerColorNames[player] + '-' +
         this.vehicleName + '.png'
     );
 };

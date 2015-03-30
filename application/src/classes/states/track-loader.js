@@ -8,6 +8,7 @@ var ObstacleFactory = require('../obstacles/obstacle-factory');
 var Track           = require('../track');
 var TrackSelector   = require('../../components/track-selector');
 var TrackLoader     = require('../track-loader');
+var Score           = require('../score');
 var _               = require('underscore');
 var util            = require('../../util');
 
@@ -22,6 +23,7 @@ var TrackLoaderState = function(trackData, playerCount, debug)
     this.carFactory      = new CarFactory(this);
     this.obstacleFactory = new ObstacleFactory(this);
     this.track           = new Track(this);
+    this.score           = new Score(this, playerCount);
     this.track.setDebug(this.debug);
     this.lapNumber = 1;
     this.playerCount = playerCount || 1;
@@ -35,6 +37,7 @@ TrackLoaderState.prototype.preload = function()
 
     this.carFactory.loadAssets();
     this.track.loadAssets();
+    this.score.loadAssets();
 
     this.load.tilemap(
         'track',
@@ -64,6 +67,7 @@ TrackLoaderState.prototype.create = function()
     this.initTrack();
     this.createStartingPointVectors();
     this.initPlayers();
+    this.initScore();
     this.initInputs();
 
     this.showLapCounter();
@@ -76,7 +80,7 @@ TrackLoaderState.prototype.create = function()
 
 TrackLoaderState.prototype.initTrack = function()
 {
-    var backgroundLayer, dropsLayer, state = this;
+    var backgroundLayer, state = this;
 
     this.map = this.game.add.tilemap('track');
 
@@ -144,6 +148,11 @@ TrackLoaderState.prototype.initPlayers = function()
         car.body.setCollisionGroup(this.collisionGroup);
         car.body.collides(this.collisionGroup);
     }, this);
+};
+
+TrackLoaderState.prototype.initScore = function()
+{
+    this.score.show();
 };
 
 TrackLoaderState.prototype.initInputs = function()
@@ -531,6 +540,9 @@ TrackLoaderState.prototype.changeNumberOfPlayers = function(value)
 
     this.createStartingPointVectors();
     this.initPlayers();
+
+    this.score.reset(this.playerCount);
+    this.score.show();
 };
 
 TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
