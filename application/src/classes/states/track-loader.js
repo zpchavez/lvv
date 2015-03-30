@@ -1,17 +1,17 @@
 /* globals window */
 'use strict';
 
-var _               = require('underscore');
 var Phaser          = require('phaser');
 var React           = require('react');
-var CarFactory      = require('../objects/car-factory');
-var ObstacleFactory = require('../objects/obstacles/obstacle-factory');
-var Track           = require('../objects/track');
-var TrackSelector   = require('../components/track-selector');
-var TrackLoader     = require('../objects/track-loader');
-var util            = require('../util');
+var CarFactory      = require('../car-factory');
+var ObstacleFactory = require('../obstacles/obstacle-factory');
+var Track           = require('../track');
+var TrackSelector   = require('../../components/track-selector');
+var TrackLoader     = require('../track-loader');
+var _               = require('underscore');
+var util            = require('../../util');
 
-var TrackLoaderState = function(trackData, debug)
+var TrackLoaderState = function(trackData, playerCount, debug)
 {
     this.trackData = trackData;
 
@@ -24,7 +24,7 @@ var TrackLoaderState = function(trackData, debug)
     this.track           = new Track(this);
     this.track.setDebug(this.debug);
     this.lapNumber = 1;
-    this.playerCount = 1;
+    this.playerCount = playerCount || 1;
 };
 
 TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
@@ -47,8 +47,18 @@ TrackLoaderState.prototype.preload = function()
     this.trackData.tilesets.forEach(function (tileset) {
         state.load.image(
             tileset.name,
-            tileset.imagePath
+            tileset.imageUrl
         );
+    });
+
+    // Load image layer assets
+    this.trackData.layers.forEach(function (layer) {
+        if (layer.type === 'imagelayer') {
+            state.load.image(
+                layer.name,
+                layer.imageUrl
+            );
+        }
     });
 
     this.obstacleFactory.loadAssets(_.keys(this.trackData.placedObjectClasses));
@@ -76,7 +86,7 @@ TrackLoaderState.prototype.create = function()
 
 TrackLoaderState.prototype.initTrack = function()
 {
-    var backgroundLayer, dropsLayer, state = this;
+    var backgroundLayer, state = this;
 
     this.map = this.game.add.tilemap('track');
 
@@ -91,11 +101,11 @@ TrackLoaderState.prototype.initTrack = function()
     this.collisionGroup = this.game.physics.p2.createCollisionGroup();
     this.game.physics.p2.updateBoundsCollisionGroup();
 
-    // Init drop layer
-    if (this.map.getLayerIndex('drops')) {
-        dropsLayer = this.map.createLayer('drops');
-        dropsLayer.visible = false;
-    }
+    this.trackData.layers.forEach(function (layer) {
+        if (layer.type === 'imagelayer') {
+            state.game.add.sprite(layer.x, layer.y, layer.name);
+        }
+    });
 
     this.placeTrackMarkers();
 
@@ -508,7 +518,7 @@ TrackLoaderState.prototype.selectTrack = function(trackTheme, trackName)
     var callback, trackLoader, state = this;
 
     callback = function(data) {
-        state.game.state.add('track-loader', new TrackLoaderState(data, state.debug), true);
+        state.game.state.add('track-loader', new TrackLoaderState(data, state.playerCount, state.debug), true);
     };
 
     trackLoader = new TrackLoader(this.load);

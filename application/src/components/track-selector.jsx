@@ -1,7 +1,7 @@
 'use strict';
 
 var React     = require('react');
-var trackList = require('../../assets/tilemaps/maps/list');
+var trackList = require('../track-list');
 var _         = require('underscore');
 
 module.exports = React.createClass({
@@ -15,28 +15,50 @@ module.exports = React.createClass({
 
     getInitialState : function()
     {
+        var initialTheme = _(trackList).keys()[0];
+
         return {
-            selectedTheme : _(trackList).keys()[0]
+            selectedTheme : initialTheme,
+            selectedTrack : _(trackList[initialTheme]).keys()[0],
+            playerCount   : 1
         };
     },
 
     selectTheme : function(event)
     {
-        this.setState({
-            selectedTheme : event.currentTarget.value
-        });
+        var selectedTheme, selectedTrack;
+
+        selectedTheme = event.currentTarget.value;
+        selectedTrack = _(trackList[selectedTheme]).keys()[0];
 
         this.props.onSelectTrack(
-            event.currentTarget.value,
-            _(trackList[event.currentTarget.value]).keys()[0]
+            selectedTheme,
+            selectedTrack
         );
+
+        this.setState({
+            selectedTheme : selectedTheme,
+            selectedTrack : selectedTrack
+        });
     },
 
     selectTrack : function(event)
     {
+        var selectedTrack = event.currentTarget.value;
+
         this.props.onSelectTrack(
             this.state.selectedTheme,
-            event.currentTarget.value
+            selectedTrack
+        );
+
+        this.setState({selectedTrack : selectedTrack});
+    },
+
+    restart : function(event)
+    {
+        this.props.onSelectTrack(
+            this.state.selectedTheme,
+            this.state.selectedTrack
         );
     },
 
@@ -49,9 +71,11 @@ module.exports = React.createClass({
 
     selectNumberOfPlayers : function(event)
     {
-        this.props.onChangeNumberOfPlayers(
-            parseInt(event.currentTarget.value, 10)
-        );
+        var playerCount = parseInt(event.currentTarget.value, 10);
+
+        this.props.onChangeNumberOfPlayers(playerCount);
+
+        this.setState({playerCount : playerCount});
     },
 
     renderThemeSelector : function()
@@ -112,13 +136,16 @@ module.exports = React.createClass({
                     </select>
                 </div>
                 <div>
-                    <label htmlFor="numPlayers">Number of Players</label>
-                    <select id="numPlayers" onChange={this.selectNumberOfPlayers}>
+                    <label htmlFor="playerCount">Number of Players</label>
+                    <select id="playerCount" onChange={this.selectNumberOfPlayers}>
                         <option value={1}>1</option>
                         <option value={2}>2</option>
                         <option value={3}>3</option>
                         <option value={4}>4</option>
                     </select>
+                </div>
+                <div>
+                    <button onClick={this.restart}>Restart</button>
                 </div>
             </div>
         );

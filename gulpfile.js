@@ -1,24 +1,30 @@
 'use strict';
 
-var gulp        = require('gulp'),
-    gutil       = require('gulp-util'),
-    rimraf      = require('gulp-rimraf'),
-    rename      = require('gulp-rename'),
-    minifycss   = require('gulp-minify-css'),
-    minifyhtml  = require('gulp-minify-html'),
-    processhtml = require('gulp-processhtml'),
-    jshint      = require('gulp-jshint'),
-    streamify   = require('gulp-streamify'),
-    uglify      = require('gulp-uglify'),
-    connect     = require('gulp-connect'),
-    source      = require('vinyl-source-stream'),
-    browserify  = require('browserify'),
-    reactify    = require('reactify'),
-    watchify    = require('watchify'),
-    gulpif      = require('gulp-if'),
-    paths;
+var browserify  = require('browserify');
+var connect     = require('gulp-connect');
+var del         = require('del');
+var glob        = require('glob');
+var gulp        = require('gulp');
+var gulpif      = require('gulp-if');
+var gutil       = require('gulp-util');
+var jshint      = require('gulp-jshint');
+var minifycss   = require('gulp-minify-css');
+var minifyhtml  = require('gulp-minify-html');
+var processhtml = require('gulp-processhtml');
+var proxyquire  = require('proxyquireify');
+var reactify    = require('reactify');
+var rename      = require('gulp-rename');
+var rimraf      = require('gulp-rimraf');
+var source      = require('vinyl-source-stream');
+var streamify   = require('gulp-streamify');
+var uglify      = require('gulp-uglify');
+var watchify    = require('watchify');
 
+var paths;
 var watching = false;
+
+require('./gulp-tasks/connect');
+require('./gulp-tasks/preprocess');
 
 paths = {
     assets: [
@@ -31,9 +37,14 @@ paths = {
     libs:   [
         './node_modules/phaser/build/phaser.js'
     ],
-    js:     ['application/src/*.js', 'application/src/**/*.js', 'application/src/components/**/*.jsx'],
+    js: [
+        'application/src/*.js',
+        'application/src/**/*.js',
+        'application/src/components/**/*.jsx'
+    ],
     entry: './application/src/main.js',
-    dist:   './build/'
+    dist: './build/',
+    testBuild : './test'
 };
 
 gulp.task('clean', function () {
@@ -83,6 +94,40 @@ gulp.task('compile', ['clean'], function () {
     return bundlee();
 });
 
+gulp.task('compile:test', ['clean'], function () {
+    var path = gutil.env.path || './__tests__/**/*.js*';
+    var entries = glob.sync(path);
+
+    var bundler = browserify({
+        cache        : {},
+        packageCache : {},
+        fullPaths    : true,
+        entries      : entries,
+        extensions   : ['.js'],
+        debug        : watching
+    })
+    .plugin(proxyquire.plugin)
+    .transform(reactify);
+
+    var bundlee = function() {
+        return bundler
+            .bundle()
+            .pipe(source('tests.js'))
+            .pipe(jshint('.jshintrc'))
+            .pipe(jshint.reporter('default'))
+            .pipe(gulpif(!watching, streamify(uglify({outSourceMaps: false}))))
+            .pipe(gulp.dest(paths.testBuild))
+            .on('error', gutil.log);
+    };
+
+    if (watching) {
+        bundler = watchify(bundler);
+        bundler.on('update', bundlee);
+    }
+
+    return bundlee();
+});
+
 gulp.task('minifycss', ['clean'], function () {
     gulp.src(paths.css)
         .pipe(gulpif(!watching, minifycss({
@@ -114,26 +159,19 @@ gulp.task('html', ['build'], function(){
         .on('error', gutil.log);
 });
 
-gulp.task('connect', function () {
-    connect.server({
-        root: ['./build'],
-        port: 9000,
-        livereload: true
-    });
-});
-
-gulp.task('connect:examples', function() {
-    return connect.server({
-        root       : 'examples/examples',
-        port       : 8000,
-        livereload : false
-    });
-});
-
 gulp.task('watch', function () {
     watching = true;
     return gulp.watch(['./application/index.html', paths.css, paths.js, paths.assets], ['build', 'html']);
 });
 
+gulp.task('delta:test', function() {
+    gulp.watch(['./tests/**/*.html'], ['preprocess:test']);
+});
+
+gulp.task('clean:test', function(cb) {
+    del(['./test'], cb);
+});
+
 gulp.task('default', ['connect', 'watch', 'build']);
 gulp.task('build', ['clean', 'copy', 'copylibs', 'compile', 'minifycss', 'processhtml', 'minifyhtml']);
+gulp.task('test', ['preprocess:test', 'compile:test', 'connect:test', 'delta:test', 'watch']);
