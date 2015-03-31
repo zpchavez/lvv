@@ -26,7 +26,20 @@ module.exports = React.createClass({
 
     selectTheme : function(event)
     {
-        this.setState({selectedTheme : event.currentTarget.value});
+        var selectedTheme, selectedTrack;
+
+        selectedTheme = event.currentTarget.value;
+        selectedTrack = _(trackList[selectedTheme]).keys()[0];
+
+        this.props.onSelectTrack(
+            selectedTheme,
+            selectedTrack
+        );
+
+        this.setState({
+            selectedTheme : selectedTheme,
+            selectedTrack : selectedTrack
+        });
     },
 
     selectTrack : function(event)

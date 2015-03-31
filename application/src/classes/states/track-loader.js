@@ -64,8 +64,18 @@ TrackLoaderState.prototype.preload = function()
     this.trackData.tilesets.forEach(function (tileset) {
         state.load.image(
             tileset.name,
-            tileset.imagePath
+            tileset.imageUrl
         );
+    });
+
+    // Load image layer assets
+    this.trackData.layers.forEach(function (layer) {
+        if (layer.type === 'imagelayer') {
+            state.load.image(
+                layer.name,
+                layer.imageUrl
+            );
+        }
     });
 
     this.obstacleFactory.loadAssets(_.keys(this.trackData.placedObjectClasses));
@@ -108,6 +118,12 @@ TrackLoaderState.prototype.initTrack = function()
     // Now that world size is set, we can create the main collision group
     this.collisionGroup = this.game.physics.p2.createCollisionGroup();
     this.game.physics.p2.updateBoundsCollisionGroup();
+
+    this.trackData.layers.forEach(function (layer) {
+        if (layer.type === 'imagelayer') {
+            state.game.add.sprite(layer.x, layer.y, layer.name);
+        }
+    });
 
     this.placeTrackMarkers();
 
