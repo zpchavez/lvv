@@ -96,6 +96,12 @@ describe('TrackAssembler', function () {
                                     }
                                 }
                             ]
+                        },
+                        {
+                            name : 'image',
+                            type : 'imagelayer',
+                            x    : 10,
+                            y    : 20
                         }
                     ]
                 }
@@ -239,6 +245,18 @@ describe('TrackAssembler', function () {
             expect(assembledData.layers[0].height).to.equal(4);
             expect(assembledData.layers[1].width).to.equal(4);
             expect(assembledData.layers[1].height).to.equal(4);
+        });
+
+        it('updates position of imagelayers', function() {
+            var trackAssembler, assembledData;
+
+            trackAssembler = new TrackAssembler(getSegmentDataWithTwoRowsAndTwoColumns());
+            assembledData  = trackAssembler.assemble();
+
+            expect(assembledData.layers[2].x).to.equal(74); // 10 + 64
+            expect(assembledData.layers[2].y).to.equal(20); // 20 + 0
+            expect(assembledData.layers[3].x).to.equal(74); // 10 + 64
+            expect(assembledData.layers[3].y).to.equal(84); // 20 + 64
         });
     });
 });
