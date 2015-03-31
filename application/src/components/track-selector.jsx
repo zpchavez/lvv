@@ -10,7 +10,8 @@ module.exports = React.createClass({
         phaserLoader            : React.PropTypes.object.isRequired,
         onSelectTrack           : React.PropTypes.func.isRequired,
         onChangeDebugMode       : React.PropTypes.func.isRequired,
-        onChangeNumberOfPlayers : React.PropTypes.func.isRequired
+        onChangeNumberOfPlayers : React.PropTypes.func.isRequired,
+        onSelectLaps            : React.PropTypes.func.isRequired
     },
 
     getInitialState : function()
@@ -20,7 +21,8 @@ module.exports = React.createClass({
         return {
             selectedTheme : initialTheme,
             selectedTrack : _(trackList[initialTheme]).keys()[0],
-            playerCount   : 1
+            playerCount   : 1,
+            laps          : 5
         };
     },
 
@@ -88,6 +90,23 @@ module.exports = React.createClass({
         this.setState({playerCount : playerCount});
     },
 
+    selectLaps : function(event)
+    {
+        var stringValue, value;
+
+        stringValue = event.currentTarget.value;
+
+        if (stringValue === 'Infinity') {
+            value = Infinity;
+        } else {
+            value = parseInt(stringValue, 10);
+        }
+
+        this.props.onSelectLaps(value);
+
+        this.setState({laps : value});
+    },
+
     renderThemeSelector : function()
     {
         var themes, options = [];
@@ -153,6 +172,16 @@ module.exports = React.createClass({
                         <option value={3}>3</option>
                         <option value={4}>4</option>
                         <option value='teams'>4 Teams</option>
+                    </select>
+                </div>
+                <div>
+                    <label htmlFor="laps">Laps</label>
+                    <select id="laps" onChange={this.selectLaps} value={this.state.laps}>
+                        <option value={1}>1</option>
+                        <option value={3}>3</option>
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={Infinity}>Unlimited</option>
                     </select>
                 </div>
                 <div>

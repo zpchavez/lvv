@@ -18,7 +18,8 @@ var TrackLoaderState = function(trackData, options)
     _(options).defaults({
         debug       : false,
         playerCount : 1,
-        teams       : false
+        teams       : false,
+        laps        : 5
     });
 
     if (options.teams && options.playerCount !== 4) {
@@ -38,7 +39,10 @@ var TrackLoaderState = function(trackData, options)
     this.teams           = options.teams;
     this.score           = new Score(this, options.teams ? 2 : options.playerCount);
     this.lapNumber       = 1;
+    this.laps            = options.laps;
+    this.raceOver        = false;
     this.playerCount     = options.playerCount || 1;
+    this.suddenDeath     = false;
 
     this.track.setDebug(this.debug);
 };
@@ -242,7 +246,7 @@ TrackLoaderState.prototype.placeTrackMarkers = function()
 
     this.track.loadFromObject(data);
 
-    this.track.setLapCompletedCallback(this.incrementLapCounter, this);
+    this.track.setLapCompletedCallback(this.completeLap, this);
     this.track.setMarkerSkippedCallback(this.moveCarToLastActivatedMarker, this);
 };
 
@@ -300,6 +304,10 @@ TrackLoaderState.prototype.update = function()
         }
     }, this);
 
+    if (this.raceOver) {
+        return;
+    }
+
     if (this.playerCount > 1) {
         visibleCars = _.where(this.cars, {visible : true});
 
@@ -326,7 +334,7 @@ TrackLoaderState.prototype.update = function()
                 this.score.awardTwoPlayerPointToPlayer(winningCar.teamNumber);
             }
 
-            if (this.score.getWinner() === false) {
+            if (this.score.getWinner() === false && ! this.suddenDeath) {
                 window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), 2500);
             } else {
                 window.setTimeout(_.bind(this.regenerate, this), 5000);
@@ -422,8 +430,6 @@ TrackLoaderState.prototype.updateCamera = function()
         averagePlayerPosition[0] = this.track.getLastActivatedMarker().x;
         averagePlayerPosition[1] = this.track.getLastActivatedMarker().y;
     }
-
-
 
     this.easeCamera(averagePlayerPosition[0], averagePlayerPosition[1]);
 
@@ -565,10 +571,39 @@ TrackLoaderState.prototype.showLapCounter = function()
     this.lapDisplay.fixedToCamera = true;
 };
 
-TrackLoaderState.prototype.incrementLapCounter = function()
+TrackLoaderState.prototype.completeLap = function()
 {
-    this.lapNumber += 1;
-    this.lapDisplay.setText('Lap ' + this.lapNumber);
+    var leaders;
+
+    if (this.lapNumber === this.laps) {
+        leaders = this.score.getLeaders();
+
+        // Eliminate non-leaders
+        this.cars.map(function (car, index) {
+            if (! _(leaders).contains(index)) {
+                car.visible = false;
+            }
+            return car;
+        });
+
+        if (leaders.length === 1) {
+            this.cars[leaders[0]].setVictorySpinning(true);
+            this.raceOver = true;
+        } else if (leaders.length === 2 && this.teams && this.cars[leaders[0].teamNumber === this.cars[leaders[1].teamNumber]]) {
+            this.cars[leaders[0]].setVictorySpinning(true);
+            this.cars[leaders[1]].setVictorySpinning(true);
+            this.raceOver = true;
+        } else {
+            this.suddenDeath = true;
+        }
+    }
+
+    if (this.raceOver) {
+        window.setTimeout(_.bind(this.regenerate, this), 5000);
+    } else {
+        this.lapNumber += 1;
+        this.lapDisplay.setText('Lap ' + this.lapNumber);
+    }
 };
 
 TrackLoaderState.prototype.selectTrack = function(trackTheme, trackName)
@@ -583,7 +618,8 @@ TrackLoaderState.prototype.selectTrack = function(trackTheme, trackName)
                 {
                     playerCount : state.playerCount,
                     debug       : state.debug,
-                    teams       : state.teams
+                    teams       : state.teams,
+                    laps        : state.laps
                 }
             ),
             true
@@ -616,6 +652,11 @@ TrackLoaderState.prototype.changeNumberOfPlayers = function(value, teams)
     this.reload();
 };
 
+TrackLoaderState.prototype.setLaps = function(laps)
+{
+    this.laps = laps;
+};
+
 TrackLoaderState.prototype.reload = function()
 {
     this.game.state.add(
@@ -625,7 +666,8 @@ TrackLoaderState.prototype.reload = function()
             {
                 playerCount : this.playerCount,
                 debug       : this.debug,
-                teams       : this.teams
+                teams       : this.teams,
+                laps        : this.laps
             }
         ),
         true
@@ -647,7 +689,8 @@ TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
             phaserLoader            : this.load,
             onSelectTrack           : this.selectTrack.bind(this),
             onChangeDebugMode       : this.changeDebugMode.bind(this),
-            onChangeNumberOfPlayers : this.changeNumberOfPlayers.bind(this)
+            onChangeNumberOfPlayers : this.changeNumberOfPlayers.bind(this),
+            onSelectLaps            : this.setLaps.bind(this)
         }),
         window.document.getElementById('content')
     );

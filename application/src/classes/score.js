@@ -101,4 +101,19 @@ Score.prototype.getWinner = function()
     return false;
 };
 
+Score.prototype.getLeaders = function()
+{
+    var topScore, leaderIndexes = [];
+
+    topScore = Math.max.apply(null, this.playerScores);
+
+    this.playerScores.forEach(function (score, player) {
+        if (score === topScore) {
+            leaderIndexes.push(player);
+        }
+    });
+
+    return leaderIndexes;
+};
+
 module.exports = Score;
