@@ -30,8 +30,6 @@ CarFactory.prototype.getSpritePath = function(player)
 
     colorNames = this.teams ? teamPlayerColorNames : playerColorNames;
 
-    console.log('colorNames', colorNames);
-
     return (
         'assets/img/vehicles/' +
         this.vehicleName + '/' +

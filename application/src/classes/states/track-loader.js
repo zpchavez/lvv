@@ -329,7 +329,7 @@ TrackLoaderState.prototype.update = function()
             if (this.score.getWinner() === false) {
                 window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), 2500);
             } else {
-                window.setTimeout(_.bind(this.reload, this), 5000);
+                window.setTimeout(_.bind(this.regenerate, this), 5000);
             }
         }
     }
@@ -632,9 +632,17 @@ TrackLoaderState.prototype.reload = function()
     );
 };
 
+TrackLoaderState.prototype.regenerate = function()
+{
+    this.selectTrack(
+        this.trackSelector.state.selectedTheme,
+        this.trackSelector.state.selectedTrack
+    );
+};
+
 TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
 {
-    React.render(
+    this.trackSelector = React.render(
         React.createElement(TrackSelector, {
             phaserLoader            : this.load,
             onSelectTrack           : this.selectTrack.bind(this),
