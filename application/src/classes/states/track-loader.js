@@ -120,8 +120,10 @@ TrackLoaderState.prototype.initTrack = function()
     this.game.physics.p2.updateBoundsCollisionGroup();
 
     this.trackData.layers.forEach(function (layer) {
+        var sprite;
         if (layer.type === 'imagelayer') {
-            state.game.add.sprite(layer.x, layer.y, layer.name);
+            sprite = state.game.add.sprite(layer.x, layer.y, layer.name);
+            sprite.alpha = layer.opacity;
         }
     });
 
