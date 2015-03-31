@@ -589,7 +589,7 @@ TrackLoaderState.prototype.completeLap = function()
         if (leaders.length === 1) {
             this.cars[leaders[0]].setVictorySpinning(true);
             this.raceOver = true;
-        } else if (leaders.length === 2 && this.teams && this.cars[leaders[0].teamNumber === this.cars[leaders[1].teamNumber]]) {
+        } else if (leaders.length === 2 && this.teams && this.cars[leaders[0]].teamNumber === this.cars[leaders[1]].teamNumber) {
             this.cars[leaders[0]].setVictorySpinning(true);
             this.cars[leaders[1]].setVictorySpinning(true);
             this.raceOver = true;
