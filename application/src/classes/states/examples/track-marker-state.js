@@ -1,8 +1,8 @@
 'use strict';
 
 var Phaser     = require('phaser');
-var CarFactory = require('../objects/car-factory');
-var Track      = require('../objects/track');
+var CarFactory = require('../../car-factory');
+var Track      = require('../../track');
 
 var TrackMarkerState = function()
 {
