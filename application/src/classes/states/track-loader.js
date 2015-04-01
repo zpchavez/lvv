@@ -339,7 +339,7 @@ TrackLoaderState.prototype.update = function()
                 window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), 2500);
             } else {
                 this.showMessage(
-                    playerColorNames[this.score.getWinner()].concat(' WINS!').toUpperCase(),
+                    playerColorNames[this.score.getWinner()].toUpperCase().concat(' WINS!'),
                     {showFor : 5000}
                 );
                 window.setTimeout(_.bind(this.regenerate, this), 5000);

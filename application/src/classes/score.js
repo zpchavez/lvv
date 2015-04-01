@@ -4,7 +4,8 @@ var Score = function(state, playerCount)
 {
     this.state = state;
 
-    this.twoPlayerSprites = [];
+    this.twoPlayerSprites   = [];
+    this.multiplayerSprites = [[], [], [], []];
 
     this.reset(playerCount);
 };
@@ -37,12 +38,15 @@ Score.prototype.reset = function(playerCount)
 
 Score.prototype.show = function()
 {
+    var yPos, xPos, spriteCount;
+
     if (this.playerCount === 1) {
         return;
     }
 
     if (this.playerCount === 2) {
-        var yPos = 60, spriteCount = 0;
+        yPos        = 60;
+        spriteCount = 0;
 
         for (var p1Point = 0; p1Point < this.playerScores[0]; p1Point += 1) {
             this.twoPlayerSprites[spriteCount] = this.state.add.sprite(20, yPos, 'score-markers');
@@ -60,6 +64,19 @@ Score.prototype.show = function()
 
             yPos += 20;
             spriteCount += 1;
+        }
+    } else {
+        for (var i = 0; i < this.playerCount; i += 1) {
+            yPos = 60;
+            xPos = 30 * (i + 1);
+
+            for (var p = 0; p < 8; p += 1) {
+                this.multiplayerSprites[i][p] = this.state.add.sprite(xPos, yPos, 'score-markers');
+                this.multiplayerSprites[i][p].frame = 4;
+                this.multiplayerSprites[i][p].fixedToCamera = true;
+
+                yPos += 20;
+            }
         }
     }
 };
