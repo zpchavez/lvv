@@ -564,8 +564,10 @@ TrackLoaderState.prototype.showLapCounter = function()
         20,
         'Lap ' + this.lapNumber,
         {
-            font: "22px Arial",
-            fill: "#ffffff"
+            font            : "22px Arial",
+            fill            : "#ffffff",
+            stroke          : '#000000',
+            strokeThickness : 3
         }
     );
     this.lapDisplay.fixedToCamera = true;
