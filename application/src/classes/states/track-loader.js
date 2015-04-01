@@ -13,6 +13,9 @@ var _                = require('underscore');
 var util             = require('../../util');
 var playerColorNames = require('../../player-color-names');
 
+var NEXT_GAME_DELAY  = 5000;
+var NEXT_ROUND_DELAY = 2500;
+
 var TrackLoaderState = function(trackData, options)
 {
     options = options || {};
@@ -344,15 +347,15 @@ TrackLoaderState.prototype.update = function()
 
             if (this.score.getWinner() === false && ! this.suddenDeath) {
                 this.eliminationStack = [];
-                window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), 2500);
+                window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), NEXT_ROUND_DELAY);
             } else {
                 this.showMessage(
                     playerColorNames[this.teams ? winningCar.teamNumber : winningCar.playerNumber]
                         .toUpperCase()
                         .concat(' WINS!'),
-                    {showFor : 5000}
+                    {showFor : NEXT_GAME_DELAY}
                 );
-                window.setTimeout(_.bind(this.regenerate, this), 5000);
+                window.setTimeout(_.bind(this.regenerate, this), NEXT_GAME_DELAY);
             }
         }
     }
@@ -651,7 +654,7 @@ TrackLoaderState.prototype.completeLap = function()
     }
 
     if (this.raceOver) {
-        window.setTimeout(_.bind(this.regenerate, this), 5000);
+        window.setTimeout(_.bind(this.regenerate, this), NEXT_GAME_DELAY);
     } else {
         this.lapNumber += 1;
         this.lapDisplay.setText('Lap ' + this.lapNumber);

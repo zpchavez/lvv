@@ -1,5 +1,7 @@
 'use strict';
 
+var UNAWARDED_POINT_FRAME = 4;
+
 var Score = function(state, playerCount)
 {
     this.state = state;
@@ -44,44 +46,44 @@ Score.prototype.reset = function(playerCount)
 
 Score.prototype.show = function()
 {
-    var yPos, xPos, spriteCount;
+    var y, x, spriteCount;
 
     if (this.playerCount === 1) {
         return;
     }
 
     if (this.playerCount === 2) {
-        yPos        = 60;
+        y        = 60;
         spriteCount = 0;
 
         for (var p1Point = 0; p1Point < this.playerScores[0]; p1Point += 1) {
-            this.twoPlayerSprites[spriteCount] = this.state.add.sprite(20, yPos, 'score-markers');
+            this.twoPlayerSprites[spriteCount] = this.state.add.sprite(20, y, 'score-markers');
             this.twoPlayerSprites[spriteCount].frame = 0;
             this.twoPlayerSprites[spriteCount].fixedToCamera = true;
 
-            yPos += 20;
+            y += 20;
             spriteCount += 1;
         }
 
         for (var p2Point = 0; p2Point < this.playerScores[1]; p2Point += 1) {
-            this.twoPlayerSprites[spriteCount] = this.state.add.sprite(20, yPos, 'score-markers');
+            this.twoPlayerSprites[spriteCount] = this.state.add.sprite(20, y, 'score-markers');
             this.twoPlayerSprites[spriteCount].frame = 1;
             this.twoPlayerSprites[spriteCount].fixedToCamera = true;
 
-            yPos += 20;
+            y += 20;
             spriteCount += 1;
         }
     } else {
         for (var i = 0; i < this.playerCount; i += 1) {
-            yPos = 60;
-            xPos = 30 * (i + 1);
+            y = 60;
+            x = 30 * (i + 1);
 
             for (var p = 7; p >= 0; p -= 1) {
-                this.freeForAllSprites[i][p] = this.state.add.sprite(xPos, yPos, 'score-markers');
-                this.freeForAllSprites[i][p].frame = 4;
+                this.freeForAllSprites[i][p] = this.state.add.sprite(x, y, 'score-markers');
+                this.freeForAllSprites[i][p].frame = UNAWARDED_POINT_FRAME;
                 this.freeForAllSprites[i][p].fixedToCamera = true;
 
-                yPos += 20;
+                y += 20;
             }
         }
     }
@@ -142,7 +144,7 @@ Score.prototype.awardPointsForFreeForAll = function(playerStack)
     // Redraw score
     for (var i = 0; i < this.playerCount; i += 1) {
         for (var p = 7; p >= 0; p -= 1) {
-            this.freeForAllSprites[i][p].frame = (this.playerScores[i] > p) ? i : 4;
+            this.freeForAllSprites[i][p].frame = (this.playerScores[i] > p) ? i : UNAWARDED_POINT_FRAME;
         }
     }
 };
