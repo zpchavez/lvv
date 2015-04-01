@@ -571,6 +571,40 @@ TrackLoaderState.prototype.showLapCounter = function()
     this.lapDisplay.fixedToCamera = true;
 };
 
+TrackLoaderState.prototype.showMessage = function(text, options)
+{
+    options = options || {};
+
+    _(options).defaults({
+        showFor         : 3000,
+        font            : '42px Arial',
+        fill            : '#ffffff',
+        stroke          : '#000000',
+        strokeThickness : 5
+    });
+
+    this.message = this.game.add.text(
+        this.game.width / 2,
+        this.game.height / 2,
+        text,
+        {
+            font            : options.font,
+            fill            : options.fill,
+            stroke          : options.stroke,
+            strokeThickness : options.strokeThickness
+        }
+    );
+    this.message.fixedToCamera = true;
+    this.message.anchor.setTo(0.5, 0.5);
+
+    if (options.showFor) {
+        window.setTimeout(
+            this.message.destroy.bind(this.message),
+            options.showFor
+        );
+    }
+};
+
 TrackLoaderState.prototype.completeLap = function()
 {
     var leaders;
