@@ -4,8 +4,8 @@ var Score = function(state, playerCount)
 {
     this.state = state;
 
-    this.twoPlayerSprites   = [];
-    this.multiplayerSprites = [[], [], [], []];
+    this.twoPlayerSprites  = [];
+    this.freeForAllSprites = [[], [], [], []];
 
     this.reset(playerCount);
 };
@@ -33,6 +33,12 @@ Score.prototype.reset = function(playerCount)
 
     this.twoPlayerSprites.forEach(function (sprite) {
         sprite.destroy();
+    });
+
+    this.freeForAllSprites.forEach(function (playerSprites) {
+        playerSprites.forEach(function (sprite) {
+            sprite.destroy();
+        });
     });
 };
 
@@ -70,10 +76,10 @@ Score.prototype.show = function()
             yPos = 60;
             xPos = 30 * (i + 1);
 
-            for (var p = 0; p < 8; p += 1) {
-                this.multiplayerSprites[i][p] = this.state.add.sprite(xPos, yPos, 'score-markers');
-                this.multiplayerSprites[i][p].frame = 4;
-                this.multiplayerSprites[i][p].fixedToCamera = true;
+            for (var p = 7; p >= 0; p -= 1) {
+                this.freeForAllSprites[i][p] = this.state.add.sprite(xPos, yPos, 'score-markers');
+                this.freeForAllSprites[i][p].frame = 4;
+                this.freeForAllSprites[i][p].fixedToCamera = true;
 
                 yPos += 20;
             }
@@ -105,6 +111,40 @@ Score.prototype.awardTwoPlayerPointToPlayer = function(player)
     }
 
     this.twoPlayerSprites[spriteIndexToChange].frame = player;
+};
+
+
+/**
+ *  playerStack is an array specifying the order in which players were eliminated,
+ *  with the last value in the stack being the player who won
+ *  e.g. [1, 2, 3, 0] means that player one came in first, player four came in second,
+ *  player three came in third, and player two came in last.
+ *
+ * @param  {Array} playerStack
+ */
+Score.prototype.awardPointsForFreeForAll = function(playerStack)
+{
+    if (playerStack.length === 3) {
+        this.playerScores[playerStack[0]] -= 2; // Last place
+        this.playerScores[playerStack[2]] += 2; // First place
+    } else {
+        this.playerScores[playerStack[0]] -= 2; // Last place
+        this.playerScores[playerStack[1]] -= 1; // Third place
+        this.playerScores[playerStack[2]] += 1; // Second place
+        this.playerScores[playerStack[3]] += 2; // First place
+    }
+
+    // Don't allow negative scores
+    this.playerScores = this.playerScores.map(function (score) {
+        return Math.max(0, score);
+    });
+
+    // Redraw score
+    for (var i = 0; i < this.playerCount; i += 1) {
+        for (var p = 7; p >= 0; p -= 1) {
+            this.freeForAllSprites[i][p].frame = (this.playerScores[i] > p) ? i : 4;
+        }
+    }
 };
 
 Score.prototype.getWinner = function()

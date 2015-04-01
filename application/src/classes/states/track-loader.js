@@ -33,17 +33,18 @@ var TrackLoaderState = function(trackData, options)
 
     Phaser.State.apply(this, arguments);
 
-    this.victorySpinning = false;
-    this.carFactory      = new CarFactory(this, {teams : options.teams});
-    this.obstacleFactory = new ObstacleFactory(this);
-    this.track           = new Track(this);
-    this.teams           = options.teams;
-    this.score           = new Score(this, options.teams ? 2 : options.playerCount);
-    this.lapNumber       = 1;
-    this.laps            = options.laps;
-    this.raceOver        = false;
-    this.playerCount     = options.playerCount || 1;
-    this.suddenDeath     = false;
+    this.victorySpinning  = false;
+    this.carFactory       = new CarFactory(this, {teams : options.teams});
+    this.obstacleFactory  = new ObstacleFactory(this);
+    this.track            = new Track(this);
+    this.teams            = options.teams;
+    this.score            = new Score(this, options.teams ? 2 : options.playerCount);
+    this.lapNumber        = 1;
+    this.laps             = options.laps;
+    this.raceOver         = false;
+    this.playerCount      = options.playerCount || 1;
+    this.suddenDeath      = false;
+    this.eliminationStack = [];
 
     this.track.setDebug(this.debug);
 };
@@ -301,6 +302,9 @@ TrackLoaderState.prototype.update = function()
                 car.y > (this.game.camera.y + this.game.camera.height)))
             {
                 car.visible = false;
+                if (! this.teams && this.playerCount > 2) {
+                    this.eliminationStack.push(car.playerNumber);
+                }
             }
         }
     }, this);
@@ -333,9 +337,13 @@ TrackLoaderState.prototype.update = function()
                 this.score.awardTwoPlayerPointToPlayer(winningCar.playerNumber);
             } else if (this.teams) {
                 this.score.awardTwoPlayerPointToPlayer(winningCar.teamNumber);
+            } else {
+                this.eliminationStack.push(winningCar.playerNumber);
+                this.score.awardPointsForFreeForAll(this.eliminationStack);
             }
 
             if (this.score.getWinner() === false && ! this.suddenDeath) {
+                this.eliminationStack = [];
                 window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), 2500);
             } else {
                 this.showMessage(
