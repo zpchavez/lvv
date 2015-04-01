@@ -1,30 +1,55 @@
 /* globals window */
 'use strict';
 
-var Phaser          = require('phaser');
-var React           = require('react');
-var CarFactory      = require('../car-factory');
-var ObstacleFactory = require('../obstacles/obstacle-factory');
-var Track           = require('../track');
-var TrackSelector   = require('../../components/track-selector');
-var TrackLoader     = require('../track-loader');
-var _               = require('underscore');
-var util            = require('../../util');
+var Phaser           = require('phaser');
+var React            = require('react');
+var CarFactory       = require('../car-factory');
+var ObstacleFactory  = require('../obstacles/obstacle-factory');
+var Track            = require('../track');
+var TrackSelector    = require('../../components/track-selector');
+var TrackLoader      = require('../track-loader');
+var Score            = require('../score');
+var _                = require('underscore');
+var util             = require('../../util');
+var playerColorNames = require('../../player-color-names');
 
-var TrackLoaderState = function(trackData, playerCount, debug)
+var NEXT_GAME_DELAY  = 5000;
+var NEXT_ROUND_DELAY = 2500;
+
+var TrackLoaderState = function(trackData, options)
 {
+    options = options || {};
+    _(options).defaults({
+        debug       : false,
+        playerCount : 1,
+        teams       : false,
+        laps        : 5
+    });
+
+    if (options.teams && options.playerCount !== 4) {
+        throw new Error('Invalid number of players for team mode');
+    }
+
     this.trackData = trackData;
 
-    this.debug = _(debug).isUndefined() ? false : debug;
+    this.debug = options.debug;
 
     Phaser.State.apply(this, arguments);
 
-    this.carFactory      = new CarFactory(this);
-    this.obstacleFactory = new ObstacleFactory(this);
-    this.track           = new Track(this);
+    this.victorySpinning  = false;
+    this.carFactory       = new CarFactory(this, {teams : options.teams});
+    this.obstacleFactory  = new ObstacleFactory(this);
+    this.track            = new Track(this);
+    this.teams            = options.teams;
+    this.score            = new Score(this, options.teams ? 2 : options.playerCount);
+    this.lapNumber        = 1;
+    this.laps             = options.laps;
+    this.raceOver         = false;
+    this.playerCount      = options.playerCount || 1;
+    this.suddenDeath      = false;
+    this.eliminationStack = [];
+
     this.track.setDebug(this.debug);
-    this.lapNumber = 1;
-    this.playerCount = playerCount || 1;
 };
 
 TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
@@ -35,6 +60,7 @@ TrackLoaderState.prototype.preload = function()
 
     this.carFactory.loadAssets();
     this.track.loadAssets();
+    this.score.loadAssets();
 
     this.load.tilemap(
         'track',
@@ -74,6 +100,7 @@ TrackLoaderState.prototype.create = function()
     this.initTrack();
     this.createStartingPointVectors();
     this.initPlayers();
+    this.initScore();
     this.initInputs();
 
     this.showLapCounter();
@@ -102,8 +129,10 @@ TrackLoaderState.prototype.initTrack = function()
     this.game.physics.p2.updateBoundsCollisionGroup();
 
     this.trackData.layers.forEach(function (layer) {
+        var sprite;
         if (layer.type === 'imagelayer') {
-            state.game.add.sprite(layer.x, layer.y, layer.name);
+            sprite = state.game.add.sprite(layer.x, layer.y, layer.name);
+            sprite.alpha = layer.opacity;
         }
     });
 
@@ -138,7 +167,7 @@ TrackLoaderState.prototype.createStartingPointVectors = function()
 
 TrackLoaderState.prototype.initPlayers = function()
 {
-    var offsetVector;
+    var offsetVector, state = this;
 
     this.cars = [];
 
@@ -148,11 +177,17 @@ TrackLoaderState.prototype.initPlayers = function()
         this.cars.push(this.carFactory.getNew(
             this.startingPoint[0] + offsetVector[0],
             this.startingPoint[1] + offsetVector[1],
-            'car'
+            'player' + (i + 1)
         ));
     }
 
-    _.each(this.cars, function(car) {
+    _.each(this.cars, function(car, index) {
+        car.playerNumber = index;
+
+        if (state.teams) {
+            car.teamNumber = [0, 0, 1, 1][index];
+        }
+
         car.body.angle = this.startingPoint[2];
         this.game.world.addChild(car);
         car.bringToTop();
@@ -160,6 +195,11 @@ TrackLoaderState.prototype.initPlayers = function()
         car.body.setCollisionGroup(this.collisionGroup);
         car.body.collides(this.collisionGroup);
     }, this);
+};
+
+TrackLoaderState.prototype.initScore = function()
+{
+    this.score.show();
 };
 
 TrackLoaderState.prototype.initInputs = function()
@@ -211,7 +251,7 @@ TrackLoaderState.prototype.placeTrackMarkers = function()
 
     this.track.loadFromObject(data);
 
-    this.track.setLapCompletedCallback(this.incrementLapCounter, this);
+    this.track.setLapCompletedCallback(this.completeLap, this);
     this.track.setMarkerSkippedCallback(this.moveCarToLastActivatedMarker, this);
 };
 
@@ -243,7 +283,7 @@ TrackLoaderState.prototype.placeObstacles = function()
 
 TrackLoaderState.prototype.update = function()
 {
-    var visibleCars;
+    var visibleCars, winningCar;
 
     this.updateCamera();
 
@@ -265,16 +305,58 @@ TrackLoaderState.prototype.update = function()
                 car.y > (this.game.camera.y + this.game.camera.height)))
             {
                 car.visible = false;
+                if (! this.teams && this.playerCount > 2) {
+                    this.eliminationStack.push(car.playerNumber);
+                }
             }
         }
     }, this);
 
+    if (this.raceOver) {
+        return;
+    }
+
     if (this.playerCount > 1) {
         visibleCars = _.where(this.cars, {visible : true});
 
-        if (visibleCars.length === 1 && ! visibleCars[0].victorySpinning) {
+        if (this.victorySpinning) {
+            return;
+        }
+
+        if (this.teams && visibleCars.length === 2 && visibleCars[0].teamNumber === visibleCars[1].teamNumber) {
             visibleCars[0].setVictorySpinning(true);
-            window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), 2500);
+            visibleCars[1].setVictorySpinning(true);
+
+            winningCar = visibleCars[0];
+        } else if (visibleCars.length === 1) {
+            visibleCars[0].setVictorySpinning(true);
+            winningCar = visibleCars[0];
+        }
+
+        if (winningCar) {
+            this.victorySpinning = true;
+
+            if (this.playerCount === 2) {
+                this.score.awardTwoPlayerPointToPlayer(winningCar.playerNumber);
+            } else if (this.teams) {
+                this.score.awardTwoPlayerPointToPlayer(winningCar.teamNumber);
+            } else {
+                this.eliminationStack.push(winningCar.playerNumber);
+                this.score.awardPointsForFreeForAll(this.eliminationStack);
+            }
+
+            if (this.score.getWinner() === false && ! this.suddenDeath) {
+                this.eliminationStack = [];
+                window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), NEXT_ROUND_DELAY);
+            } else {
+                this.showMessage(
+                    playerColorNames[this.teams ? winningCar.teamNumber : winningCar.playerNumber]
+                        .toUpperCase()
+                        .concat(' WINS!'),
+                    {showFor : NEXT_GAME_DELAY}
+                );
+                window.setTimeout(_.bind(this.regenerate, this), NEXT_GAME_DELAY);
+            }
         }
     }
 
@@ -366,8 +448,6 @@ TrackLoaderState.prototype.updateCamera = function()
         averagePlayerPosition[0] = this.track.getLastActivatedMarker().x;
         averagePlayerPosition[1] = this.track.getLastActivatedMarker().y;
     }
-
-
 
     this.easeCamera(averagePlayerPosition[0], averagePlayerPosition[1]);
 
@@ -484,6 +564,8 @@ TrackLoaderState.prototype.moveCarToLastActivatedMarker = function(car)
 
 TrackLoaderState.prototype.resetAllCarsToLastMarker = function()
 {
+    this.victorySpinning = false;
+
     _.each(this.cars, function(car, i) {
         car.visible = true;
         car.setVictorySpinning(false);
@@ -500,17 +582,83 @@ TrackLoaderState.prototype.showLapCounter = function()
         20,
         'Lap ' + this.lapNumber,
         {
-            font: "22px Arial",
-            fill: "#ffffff"
+            font            : "22px Arial",
+            fill            : "#ffffff",
+            stroke          : '#000000',
+            strokeThickness : 3
         }
     );
     this.lapDisplay.fixedToCamera = true;
 };
 
-TrackLoaderState.prototype.incrementLapCounter = function()
+TrackLoaderState.prototype.showMessage = function(text, options)
 {
-    this.lapNumber += 1;
-    this.lapDisplay.setText('Lap ' + this.lapNumber);
+    options = options || {};
+
+    _(options).defaults({
+        showFor         : 3000,
+        font            : '42px Arial',
+        fill            : '#ffffff',
+        stroke          : '#000000',
+        strokeThickness : 5
+    });
+
+    this.message = this.game.add.text(
+        this.game.width / 2,
+        this.game.height / 2,
+        text,
+        {
+            font            : options.font,
+            fill            : options.fill,
+            stroke          : options.stroke,
+            strokeThickness : options.strokeThickness
+        }
+    );
+    this.message.fixedToCamera = true;
+    this.message.anchor.setTo(0.5, 0.5);
+
+    if (options.showFor) {
+        window.setTimeout(
+            this.message.destroy.bind(this.message),
+            options.showFor
+        );
+    }
+};
+
+TrackLoaderState.prototype.completeLap = function()
+{
+    var leaders;
+
+    if (this.lapNumber === this.laps) {
+        leaders = this.score.getLeaders();
+
+        // Eliminate non-leaders
+        this.cars.map(function (car, index) {
+            if (! _(leaders).contains(index)) {
+                car.visible = false;
+            }
+            return car;
+        });
+
+        if (leaders.length === 1) {
+            this.cars[leaders[0]].setVictorySpinning(true);
+            this.raceOver = true;
+        } else if (leaders.length === 2 && this.teams && this.cars[leaders[0]].teamNumber === this.cars[leaders[1]].teamNumber) {
+            this.cars[leaders[0]].setVictorySpinning(true);
+            this.cars[leaders[1]].setVictorySpinning(true);
+            this.raceOver = true;
+        } else {
+            this.suddenDeath = true;
+            this.showMessage('Showdown!');
+        }
+    }
+
+    if (this.raceOver) {
+        window.setTimeout(_.bind(this.regenerate, this), NEXT_GAME_DELAY);
+    } else {
+        this.lapNumber += 1;
+        this.lapDisplay.setText('Lap ' + this.lapNumber);
+    }
 };
 
 TrackLoaderState.prototype.selectTrack = function(trackTheme, trackName)
@@ -518,7 +666,19 @@ TrackLoaderState.prototype.selectTrack = function(trackTheme, trackName)
     var callback, trackLoader, state = this;
 
     callback = function(data) {
-        state.game.state.add('track-loader', new TrackLoaderState(data, state.playerCount, state.debug), true);
+        state.game.state.add(
+            'track-loader',
+            new TrackLoaderState(
+                data,
+                {
+                    playerCount : state.playerCount,
+                    debug       : state.debug,
+                    teams       : state.teams,
+                    laps        : state.laps
+                }
+            ),
+            true
+        );
     };
 
     trackLoader = new TrackLoader(this.load);
@@ -537,26 +697,55 @@ TrackLoaderState.prototype.changeDebugMode = function(value)
     }
 };
 
-TrackLoaderState.prototype.changeNumberOfPlayers = function(value)
+TrackLoaderState.prototype.changeNumberOfPlayers = function(value, teams)
 {
+    teams = _(teams).isUndefined() ? false : teams;
+
     this.playerCount = value;
+    this.teams       = teams;
 
-    _.each(this.cars, function(car) {
-        car.destroy();
-    });
+    this.reload();
+};
 
-    this.createStartingPointVectors();
-    this.initPlayers();
+TrackLoaderState.prototype.setLaps = function(laps)
+{
+    this.laps = laps;
+};
+
+TrackLoaderState.prototype.reload = function()
+{
+    this.game.state.add(
+        'track-loader',
+        new TrackLoaderState(
+            this.trackData,
+            {
+                playerCount : this.playerCount,
+                debug       : this.debug,
+                teams       : this.teams,
+                laps        : this.laps
+            }
+        ),
+        true
+    );
+};
+
+TrackLoaderState.prototype.regenerate = function()
+{
+    this.selectTrack(
+        this.trackSelector.state.selectedTheme,
+        this.trackSelector.state.selectedTrack
+    );
 };
 
 TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
 {
-    React.render(
+    this.trackSelector = React.render(
         React.createElement(TrackSelector, {
             phaserLoader            : this.load,
             onSelectTrack           : this.selectTrack.bind(this),
             onChangeDebugMode       : this.changeDebugMode.bind(this),
-            onChangeNumberOfPlayers : this.changeNumberOfPlayers.bind(this)
+            onChangeNumberOfPlayers : this.changeNumberOfPlayers.bind(this),
+            onSelectLaps            : this.setLaps.bind(this)
         }),
         window.document.getElementById('content')
     );

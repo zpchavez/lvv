@@ -71,7 +71,11 @@ MainMenuState.prototype.onTrackLoaderClick = function()
     firstTrack = _(trackList[firstTheme]).keys()[0];
 
     trackLoader.load(firstTheme, firstTrack, function(data) {
-        stateManager.add('track-loader', new TrackLoaderState(data, 1, false), true);
+        stateManager.add(
+            'track-loader',
+            new TrackLoaderState(data),
+            true
+        );
     });
 };
 
