@@ -1,16 +1,17 @@
 /* globals window */
 'use strict';
 
-var Phaser          = require('phaser');
-var React           = require('react');
-var CarFactory      = require('../car-factory');
-var ObstacleFactory = require('../obstacles/obstacle-factory');
-var Track           = require('../track');
-var TrackSelector   = require('../../components/track-selector');
-var TrackLoader     = require('../track-loader');
-var Score           = require('../score');
-var _               = require('underscore');
-var util            = require('../../util');
+var Phaser           = require('phaser');
+var React            = require('react');
+var CarFactory       = require('../car-factory');
+var ObstacleFactory  = require('../obstacles/obstacle-factory');
+var Track            = require('../track');
+var TrackSelector    = require('../../components/track-selector');
+var TrackLoader      = require('../track-loader');
+var Score            = require('../score');
+var _                = require('underscore');
+var util             = require('../../util');
+var playerColorNames = require('../../player-color-names');
 
 var TrackLoaderState = function(trackData, options)
 {
@@ -337,6 +338,10 @@ TrackLoaderState.prototype.update = function()
             if (this.score.getWinner() === false && ! this.suddenDeath) {
                 window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), 2500);
             } else {
+                this.showMessage(
+                    playerColorNames[this.score.getWinner()].concat(' WINS!').toUpperCase(),
+                    {showFor : 5000}
+                );
                 window.setTimeout(_.bind(this.regenerate, this), 5000);
             }
         }
