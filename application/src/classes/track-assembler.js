@@ -66,7 +66,7 @@ TrackAssembler.prototype._numberSegmentsInClockwiseOrder = function()
 
 TrackAssembler.prototype._combineLayers = function()
 {
-    var tileLayers = [], objectLayers = [], self = this;
+    var layers = [], self = this;
 
     this.firstSegment.layers.forEach(function (layer) {
         layer.width  = self.finalData.width;
@@ -87,13 +87,14 @@ TrackAssembler.prototype._combineLayers = function()
                 });
             });
             layer.data = rowData;
-            tileLayers.push(layer);
+            layers.push(layer);
         } else if (layer.type === 'objectgroup') {
             var updatedObjects = [];
             self.segmentData.forEach(function (row, rowNum) {
                 row.forEach(function (segment, colNum) {
                     var segmentObjects = _(segment.layers).findWhere({name : layer.name}).objects;
                     segmentObjects.forEach(function (object) {
+                        // Update position based on segment
                         object.x = object.x + (self.segmentPixelWidth * colNum);
                         object.y = object.y + (self.segmentPixelHeight * rowNum);
                         object.segmentNumber = segment.segmentNumber;
@@ -102,11 +103,24 @@ TrackAssembler.prototype._combineLayers = function()
                 });
             });
             layer.objects = updatedObjects;
-            objectLayers.push(layer);
+            layers.push(layer);
         }
     });
 
-    this.finalData.layers = tileLayers.concat(objectLayers);
+    // Add imagelayers and update their positions based on which segment they appear in
+    self.segmentData.forEach(function (row, rowNum) {
+        row.forEach(function (segment, colNum) {
+            var imageLayers = _(segment.layers).where({type : 'imagelayer'}) || [];
+            imageLayers.forEach(function (imageLayer) {
+                imageLayer.x = imageLayer.x + (self.segmentPixelWidth * colNum);
+                imageLayer.y = imageLayer.y + (self.segmentPixelHeight * rowNum);
+                // Every image layer is it's own thing. They aren't combined.
+                layers.push(_.extend({}, imageLayer));
+            });
+        });
+    });
+
+    this.finalData.layers = layers;
 };
 
 TrackAssembler.prototype._setUpTrackMarkers = function()
