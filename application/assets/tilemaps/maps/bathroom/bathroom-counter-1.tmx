@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="48" height="20" tilewidth="128" tileheight="128" nextobjectid="34">
+ <tileset firstgid="1" name="counter-surface-marble-3" tilewidth="128" tileheight="128">
+  <image source="../../tiles/counter-surface-marble-3.png" width="512" height="512"/>
+ </tileset>
+ <tileset firstgid="17" name="floor tiles" tilewidth="128" tileheight="128">
+  <image source="../../tiles/floor-tile-1.png" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="18" name="edges" tilewidth="128" tileheight="128">
+  <image source="../../tiles/10pxedges.png" width="384" height="384"/>
+ </tileset>
+ <tileset firstgid="27" source="../../tilesets/bathroom-obstacles.tsx"/>
+ <tileset firstgid="33" name="sink" tilewidth="1838" tileheight="1870">
+  <tile id="0">
+   <properties>
+    <property name="imageHeight" value="1870"/>
+    <property name="imageWidth" value="1838"/>
+    <property name="type" value="BathroomSink"/>
+   </properties>
+   <image width="1838" height="1870" source="../../../img/sink.png"/>
+  </tile>
+ </tileset>
+ <layer name="floor" width="48" height="20">
+  <data encoding="base64" compression="zlib">
+   eJztwwEJAAAMBKGr8P3LrsdQcNVUVVX1+QPKgj/B
+  </data>
+ </layer>
+ <layer name="background" width="48" height="20">
+  <data encoding="base64" compression="zlib">
+   eJztkjkOgDAAwwrlKDf/fy3emCLBliGWPHh3KS8DdthjNW5FwxEnnI1bseOCK27GrbjxwBMv41a4/J3/vX7P/16tcPk7/3v9nv+9WuHyd/73+v3r/yH85QFWYBa6
+  </data>
+ </layer>
+ <layer name="details" width="48" height="20">
+  <data encoding="base64" compression="zlib">
+   eJzt0DsKACAMBNG9hPi5/0FNp5WNyAaZB1ulGSItRfnVw43+9+j3ot+Lfi/6vej3ot/r5/4W68k3bh8AbCaYHQbb
+  </data>
+ </layer>
+ <objectgroup name="obstacles">
+  <object id="1" gid="33" x="1097" y="1983"/>
+  <object id="3" gid="32" x="802.536" y="1430.45" rotation="-56.7958"/>
+  <object id="4" gid="27" x="4728.76" y="1305.97" rotation="-244.256"/>
+  <object id="5" gid="28" x="5285.7" y="1665.77" rotation="-19.1191"/>
+  <object id="6" gid="28" x="5239" y="1725"/>
+  <object id="7" gid="28" x="5196.31" y="1698.86" rotation="-25.6802"/>
+  <object id="8" gid="28" x="5676.85" y="1788.25" rotation="-45.8069"/>
+  <object id="9" gid="28" x="5603.85" y="2124.24" rotation="-43.4983"/>
+  <object id="10" gid="28" x="5191.94" y="1826.72" rotation="-24.758"/>
+  <object id="11" gid="28" x="5172.5" y="1745.56" rotation="30.8297"/>
+  <object id="12" gid="28" x="5217.79" y="1769.34" rotation="21.5805"/>
+  <object id="13" gid="28" x="5308.34" y="1778.87" rotation="-25.7515"/>
+  <object id="14" gid="28" x="5254.41" y="1839.49" rotation="-30.7622"/>
+  <object id="15" gid="28" x="5322.44" y="1920.17" rotation="-49.4976"/>
+  <object id="16" gid="28" x="5311" y="2013"/>
+  <object id="17" gid="28" x="5461.22" y="1943.98" rotation="83.8292"/>
+  <object id="18" gid="28" x="5356.96" y="1675.87" rotation="62.947"/>
+  <object id="19" gid="28" x="5393.06" y="1815.44" rotation="26.2978"/>
+  <object id="20" gid="28" x="5491.79" y="1732.8" rotation="41.9872"/>
+  <object id="21" gid="28" x="5589.39" y="1897.59" rotation="-88.0208"/>
+  <object id="22" gid="28" x="5689.89" y="1978.89" rotation="-231.045"/>
+  <object id="23" gid="28" x="5418.88" y="2055.4" rotation="-238.12"/>
+  <object id="24" gid="28" x="5374.41" y="1914.66" rotation="18.2038"/>
+  <object id="25" gid="28" x="5200.07" y="1613.52" rotation="79.3803"/>
+  <object id="26" gid="28" x="5573.43" y="1624.45" rotation="23.7884"/>
+  <object id="27" gid="28" x="5223.4" y="2059.72" rotation="-33.1089"/>
+  <object id="28" gid="29" x="5232" y="1059"/>
+  <object id="29" gid="30" x="4158" y="646"/>
+  <object id="30" gid="31" x="2881.15" y="427.786" rotation="-209.756"/>
+ </objectgroup>
+ <objectgroup name="track">
+  <object id="32" name="finish-line" type="finish-line" x="3260" y="1148" width="916" height="64"/>
+  <object id="33" x="4192" y="1152"/>
+ </objectgroup>
+</map>
