@@ -121,6 +121,10 @@ TrackLoaderState.prototype.initTrack = function()
         state.map.addTilesetImage(tileset.name, tileset.name);
     });
 
+    if (_.findWhere(this.trackData.layers, {name : 'floor'})) {
+        state.map.createLayer('floor');
+    }
+
     backgroundLayer = this.map.createLayer('background');
     backgroundLayer.resizeWorld();
 
@@ -128,11 +132,15 @@ TrackLoaderState.prototype.initTrack = function()
     this.collisionGroup = this.game.physics.p2.createCollisionGroup();
     this.game.physics.p2.updateBoundsCollisionGroup();
 
+    console.log(this.trackData.layers);
+
     this.trackData.layers.forEach(function (layer) {
         var sprite;
         if (layer.type === 'imagelayer') {
             sprite = state.game.add.sprite(layer.x, layer.y, layer.name);
             sprite.alpha = layer.opacity;
+        } else if (layer.name === 'details') {
+            state.map.createLayer(layer.name);
         }
     });
 
