@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" nextobjectid="5">
+ <tileset firstgid="1" source="../../tilesets/breakroom.tsx"/>
+ <tileset firstgid="257" source="../../tilesets/breakroom-obstacles.tsx"/>
+ <tileset firstgid="258" source="../../tilesets/meta-tile.tsx"/>
+ <layer name="floor" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt1TlBRFEABMGfLGCAw8ACBoD1r4znoieoYIIyMH27ruvp7Pns5ezGqV/P3s7ezz449/3s8+zr7Jtz/5z9nv2dPTh3/ZesH8uu/5L1Y9n1X7J+LLv+S9aPZdd/yfqx7PovWT+WXf8l68ey679k/Vh2/ZesH8uu/5L1Y9n1X7J+LLv+S9aPZdd/yfqx7PovWT+WXf8l68ey679k/Vh2/ZesH8uu/5L1Y9n1X7J+LLv+S9aPZdd/yfqx7PovWT+WXf8l68ey679k/Vh2/ZesH8uu/5L1Y9n1X7J+LLv+S9aPZdd/yfqx7PovWT+WXf8l68ey679k/Vh2/ZesH8uu/5L1Y9n1X7J+LLv+S9aPZdd/yfqx7PovWT+WXf8l68ey679k/Vh2/ZesH8uu/5L1Y9n1X7J+LLv+S9aPZdd/yfqx7PovWT+WXf8l68ey679k/Vj2PxjQp6U=
+  </data>
+ </layer>
+ <layer name="background" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJztmwtu2lAQRb21NmygaTaQlA0kZf+qn2DE5TLjTwHh6J0jjSwDxsrc9+ZnMgwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwKH5szH6O9jLa7pF/9Ib5tRFDjyPvGzH0OPK5EUOPI80XX6P9He1wsr3Y28nCR27V61OWXdO0aHHrdbTfp3v2SPNBpolrEz5yq16fsuyapkeLWx+j/Tnds0c8jlfahI/cqtenLLsmWxc9siS2V3vnMPH6lGXXRE7vPX9spd/4tPNe9Xh239Hyd2hDPn9+39Hyd+hBPn9+39FyU/Tn5PPb13f4dUls8n48ckWco8d91nfz3xrtPHfHOXpc+uCWOmlt3ez1FXocUR/cWiu5P6cMPXLWxpxbcozHK/S4Rn3wyBoqfKzzKvS4xvXIZr3hw2w2G+c6J4zj1HzLe/Qs3vWI+6DSJHTx2Wzm+zhOzbdcD+0Pe+8Hs7qn0sXXe+b7qobayfdqHfBa3LNHmh/W1Ey+3uO8ur7SI5uZoMd133xvyzTxfuVrQI8gq0erOPM/5rORnZzHsbpnj3hNqvHL/TP1/PuleC/7jkyP7H494jFC41e2Zqvn317rao3s12d6ZPuoR3xvaPyq9knWU3itqzWy7pf9kOsR9+v9eZTPr7L5SaZJ9Uzc6y/V5G0418GZHvQf1/7X3LrEVCOvaUOb0GRv17ge1FfX85K5fqTK87oHsto1esYsr2dakD/OMXyup8hyvO6BrI882Oc1r1dzxx5xPar5uJrn3Vj7EcPeh3y9q3YauzI9yB/neWLmGzXPu7H+dcZSzdn181N6kD/O6zjzjZq/nz1/8u8MLQ/DZX2t/Tn5vF7HmXmvV8Uz1yLq3NhDOrNCj0vmYtOS305rL+6mOT5qBfSomYtNWc/n5rqoRYzSWIYeNXO9hluVI6q9pTWCx7Oo06JmQ4/7/FZkyf8jaG0W9Vkctc7uXY+5XmON75eYfo8emZcAAADAd+QfPO0/Gw==
+  </data>
+ </layer>
+ <objectgroup name="obstacles">
+  <object id="1" gid="257" x="439.777" y="2572" rotation="33.809"/>
+ </objectgroup>
+ <objectgroup name="track">
+  <object id="2" name="finish-line" x="994" y="2720" width="355" height="38"/>
+  <object id="3" type="marker" x="773" y="2725" width="611" height="35" rotation="180">
+   <properties>
+    <property name="index" value="0"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer name="drops" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt0bENgEAAA7GH/YemTkWFjsIneYHkvs65AQAAAAAAAAAAAAAAAAAAAAAAAAAA+MSfq7fxx1Zv44+t3sYfW72NP7Z6G39s9Tb+2Opt/LHV2/hjq7fxx1Zv44+t3sYfW72NP7Z6G39s9Tb+2Opt/LHV2/hjq7fxx1Zv44+t3sYfW72NP7Z6G39s9Tb+2Opt/LHV2/hjq7fxx1Zv44+t3sYfW72NP7Z6G39s9Tb+2Opt/LHV2/hjq7fxx1Zv44+t3sYfW72NP7Z6G39s9Tb+2Opt/LHV2wAAvHkAEENi6Q==
+  </data>
+ </layer>
+</map>

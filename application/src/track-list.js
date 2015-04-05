@@ -3,6 +3,9 @@
 var urlRoot = 'assets/tilemaps/maps/';
 
 module.exports = {
+    'Breakroom' : {
+        'Test' : urlRoot + 'breakroom/test.json'
+    },
     'Desert' : {
         'Two-Segment Track'  : [
             // Each array at this depth represents a row. This track has only one row of two segments.
