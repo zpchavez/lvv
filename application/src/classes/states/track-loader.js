@@ -121,6 +121,9 @@ TrackLoaderState.prototype.initTrack = function()
         state.map.addTilesetImage(tileset.name, tileset.name);
     });
 
+    if (this.map.getLayerIndex('floor') !== null) {
+        this.map.createLayer('floor');
+    }
     this.map.createLayer('background').resizeWorld();
 
     // Now that world size is set, we can create the main collision group
