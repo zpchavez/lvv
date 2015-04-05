@@ -8,4 +8,12 @@
   </properties>
   <image width="315" height="551" source="../../img/obstacles/xbox-controller.png"/>
  </tile>
+ <tile id="1">
+  <properties>
+   <property name="imageHeight" value="486"/>
+   <property name="imageWidth" value="76"/>
+   <property name="type" value="Marker"/>
+  </properties>
+  <image width="76" height="486" source="../../img/obstacles/marker.png"/>
+ </tile>
 </tileset>
