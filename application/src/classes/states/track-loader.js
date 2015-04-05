@@ -113,7 +113,7 @@ TrackLoaderState.prototype.create = function()
 
 TrackLoaderState.prototype.initTrack = function()
 {
-    var backgroundLayer, state = this;
+    var state = this;
 
     this.map = this.game.add.tilemap('track');
 
@@ -121,8 +121,7 @@ TrackLoaderState.prototype.initTrack = function()
         state.map.addTilesetImage(tileset.name, tileset.name);
     });
 
-    backgroundLayer = this.map.createLayer('background');
-    backgroundLayer.resizeWorld();
+    this.map.createLayer('background').resizeWorld();
 
     // Now that world size is set, we can create the main collision group
     this.collisionGroup = this.game.physics.p2.createCollisionGroup();
@@ -467,7 +466,7 @@ TrackLoaderState.prototype.updateCamera = function()
 
 TrackLoaderState.prototype.handleDrops = function(car)
 {
-    if (this.map.getLayerIndex('drops')) {
+    if (this.map.getLayerIndex('drops') !== null) {
         if (car.falling || car.airborne) {
             return;
         }
@@ -484,7 +483,7 @@ TrackLoaderState.prototype.handleDrops = function(car)
 
 TrackLoaderState.prototype.handleRamps = function(car)
 {
-    if (this.map.getLayerIndex('ramps')) {
+    if (this.map.getLayerIndex('ramps') !== null) {
         if (car.falling || car.airborne) {
             return;
         }
@@ -500,7 +499,7 @@ TrackLoaderState.prototype.handleRamps = function(car)
 
 TrackLoaderState.prototype.handleRoughTerrain = function(car)
 {
-    if (this.map.getLayerIndex('rough')) {
+    if (this.map.getLayerIndex('rough') !== null) {
         if (car.airborne) {
             return;
         }
