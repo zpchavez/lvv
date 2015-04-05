@@ -12,8 +12,16 @@
   <properties>
    <property name="imageHeight" value="486"/>
    <property name="imageWidth" value="76"/>
-   <property name="type" value="Marker"/>
+   <property name="type" value="MarkerRed"/>
   </properties>
-  <image width="76" height="486" source="../../img/obstacles/marker.png"/>
+  <image width="76" height="486" source="../../img/obstacles/marker-red.png"/>
+ </tile>
+ <tile id="2">
+  <properties>
+   <property name="imageHeight" value="486"/>
+   <property name="imageWidth" value="76"/>
+   <property name="type" value="MarkerGreen"/>
+  </properties>
+  <image width="76" height="486" source="../../img/obstacles/marker-green.png"/>
  </tile>
 </tileset>

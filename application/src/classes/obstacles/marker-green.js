@@ -2,19 +2,19 @@
 
 var AbstractStaticObstacle = require('./abstract-static-obstacle');
 
-var Marker = function(state, x, y, key, angle)
+var MarkerGreen = function(state, x, y, key, angle)
 {
     AbstractStaticObstacle.apply(this, arguments);
 };
 
-Marker.prototype = Object.create(AbstractStaticObstacle.prototype);
+MarkerGreen.prototype = Object.create(AbstractStaticObstacle.prototype);
 
-Marker.prototype.getSpritePath = function()
+MarkerGreen.prototype.getSpritePath = function()
 {
-    return ('assets/img/obstacles/marker.png');
+    return ('assets/img/obstacles/marker-green.png');
 };
 
-Marker.prototype.createPhysicsBody = function(state, angle)
+MarkerGreen.prototype.createPhysicsBody = function(state, angle)
 {
     state.game.physics.p2.enable(this);
 
@@ -27,4 +27,4 @@ Marker.prototype.createPhysicsBody = function(state, angle)
     }
 };
 
-module.exports = Marker;
+module.exports = MarkerGreen;
