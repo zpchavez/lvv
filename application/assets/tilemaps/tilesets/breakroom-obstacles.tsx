@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset name="Breakroom Obstacles" tilewidth="900" tileheight="822">
+<tileset name="Breakroom Obstacles" tilewidth="900" tileheight="915">
  <tile id="0">
   <properties>
    <property name="imageHeight" value="351"/>
@@ -31,5 +31,13 @@
    <property name="type" value="Binder"/>
   </properties>
   <image width="764" height="900" source="../../img/obstacles/binder.png"/>
+ </tile>
+ <tile id="4">
+  <properties>
+   <property name="imageHeight" value="915"/>
+   <property name="imageWidth" value="664"/>
+   <property name="type" value="LegalPad"/>
+  </properties>
+  <image width="664" height="915" source="../../img/obstacles/legal-pad.jpg"/>
  </tile>
 </tileset>

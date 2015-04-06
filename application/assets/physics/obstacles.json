@@ -1115,5 +1115,26 @@
         664
       ]
     }
+  ],
+  "legalPad": [
+    {
+      "density": 2,
+      "friction": 0,
+      "bounce": 0,
+      "filter": {
+        "categoryBits": 1,
+        "maskBits": 65535
+      },
+      "shape": [
+        0,
+        1076.5,
+        1,
+        -0.5,
+        780.5,
+        3,
+        780,
+        1076.5
+      ]
+    }
   ]
 }
