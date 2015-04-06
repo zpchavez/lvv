@@ -470,7 +470,7 @@ TrackLoaderState.prototype.updateCamera = function()
 TrackLoaderState.prototype.handleDrops = function(car)
 {
     if (this.map.getLayerIndex('drops') !== null) {
-        if (car.falling || car.airborne) {
+        if (car.falling || car.airborne || car.onRamp) {
             return;
         }
 

@@ -3,6 +3,7 @@
 var _              = require('underscore');
 var AspirinBottle  = require('./aspirin-bottle');
 var AspirinPill    = require('./aspirin-pill');
+var Binder         = require('./binder');
 var ClownNose      = require('./clown-nose');
 var Comb           = require('./comb');
 var DynamicBox     = require('./dynamic-box');
@@ -22,6 +23,7 @@ var ObstacleFactory = function(state) {
 ObstacleFactory.prototype.types = {
     'AspirinBottle'  : AspirinBottle,
     'AspirinPill'    : AspirinPill,
+    'Binder'         : Binder,
     'ClownNose'      : ClownNose,
     'Comb'           : Comb,
     'DynamicBox'     : DynamicBox,

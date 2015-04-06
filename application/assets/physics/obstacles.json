@@ -1075,5 +1075,45 @@
         481.5
       ]
     }
+  ],
+  "binder": [
+    {
+      "density": 2,
+      "friction": 0,
+      "bounce": 0,
+      "filter": {
+        "categoryBits": 1,
+        "maskBits": 65535
+      },
+      "shape": [
+        36,
+        33,
+        18,
+        658,
+        7,
+        658,
+        24,
+        29
+      ]
+    },
+    {
+      "density": 2,
+      "friction": 0,
+      "bounce": 0,
+      "filter": {
+        "categoryBits": 1,
+        "maskBits": 65535
+      },
+      "shape": [
+        874,
+        663,
+        868,
+        40,
+        880,
+        40,
+        887,
+        664
+      ]
+    }
   ]
 }
