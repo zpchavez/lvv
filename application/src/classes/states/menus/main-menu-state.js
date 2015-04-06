@@ -38,6 +38,8 @@ MainMenuState.prototype.create = function()
     this.add.button(400, 10, 'button-track-loader', this.onTrackLoaderClick);
 
     this.add.button(10, 120, 'button-bathroom-obstacle-set', this.onBathroomObstacleSetClick);
+
+    this.game.add.plugin(Phaser.Plugin.Debug);
 };
 
 MainMenuState.prototype.onImageExampleClick = function()

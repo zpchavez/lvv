@@ -35,7 +35,8 @@ paths = {
     ],
     css:    'application/css/*.css',
     libs:   [
-        './node_modules/phaser/build/phaser.js'
+        './node_modules/phaser/build/phaser.js',
+        './node_modules/phaser-debug/dist/phaser-debug.js'
     ],
     js: [
         'application/src/*.js',
