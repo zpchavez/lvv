@@ -26,13 +26,29 @@
  </tile>
  <tile id="3">
   <properties>
+   <property name="imageHeight" value="486"/>
+   <property name="imageWidth" value="76"/>
+   <property name="type" value="MarkerBlue"/>
+  </properties>
+  <image width="76" height="486" source="../../img/obstacles/marker-blue.png"/>
+ </tile>
+ <tile id="4">
+  <properties>
+   <property name="imageHeight" value="486"/>
+   <property name="imageWidth" value="76"/>
+   <property name="type" value="MarkerBlack"/>
+  </properties>
+  <image width="76" height="486" source="../../img/obstacles/marker-black.png"/>
+ </tile>
+ <tile id="5">
+  <properties>
    <property name="imageHeight" value="822"/>
    <property name="imageWidth" value="900"/>
    <property name="type" value="Binder"/>
   </properties>
   <image width="764" height="900" source="../../img/obstacles/binder.png"/>
  </tile>
- <tile id="4">
+ <tile id="6">
   <properties>
    <property name="imageHeight" value="915"/>
    <property name="imageWidth" value="664"/>

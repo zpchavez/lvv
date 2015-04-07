@@ -11,6 +11,8 @@ var Floss          = require('./floss');
 var LegalPad       = require('./legal-pad');
 var MarkerGreen    = require('./marker-green');
 var MarkerRed      = require('./marker-red');
+var MarkerBlue     = require('./marker-blue');
+var MarkerBlack    = require('./marker-black');
 var Razor          = require('./razor');
 var StaticBox      = require('./static-box');
 var Toothbrush     = require('./toothbrush');
@@ -32,6 +34,8 @@ ObstacleFactory.prototype.types = {
     'LegalPad'       : LegalPad,
     'MarkerGreen'    : MarkerGreen,
     'MarkerRed'      : MarkerRed,
+    'MarkerBlue'     : MarkerBlue,
+    'MarkerBlack'    : MarkerBlack,
     'Razor'          : Razor,
     'StaticBox'      : StaticBox,
     'Toothbrush'     : Toothbrush,
