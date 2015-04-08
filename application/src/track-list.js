@@ -4,8 +4,7 @@ var urlRoot = 'assets/tilemaps/maps/';
 
 module.exports = {
     'Breakroom' : {
-        'Test' : urlRoot + 'breakroom/test.json',
-        'SW'   : [
+        'Table Hop'   : [
             [
                 [
                     urlRoot + 'breakroom/nw1.json'
@@ -22,7 +21,8 @@ module.exports = {
                     urlRoot + 'breakroom/se1.json'
                 ]
             ]
-        ]
+        ],
+        'Test' : urlRoot + 'breakroom/test.json'
     },
     'Desert' : {
         'Two-Segment Track'  : [
