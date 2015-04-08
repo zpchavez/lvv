@@ -6,6 +6,13 @@ var trackList      = require('../track-list');
 var util           = require('../util');
 var TrackAssembler = require('./track-assembler');
 
+// Here's a list of layer names that are reserved for data tile layers that shouldn't be rendered
+var dataLayers = {
+    drops : true,
+    ramps : true,
+    rough : true
+};
+
 /**
  * @param {Phaser.Loader} loader
  */
@@ -50,28 +57,43 @@ TrackLoader.prototype.adjustTrackData = function(data)
             layer.imageUrl = 'assets/' + layer.image.replace(/[.\/]*/, '', 'g');
         }
 
-        if (! layer.objects) {
-            return;
+        // Set data tile layers to not render
+        if (layer.type === 'tilelayer' && dataLayers[layer.name]) {
+            layer.visible = false;
         }
 
-        layer.objects.forEach(function (tilemapObject) {
-            var translationVector;
+        if (layer.objects) {
+            layer.objects.forEach(function (tilemapObject) {
+                var translationVector;
 
-            if (tilemapObject.gid && objectClasses[tilemapObject.gid]) {
-                tilemapObject.type = objectClasses[tilemapObject.gid].type;
+                if (tilemapObject.gid && objectClasses[tilemapObject.gid]) {
+                    tilemapObject.type = objectClasses[tilemapObject.gid].type;
 
-                if (! data.placedObjectClasses[tilemapObject.type]) {
-                    data.placedObjectClasses[tilemapObject.type] = true;
-                }
+                    if (! data.placedObjectClasses[tilemapObject.type]) {
+                        data.placedObjectClasses[tilemapObject.type] = true;
+                    }
 
-                if (objectClasses[tilemapObject.gid].imageHeight &&
-                    objectClasses[tilemapObject.gid].imageWidth) {
-                    // The translation vector leads from the bottom-left corner of the object
-                    // to the object center
-                    translationVector = [
-                        parseInt(objectClasses[tilemapObject.gid].imageWidth, 10) / 2,
-                        - parseInt(objectClasses[tilemapObject.gid].imageHeight, 10) / 2
-                    ];
+                    if (objectClasses[tilemapObject.gid].imageHeight &&
+                        objectClasses[tilemapObject.gid].imageWidth) {
+                        // The translation vector leads from the bottom-left corner of the object
+                        // to the object center
+                        translationVector = [
+                            parseInt(objectClasses[tilemapObject.gid].imageWidth, 10) / 2,
+                            - parseInt(objectClasses[tilemapObject.gid].imageHeight, 10) / 2
+                        ];
+                        translationVector = util.rotateVector(
+                            tilemapObject.rotation * Math.PI / 180,
+                            translationVector
+                        );
+                        tilemapObject.x += translationVector[0];
+                        tilemapObject.y += translationVector[1];
+                    }
+                // Objects without gids and width and/or height defined are instead rotated around
+                // the top-left corner
+                } else if (tilemapObject.gid === undefined &&
+                    (tilemapObject.width !== 0 || tilemapObject.imageHeight !== 0)
+                ) {
+                    translationVector = [tilemapObject.width / 2, tilemapObject.height / 2];
                     translationVector = util.rotateVector(
                         tilemapObject.rotation * Math.PI / 180,
                         translationVector
@@ -79,20 +101,8 @@ TrackLoader.prototype.adjustTrackData = function(data)
                     tilemapObject.x += translationVector[0];
                     tilemapObject.y += translationVector[1];
                 }
-            // Objects without gids and width and/or height defined are instead rotated around
-            // the top-left corner
-            } else if (tilemapObject.gid === undefined &&
-                (tilemapObject.width !== 0 || tilemapObject.imageHeight !== 0)
-            ) {
-                translationVector = [tilemapObject.width / 2, tilemapObject.height / 2];
-                translationVector = util.rotateVector(
-                    tilemapObject.rotation * Math.PI / 180,
-                    translationVector
-                );
-                tilemapObject.x += translationVector[0];
-                tilemapObject.y += translationVector[1];
-            }
-        });
+            });
+        }
     });
 
     return data;

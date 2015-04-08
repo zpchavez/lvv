@@ -3,6 +3,7 @@
 var _              = require('underscore');
 var AspirinBottle  = require('./aspirin-bottle');
 var AspirinPill    = require('./aspirin-pill');
+var BathroomSink  = require('./bathroom-sink');
 var Binder         = require('./binder');
 var ClownNose      = require('./clown-nose');
 var Comb           = require('./comb');
@@ -26,6 +27,7 @@ var ObstacleFactory = function(state) {
 ObstacleFactory.prototype.types = {
     'AspirinBottle'  : AspirinBottle,
     'AspirinPill'    : AspirinPill,
+    'BathroomSink'  : BathroomSink,
     'Binder'         : Binder,
     'ClownNose'      : ClownNose,
     'Comb'           : Comb,

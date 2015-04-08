@@ -56,14 +56,17 @@ TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
 
 TrackLoaderState.prototype.preload = function()
 {
-    var state = this;
+    var state = this,
+        cacheKey = Phaser.Plugin.Tiled.utils.cacheKey;
+
+    this.game.add.plugin(Phaser.Plugin.Tiled);
 
     this.carFactory.loadAssets();
     this.track.loadAssets();
     this.score.loadAssets();
 
-    this.load.tilemap(
-        'track',
+    this.load.tiledmap(
+        cacheKey('track', 'tiledmap'),
         null,
         this.trackData,
         Phaser.Tilemap.TILED_JSON
@@ -72,7 +75,7 @@ TrackLoaderState.prototype.preload = function()
     // Load tilesets
     this.trackData.tilesets.forEach(function (tileset) {
         state.load.image(
-            tileset.name,
+            cacheKey('track', 'tileset', tileset.name),
             tileset.imageUrl
         );
     });
@@ -81,7 +84,7 @@ TrackLoaderState.prototype.preload = function()
     this.trackData.layers.forEach(function (layer) {
         if (layer.type === 'imagelayer') {
             state.load.image(
-                layer.name,
+                cacheKey('track', 'layer', layer.name),
                 layer.imageUrl
             );
         }
@@ -113,30 +116,11 @@ TrackLoaderState.prototype.create = function()
 
 TrackLoaderState.prototype.initTrack = function()
 {
-    var state = this;
-
-    this.map = this.game.add.tilemap('track');
-
-    this.trackData.tilesets.forEach(function (tileset) {
-        state.map.addTilesetImage(tileset.name, tileset.name);
-    });
-
-    if (this.map.getLayerIndex('floor') !== null) {
-        this.map.createLayer('floor');
-    }
-    this.map.createLayer('background').resizeWorld();
+    this.map = this.game.add.tiledmap('track');
 
     // Now that world size is set, we can create the main collision group
     this.collisionGroup = this.game.physics.p2.createCollisionGroup();
     this.game.physics.p2.updateBoundsCollisionGroup();
-
-    this.trackData.layers.forEach(function (layer) {
-        var sprite;
-        if (layer.type === 'imagelayer') {
-            sprite = state.game.add.sprite(layer.x, layer.y, layer.name);
-            sprite.alpha = layer.opacity;
-        }
-    });
 
     this.placeTrackMarkers();
 
@@ -469,7 +453,7 @@ TrackLoaderState.prototype.updateCamera = function()
 
 TrackLoaderState.prototype.handleDrops = function(car)
 {
-    if (this.map.getLayerIndex('drops') !== null) {
+    if (this.map.getTilelayerIndex('drops') !== -1) {
         if (car.falling || car.airborne || car.onRamp) {
             return;
         }
@@ -486,14 +470,15 @@ TrackLoaderState.prototype.handleDrops = function(car)
 
 TrackLoaderState.prototype.handleRamps = function(car)
 {
-    if (this.map.getLayerIndex('ramps') !== null) {
+    if (this.map.getTilelayerIndex('ramps') !== -1) {
         if (car.falling || car.airborne) {
             return;
         }
 
         if (this.map.getTileWorldXY(car.x, car.y, 32, 32, 'ramps')) {
             car.onRamp = true;
-        } else if (car.onRamp) { // If a car has just left a ramp tile, then call jump
+        } else if (car.onRamp) {
+            // If a car has just left a ramp tile, then call jump
             car.onRamp = false;
             car.jump();
         }
@@ -502,7 +487,7 @@ TrackLoaderState.prototype.handleRamps = function(car)
 
 TrackLoaderState.prototype.handleRoughTerrain = function(car)
 {
-    if (this.map.getLayerIndex('rough') !== null) {
+    if (this.map.getTilelayerIndex('rough') !== -1) {
         if (car.airborne) {
             return;
         }

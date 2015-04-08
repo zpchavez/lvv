@@ -44,6 +44,10 @@ module.exports = {
         'Figure 8'           : urlRoot + 'desert/figure8.json',
         'Bathroom Obstacles' : urlRoot + 'desert/figure8wObs.json'
     },
+    'Bathroom' : {
+        'Bathroom Counter 1' : urlRoot + '/bathroom/bathroom-counter-1.json',
+        'Countertop Sampler' : urlRoot + '/bathroom/countertop-sampler.json'
+    },
     'Misc' : {
         'Hardwood' : urlRoot + 'misc/hardwood.json'
     }
