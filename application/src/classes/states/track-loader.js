@@ -306,9 +306,9 @@ TrackLoaderState.prototype.update = function()
 
             this.track.enforce(car);
 
-            // this.handleDrops(car);
-            // this.handleRamps(car);
-            // this.handleRoughTerrain(car);
+            this.handleDrops(car);
+            this.handleRamps(car);
+            this.handleRoughTerrain(car);
 
             // If playing multiplayer, eliminate cars that go off-screen
             if (this.playerCount > 1 && (
@@ -480,7 +480,7 @@ TrackLoaderState.prototype.updateCamera = function()
 
 TrackLoaderState.prototype.handleDrops = function(car)
 {
-    if (this.map.getLayerIndex('drops')) {
+    if (this.map.getTilelayerIndex('drops')) {
         if (car.falling || car.airborne) {
             return;
         }
@@ -497,7 +497,7 @@ TrackLoaderState.prototype.handleDrops = function(car)
 
 TrackLoaderState.prototype.handleRamps = function(car)
 {
-    if (this.map.getLayerIndex('ramps')) {
+    if (this.map.getTilelayerIndex('ramps')) {
         if (car.falling || car.airborne) {
             return;
         }
@@ -513,7 +513,7 @@ TrackLoaderState.prototype.handleRamps = function(car)
 
 TrackLoaderState.prototype.handleRoughTerrain = function(car)
 {
-    if (this.map.getLayerIndex('rough')) {
+    if (this.map.getTilelayerIndex('rough')) {
         if (car.airborne) {
             return;
         }
