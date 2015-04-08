@@ -21,8 +21,7 @@ module.exports = {
                     urlRoot + 'breakroom/se1.json'
                 ]
             ]
-        ],
-        'Test' : urlRoot + 'breakroom/test.json'
+        ]
     },
     'Desert' : {
         'Two-Segment Track'  : [
