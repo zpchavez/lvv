@@ -230,12 +230,12 @@
                      "finish-line-candidate":"0",
                      "index":"2"
                     },
-                 "rotation":0,
+                 "rotation":180,
                  "type":"marker",
                  "visible":true,
                  "width":800,
-                 "x":884,
-                 "y":1820
+                 "x":1690,
+                 "y":1896
                 }],
          "opacity":1,
          "type":"objectgroup",

@@ -44,7 +44,7 @@
     <property name="index" value="1"/>
    </properties>
   </object>
-  <object id="13" type="marker" x="884" y="1820" width="800" height="70">
+  <object id="13" type="marker" x="1690" y="1896" width="800" height="70" rotation="180">
    <properties>
     <property name="finish-line-candidate" value="0"/>
     <property name="index" value="2"/>

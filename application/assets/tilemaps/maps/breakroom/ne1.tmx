@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" nextobjectid="18">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" nextobjectid="20">
  <tileset firstgid="1" source="../../tilesets/breakroom.tsx"/>
  <tileset firstgid="257" source="../../tilesets/breakroom-obstacles.tsx"/>
  <tileset firstgid="264" source="../../tilesets/meta-tile.tsx"/>
@@ -24,14 +24,15 @@
  <objectgroup name="obstacles">
   <object id="1" gid="262" x="2134" y="2381" rotation="180"/>
   <object id="3" gid="261" x="415.353" y="2398.4" rotation="51.5929"/>
-  <object id="4" gid="261" x="2078.33" y="1753.84" rotation="-232.062"/>
+  <object id="4" gid="261" x="2280.37" y="1911.42" rotation="-214.378"/>
   <object id="5" gid="261" x="2325.73" y="1218.47" rotation="38.3182"/>
   <object id="6" gid="261" x="2962.44" y="1309.58" rotation="-26.7242"/>
   <object id="7" gid="257" x="650.62" y="540.995" rotation="90.4943"/>
   <object id="8" gid="261" x="952.024" y="477.083" rotation="-268.602"/>
   <object id="9" gid="261" x="1476.45" y="480.85" rotation="-268.073"/>
   <object id="10" gid="261" x="2029.61" y="499.362" rotation="-269.141"/>
-  <object id="11" gid="263" x="253.227" y="1310.59" rotation="90.4708"/>
+  <object id="18" gid="261" x="522.679" y="1326.88" rotation="-228.395"/>
+  <object id="19" gid="261" x="892.134" y="1631.45" rotation="-311.619"/>
  </objectgroup>
  <layer name="ramps" width="100" height="100">
   <data encoding="base64" compression="zlib">
@@ -57,7 +58,7 @@
     <property name="index" value="2"/>
    </properties>
   </object>
-  <object id="15" type="marker" x="1582" y="484" width="264" height="50" rotation="270">
+  <object id="15" type="marker" x="1582" y="715.03" width="700" height="42" rotation="270">
    <properties>
     <property name="finish-line-candidate" value="0"/>
     <property name="index" value="3"/>
