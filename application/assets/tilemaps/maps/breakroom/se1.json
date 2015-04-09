@@ -319,7 +319,7 @@
                  "properties":
                     {
                      "finish-line-candidate":"1",
-                     "index":"1"
+                     "index":"2"
                     },
                  "rotation":90,
                  "type":"marker",
@@ -335,7 +335,7 @@
                  "properties":
                     {
                      "finish-line-candidate":"0",
-                     "index":"2"
+                     "index":"3"
                     },
                  "rotation":0,
                  "type":"marker",
@@ -351,7 +351,7 @@
                  "properties":
                     {
                      "finish-line-candidate":"0",
-                     "index":"3"
+                     "index":"4"
                     },
                  "rotation":180,
                  "type":"marker",
@@ -367,7 +367,7 @@
                  "properties":
                     {
                      "finish-line-candidate":"0",
-                     "index":"4"
+                     "index":"5"
                     },
                  "rotation":180,
                  "type":"marker",
@@ -383,7 +383,7 @@
                  "properties":
                     {
                      "finish-line-candidate":"0",
-                     "index":"5"
+                     "index":"6"
                     },
                  "rotation":180,
                  "type":"marker",
@@ -399,7 +399,7 @@
                  "properties":
                     {
                      "finish-line-candidate":"0",
-                     "index":"6"
+                     "index":"7"
                     },
                  "rotation":270,
                  "type":"marker",

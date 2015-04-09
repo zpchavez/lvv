@@ -57,37 +57,37 @@
   <object id="28" type="marker" x="1282" y="1058" width="428" height="54" rotation="90">
    <properties>
     <property name="finish-line-candidate" value="1"/>
-    <property name="index" value="1"/>
+    <property name="index" value="2"/>
    </properties>
   </object>
   <object id="29" type="marker" x="2548" y="774" width="436" height="54">
    <properties>
     <property name="finish-line-candidate" value="0"/>
-    <property name="index" value="2"/>
+    <property name="index" value="3"/>
    </properties>
   </object>
   <object id="30" type="marker" x="2336" y="838" width="548" height="54" rotation="180">
    <properties>
     <property name="finish-line-candidate" value="0"/>
-    <property name="index" value="3"/>
+    <property name="index" value="4"/>
    </properties>
   </object>
   <object id="31" type="marker" x="1926" y="2062" width="866" height="64" rotation="180">
    <properties>
     <property name="finish-line-candidate" value="0"/>
-    <property name="index" value="4"/>
+    <property name="index" value="5"/>
    </properties>
   </object>
   <object id="33" type="marker" x="3126" y="2536" width="602" height="60" rotation="180">
    <properties>
     <property name="finish-line-candidate" value="0"/>
-    <property name="index" value="5"/>
+    <property name="index" value="6"/>
    </properties>
   </object>
   <object id="34" type="marker" x="1226" y="3206" width="884" height="58" rotation="270">
    <properties>
     <property name="finish-line-candidate" value="0"/>
-    <property name="index" value="6"/>
+    <property name="index" value="7"/>
    </properties>
   </object>
  </objectgroup>
