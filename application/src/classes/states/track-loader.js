@@ -460,7 +460,6 @@ TrackLoaderState.prototype.updateCamera = function()
     }
 };
 
-
 TrackLoaderState.prototype.handleDrops = function(car)
 {
     if (this.map.getLayerIndex('drops')) {
