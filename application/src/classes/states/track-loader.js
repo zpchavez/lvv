@@ -425,29 +425,24 @@ TrackLoaderState.prototype.updateCamera = function()
             averagePlayerPosition[0] += this.cars[i].x;
             averagePlayerPosition[1] += this.cars[i].y;
             carCount += 1;
-        }
 
-        squaredDistance = (
-            Math.pow(this.cars[i].x - nextMarker.x, 2) +
-            Math.pow(this.cars[i].y - nextMarker.y, 2)
-        );
+            squaredDistance = (
+                Math.pow(this.cars[i].x - nextMarker.x, 2) +
+                Math.pow(this.cars[i].y - nextMarker.y, 2)
+            );
 
-        if (squaredDistance < closestSquaredDistance) {
-            closestSquaredDistance = squaredDistance;
-            closestCar             = {
-                x : this.cars[i].x,
-                y : this.cars[i].y
-            };
+            if (squaredDistance < closestSquaredDistance) {
+                closestSquaredDistance = squaredDistance;
+                closestCar             = {
+                    x : this.cars[i].x,
+                    y : this.cars[i].y
+                };
+            }
         }
     }
 
-    if (carCount > 0) {
-        averagePlayerPosition[0] /= carCount;
-        averagePlayerPosition[1] /= carCount;
-    } else {
-        averagePlayerPosition[0] = this.track.getLastActivatedMarker().x;
-        averagePlayerPosition[1] = this.track.getLastActivatedMarker().y;
-    }
+    averagePlayerPosition[0] /= carCount;
+    averagePlayerPosition[1] /= carCount;
 
     this.easeCamera(averagePlayerPosition[0], averagePlayerPosition[1]);
 
@@ -464,6 +459,7 @@ TrackLoaderState.prototype.updateCamera = function()
         this.game.camera.y = closestCar.y - this.game.camera.height + BUFFER_VALUE;
     }
 };
+
 
 TrackLoaderState.prototype.handleDrops = function(car)
 {
