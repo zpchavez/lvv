@@ -25,11 +25,11 @@
   <object id="1" gid="263" x="2018" y="1452"/>
   <object id="2" gid="262" x="2192" y="2261" rotation="90"/>
   <object id="3" gid="259" x="964.655" y="2338.02" rotation="-19.5717"/>
-  <object id="4" gid="259" x="832.815" y="1806.23" rotation="23.0927"/>
-  <object id="5" gid="259" x="1213.34" y="998.428" rotation="-34.4592"/>
+  <object id="4" gid="259" x="799.482" y="1833.5" rotation="23.0927"/>
+  <object id="5" gid="259" x="1221.34" y="982.428" rotation="-34.4592"/>
   <object id="6" gid="259" x="2590.67" y="1617.07" rotation="-141.196"/>
   <object id="7" gid="257" x="1482.43" y="1928.59" rotation="41.8838"/>
-  <object id="12" gid="259" x="1312.68" y="1117.09" rotation="233.574"/>
+  <object id="12" gid="259" x="1323.81" y="1073.78" rotation="225.043"/>
  </objectgroup>
  <objectgroup name="track">
   <object id="10" type="marker" x="-4" y="2656" width="1108" height="58">
@@ -44,7 +44,7 @@
     <property name="index" value="1"/>
    </properties>
   </object>
-  <object id="13" type="marker" x="1690" y="1896" width="800" height="70" rotation="180">
+  <object id="13" type="marker" x="2168" y="1048" width="880" height="68" rotation="180">
    <properties>
     <property name="finish-line-candidate" value="0"/>
     <property name="index" value="2"/>
