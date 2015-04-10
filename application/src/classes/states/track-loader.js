@@ -350,7 +350,7 @@ TrackLoaderState.prototype.update = function()
                 window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), NEXT_ROUND_DELAY);
             } else {
                 this.showMessage(
-                    playerColorNames[this.teams ? winningCar.teamNumber : winningCar.playerNumber]
+                    playerColorNames[this.score.getWinner()]
                         .toUpperCase()
                         .concat(' WINS!'),
                     {showFor : NEXT_GAME_DELAY}
