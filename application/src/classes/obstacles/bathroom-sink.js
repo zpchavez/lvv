@@ -20,7 +20,9 @@ BathroomSink.prototype.createPhysicsBody = function(state, angle)
 
     this.body.clearShapes();
 
-    this.body.addCircle(150, 0, 735);
+    this.body.addCircle(117, -477, -722);
+    this.body.addCircle(117, 491, -722);
+    this.body.addCircle(163, 0, -715);
 
     if (angle) {
         this.body.angle = angle;
