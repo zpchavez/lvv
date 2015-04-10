@@ -679,6 +679,8 @@ TrackLoaderState.prototype.selectTrack = function(trackTheme, trackName)
             ),
             true
         );
+
+        state.shutdown();
     };
 
     trackLoader = new TrackLoader(this.load);
@@ -727,6 +729,8 @@ TrackLoaderState.prototype.reload = function()
         ),
         true
     );
+
+    this.shutdown();
 };
 
 TrackLoaderState.prototype.regenerate = function()
