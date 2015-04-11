@@ -441,6 +441,11 @@ TrackLoaderState.prototype.updateCamera = function()
         }
     }
 
+    // Divide-by-zero safeguard
+    if (carCount === 0) {
+        return;
+    }
+
     averagePlayerPosition[0] /= carCount;
     averagePlayerPosition[1] /= carCount;
 
