@@ -17,6 +17,11 @@ var AbstractDynamicObstacle = function(state, x, y, key, angle)
 
 AbstractDynamicObstacle.prototype = Object.create(Phaser.Sprite.prototype);
 
+AbstractDynamicObstacle.prototype.loadAssets = function(state, key)
+{
+    state.load.image(key, this.getSpritePath());
+};
+
 AbstractDynamicObstacle.prototype.getSpritePath = function()
 {
     throw new Error('Attempted to load assets on abstract class');

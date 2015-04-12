@@ -34,7 +34,7 @@ ObstacleFactory.prototype.loadAssets = function(types)
 {
     _.each(types, function(type) {
         if (this.types[type]) {
-            this.state.load.image(type, this.types[type].prototype.getSpritePath());
+            this.types[type].prototype.loadAssets(this.state, type);
             this.loadedTypes[type] = true;
         } else {
             throw new Error('Attempted to load assets for unknown class: ' + type);
