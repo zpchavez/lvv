@@ -29,6 +29,8 @@ MainMenuState.prototype.preload = function()
 
 MainMenuState.prototype.create = function()
 {
+    var matches;
+
     this.add.button(10, 10, 'button-image-example', this.onImageExampleClick);
 
     this.add.button(120, 10, 'button-driving-example', this.onDrivingExampleClick);
@@ -38,6 +40,11 @@ MainMenuState.prototype.create = function()
     this.add.button(400, 10, 'button-track-loader', this.onTrackLoaderClick);
 
     this.add.button(10, 120, 'button-bathroom-obstacle-set', this.onBathroomObstacleSetClick);
+
+    matches = /debug=([^&]+)/.exec(window.location.search);
+    if (matches) {
+        this.game.add.plugin(Phaser.Plugin.Debug);
+    }
 };
 
 MainMenuState.prototype.onImageExampleClick = function()
