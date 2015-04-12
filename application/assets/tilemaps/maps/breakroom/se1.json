@@ -345,29 +345,13 @@
                  "y":774
                 }, 
                 {
-                 "height":54,
-                 "id":30,
-                 "name":"",
-                 "properties":
-                    {
-                     "finish-line-candidate":"0",
-                     "index":"4"
-                    },
-                 "rotation":180,
-                 "type":"marker",
-                 "visible":true,
-                 "width":548,
-                 "x":2336,
-                 "y":838
-                }, 
-                {
                  "height":64,
                  "id":31,
                  "name":"",
                  "properties":
                     {
                      "finish-line-candidate":"0",
-                     "index":"5"
+                     "index":"4"
                     },
                  "rotation":180,
                  "type":"marker",
@@ -383,7 +367,7 @@
                  "properties":
                     {
                      "finish-line-candidate":"0",
-                     "index":"6"
+                     "index":"5"
                     },
                  "rotation":180,
                  "type":"marker",
@@ -399,7 +383,7 @@
                  "properties":
                     {
                      "finish-line-candidate":"0",
-                     "index":"7"
+                     "index":"6"
                     },
                  "rotation":270,
                  "type":"marker",
