@@ -1,16 +1,23 @@
 'use strict';
 
-var _             = require('underscore');
-var AspirinBottle = require('./aspirin-bottle');
-var AspirinPill   = require('./aspirin-pill');
+var _              = require('underscore');
+var AspirinBottle  = require('./aspirin-bottle');
+var AspirinPill    = require('./aspirin-pill');
 var BathroomSink  = require('./bathroom-sink');
-var ClownNose     = require('./clown-nose');
-var Comb          = require('./comb');
-var DynamicBox    = require('./dynamic-box');
-var Floss         = require('./floss');
-var Razor         = require('./razor');
-var StaticBox     = require('./static-box');
-var Toothbrush    = require('./toothbrush');
+var Binder         = require('./binder');
+var ClownNose      = require('./clown-nose');
+var Comb           = require('./comb');
+var DynamicBox     = require('./dynamic-box');
+var Floss          = require('./floss');
+var LegalPad       = require('./legal-pad');
+var MarkerGreen    = require('./marker-green');
+var MarkerRed      = require('./marker-red');
+var MarkerBlue     = require('./marker-blue');
+var MarkerBlack    = require('./marker-black');
+var Razor          = require('./razor');
+var StaticBox      = require('./static-box');
+var Toothbrush     = require('./toothbrush');
+var XboxController = require('./xbox-controller');
 
 var ObstacleFactory = function(state) {
     this.state       = state;
@@ -18,16 +25,23 @@ var ObstacleFactory = function(state) {
 };
 
 ObstacleFactory.prototype.types = {
-    'AspirinBottle' : AspirinBottle,
-    'AspirinPill'   : AspirinPill,
+    'AspirinBottle'  : AspirinBottle,
+    'AspirinPill'    : AspirinPill,
     'BathroomSink'  : BathroomSink,
-    'ClownNose'     : ClownNose,
-    'DynamicBox'    : DynamicBox,
-    'Razor'         : Razor,
-    'StaticBox'     : StaticBox,
-    'Toothbrush'    : Toothbrush,
-    'Comb'          : Comb,
-    'Floss'         : Floss
+    'Binder'         : Binder,
+    'ClownNose'      : ClownNose,
+    'Comb'           : Comb,
+    'DynamicBox'     : DynamicBox,
+    'Floss'          : Floss,
+    'LegalPad'       : LegalPad,
+    'MarkerGreen'    : MarkerGreen,
+    'MarkerRed'      : MarkerRed,
+    'MarkerBlue'     : MarkerBlue,
+    'MarkerBlack'    : MarkerBlack,
+    'Razor'          : Razor,
+    'StaticBox'      : StaticBox,
+    'Toothbrush'     : Toothbrush,
+    'XboxController' : XboxController
 };
 
 ObstacleFactory.prototype.loadAssets = function(types)

@@ -117,14 +117,7 @@ TrackLoaderState.prototype.create = function()
 
 TrackLoaderState.prototype.initTrack = function()
 {
-    var backgroundLayer,
-        state = this,
-        cacheKey = Phaser.Plugin.Tiled.utils.cacheKey;
-
     this.map = this.game.add.tiledmap('track');
-
-    backgroundLayer = _.findWhere(this.map.layers, {name : 'background'});
-    backgroundLayer.resizeWorld();
 
     // Now that world size is set, we can create the main collision group
     this.collisionGroup = this.game.physics.p2.createCollisionGroup();
@@ -467,7 +460,7 @@ TrackLoaderState.prototype.updateCamera = function()
 TrackLoaderState.prototype.handleDrops = function(car)
 {
     if (this.map.getTilelayerIndex('drops') !== -1) {
-        if (car.falling || car.airborne) {
+        if (car.falling || car.airborne || car.onRamp) {
             return;
         }
 
