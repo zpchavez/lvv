@@ -1,5 +1,6 @@
 'use strict';
 
+var _      = require('underscore');
 var Phaser = require('phaser');
 var util   = require('../../util');
 
@@ -38,6 +39,12 @@ BathroomSink.prototype.createPhysicsBody = function(state, angle)
     state.game.physics.p2.enable(this);
 
     this.body.clearShapes();
+
+    this.body.loadPolygon('Obstacles', 'sinkBowl');
+
+    _.each(this.body.data.shapes, function(shape) {
+        shape.sensor = true;
+    });
 
     this.body.addCircle(117, -477, -722);
     this.body.addCircle(117, 491, -722);
