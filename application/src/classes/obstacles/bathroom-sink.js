@@ -1,17 +1,36 @@
 'use strict';
 
-var AbstractStaticObstacle = require('./abstract-static-obstacle');
+var Phaser = require('phaser');
+var util   = require('../../util');
+
+var fixturesKey = 'BathroomSinkFixtures';
 
 var BathroomSink = function(state, x, y, key, angle)
 {
-    AbstractStaticObstacle.apply(this, arguments);
+    Phaser.Sprite.apply(this, [state.game, x, y, key]);
+
+    this.createPhysicsBody(state, angle);
+
+    // The anchor for a sprite without physics is the top-left corner, whereas the anchor
+    // for a sprite with physics is in the center, so use this translation vector for the
+    // fixtures overlay sprite
+    var translationVector = [-this.width / 2, -this.height / 2];
+    translationVector = util.rotateVector(angle * Math.PI / 180, translationVector);
+
+    this.fixturesSprite = new Phaser.Sprite(state.game, x + translationVector[0], y + translationVector[1], fixturesKey);
+    if (angle) {
+        this.fixturesSprite.angle = angle;
+    }
+
+    this.body.dynamic = false;
 };
 
-BathroomSink.prototype = Object.create(AbstractStaticObstacle.prototype);
+BathroomSink.prototype = Object.create(Phaser.Sprite.prototype);
 
-BathroomSink.prototype.getSpritePath = function()
+BathroomSink.prototype.loadAssets = function(state, key)
 {
-    return ('assets/img/sink.png');
+    state.load.image(key, 'assets/img/sink-bowl.png');
+    state.load.image(fixturesKey, 'assets/img/sink-fixtures.png');
 };
 
 BathroomSink.prototype.createPhysicsBody = function(state, angle)
@@ -28,5 +47,16 @@ BathroomSink.prototype.createPhysicsBody = function(state, angle)
         this.body.angle = angle;
     }
 };
+
+BathroomSink.prototype.add = function(state)
+{
+    state.add.existing(this);
+    state.add.existing(this.fixturesSprite);
+};
+
+BathroomSink.prototype.postGameObjectPlacement = function()
+{
+    this.fixturesSprite.bringToTop();
+}
 
 module.exports = BathroomSink;

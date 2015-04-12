@@ -103,6 +103,7 @@ TrackLoaderState.prototype.create = function()
     this.initTrack();
     this.createStartingPointVectors();
     this.initPlayers();
+    this.postGameObjectPlacement();
     this.initScore();
     this.initInputs();
 
@@ -270,8 +271,13 @@ TrackLoaderState.prototype.placeObstacles = function()
     obstacles.forEach(function(obstacle) {
         obstacle.body.setCollisionGroup(state.collisionGroup);
         obstacle.body.collides(state.collisionGroup);
-        state.add.existing(obstacle);
+        obstacle.add(state);
     });
+};
+
+TrackLoaderState.prototype.postGameObjectPlacement = function()
+{
+    this.game.world.callAll('postGameObjectPlacement', null);
 };
 
 TrackLoaderState.prototype.update = function()

@@ -59,4 +59,9 @@ AbstractDynamicObstacle.prototype.update = function()
     );
 };
 
+AbstractDynamicObstacle.prototype.add = function(state)
+{
+    state.add.existing(this);
+};
+
 module.exports = AbstractDynamicObstacle;

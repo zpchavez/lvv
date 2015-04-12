@@ -32,4 +32,9 @@ AbstractStaticObstacle.prototype.createPhysicsBody = function(state, angle)
     }
 };
 
+AbstractStaticObstacle.prototype.add = function(state)
+{
+    state.add.existing(this);
+};
+
 module.exports = AbstractStaticObstacle;
