@@ -68,6 +68,5 @@
  </objectgroup>
  <objectgroup name="track">
   <object id="32" name="finish-line" type="finish-line" x="3260" y="1148" width="916" height="64"/>
-  <object id="33" x="4192" y="1152"/>
  </objectgroup>
 </map>
