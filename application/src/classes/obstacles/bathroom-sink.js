@@ -61,9 +61,7 @@ BathroomSink.prototype.createPhysicsBody = function(state, angle)
 
     this.fixturesSprite.body.clearShapes();
 
-    this.fixturesSprite.body.addCircle(117, -477, -722);
-    this.fixturesSprite.body.addCircle(117, 491, -722);
-    this.fixturesSprite.body.addCircle(163, 0, -715);
+    this.fixturesSprite.body.loadPolygon('Obstacles', 'sinkFixtures');
 
     if (angle) {
         this.fixturesSprite.body.angle = angle;
