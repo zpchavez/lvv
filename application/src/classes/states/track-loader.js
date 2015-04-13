@@ -262,8 +262,7 @@ TrackLoaderState.prototype.placeObstacles = function()
     });
 
     obstacles.forEach(function(obstacle) {
-        obstacle.body.setCollisionGroup(state.collisionGroup);
-        obstacle.body.collides(state.collisionGroup);
+        obstacle.addToCollisionGroup(state.collisionGroup);
         obstacle.add(state);
     });
 };
