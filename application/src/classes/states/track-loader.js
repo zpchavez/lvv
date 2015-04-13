@@ -341,7 +341,7 @@ TrackLoaderState.prototype.update = function()
                 window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), NEXT_ROUND_DELAY);
             } else {
                 this.showMessage(
-                    playerColorNames[this.teams ? winningCar.teamNumber : winningCar.playerNumber]
+                    playerColorNames[this.score.getWinner()]
                         .toUpperCase()
                         .concat(' WINS!'),
                     {showFor : NEXT_GAME_DELAY}
@@ -416,29 +416,29 @@ TrackLoaderState.prototype.updateCamera = function()
             averagePlayerPosition[0] += this.cars[i].x;
             averagePlayerPosition[1] += this.cars[i].y;
             carCount += 1;
-        }
 
-        squaredDistance = (
-            Math.pow(this.cars[i].x - nextMarker.x, 2) +
-            Math.pow(this.cars[i].y - nextMarker.y, 2)
-        );
+            squaredDistance = (
+                Math.pow(this.cars[i].x - nextMarker.x, 2) +
+                Math.pow(this.cars[i].y - nextMarker.y, 2)
+            );
 
-        if (squaredDistance < closestSquaredDistance) {
-            closestSquaredDistance = squaredDistance;
-            closestCar             = {
-                x : this.cars[i].x,
-                y : this.cars[i].y
-            };
+            if (squaredDistance < closestSquaredDistance) {
+                closestSquaredDistance = squaredDistance;
+                closestCar             = {
+                    x : this.cars[i].x,
+                    y : this.cars[i].y
+                };
+            }
         }
     }
 
-    if (carCount > 0) {
-        averagePlayerPosition[0] /= carCount;
-        averagePlayerPosition[1] /= carCount;
-    } else {
-        averagePlayerPosition[0] = this.track.getLastActivatedMarker().x;
-        averagePlayerPosition[1] = this.track.getLastActivatedMarker().y;
+    // Divide-by-zero safeguard
+    if (carCount === 0) {
+        return;
     }
+
+    averagePlayerPosition[0] /= carCount;
+    averagePlayerPosition[1] /= carCount;
 
     this.easeCamera(averagePlayerPosition[0], averagePlayerPosition[1]);
 
@@ -671,6 +671,8 @@ TrackLoaderState.prototype.selectTrack = function(trackTheme, trackName)
             ),
             true
         );
+
+        state.shutdown();
     };
 
     trackLoader = new TrackLoader(this.load);
@@ -719,6 +721,8 @@ TrackLoaderState.prototype.reload = function()
         ),
         true
     );
+
+    this.shutdown();
 };
 
 TrackLoaderState.prototype.regenerate = function()
