@@ -5,11 +5,16 @@ var rotateVector = require('../util').rotateVector;
 
 var Car = function(state, x, y, key)
 {
+    var centerOfMassParticle;
+
     Phaser.Sprite.apply(this, [state.game, x, y, key]);
 
     this.state = state;
 
     this.state.game.physics.p2.enable(this);
+
+    centerOfMassParticle = this.body.addParticle(0, 0);
+    centerOfMassParticle.centerOfMassFor = this;
 
     this.constants = this.getConstants();
     Object.freeze(this.constants);

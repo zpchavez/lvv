@@ -39,8 +39,9 @@ BathroomSink.prototype.createPhysicsBody = function(state, angle)
         shape.sensor = true;
     });
 
-    this.body.onBeginContact.add(function (contactingBody) {
+    this.body.onBeginContact.add(function (contactingBody, sinkContactingShape, otherContactingShape) {
         if (Car.prototype.isPrototypeOf(contactingBody.sprite) &&
+            otherContactingShape.centerOfMassFor &&
             ! (contactingBody.sprite.falling || contactingBody.sprite.airborne)) {
             contactingBody.sprite.fall(
                 {
