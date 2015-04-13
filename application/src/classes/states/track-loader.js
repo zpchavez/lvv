@@ -412,7 +412,7 @@ TrackLoaderState.prototype.updateCamera = function()
         squaredDistance;
 
     for (var i = 0; i < this.playerCount; i += 1) {
-        if (this.cars[i].visible) {
+        if (this.cars[i].visible && ! this.cars[i].falling) {
             averagePlayerPosition[0] += this.cars[i].x;
             averagePlayerPosition[1] += this.cars[i].y;
             carCount += 1;

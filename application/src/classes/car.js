@@ -138,17 +138,35 @@ Car.prototype.applyForces = function()
     }
 };
 
-Car.prototype.fall = function(tileLocation)
+Car.prototype.fall = function(fallTargetLocation, easeToTarget)
 {
     this.falling = true;
-
-    this.body.x = tileLocation.x;
-    this.body.y = tileLocation.y;
 
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
 
-    this.state.game.add.tween(this.scale).to({x : 0.1, y: 0.1}, 500, Phaser.Easing.Linear.None, true)
+    if (easeToTarget) {
+        console.log('Translation tween!');
+        console.log(arguments);
+        this.state.game.add.tween(this.body)
+            .to(
+                {x : fallTargetLocation.x, y: fallTargetLocation.y},
+                500,
+                Phaser.Easing.Linear.None,
+                true
+            );
+    } else {
+        this.body.x = fallTargetLocation.x;
+        this.body.y = fallTargetLocation.y;
+    }
+
+    this.state.game.add.tween(this.scale)
+        .to(
+            {x : 0.1, y: 0.1},
+            500,
+            Phaser.Easing.Linear.None,
+            true
+        )
         .onComplete.add(this.doneFalling, this);
 };
 

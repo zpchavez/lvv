@@ -3,6 +3,7 @@
 var _      = require('underscore');
 var Phaser = require('phaser');
 var util   = require('../../util');
+var Car    = require('../car');
 
 var fixturesKey = 'BathroomSinkFixtures';
 
@@ -10,20 +11,12 @@ var BathroomSink = function(state, x, y, key, angle)
 {
     Phaser.Sprite.apply(this, [state.game, x, y, key]);
 
+    this.fixturesSprite = new Phaser.Sprite(state.game, x, y, fixturesKey);
+
     this.createPhysicsBody(state, angle);
 
-    // The anchor for a sprite without physics is the top-left corner, whereas the anchor
-    // for a sprite with physics is in the center, so use this translation vector for the
-    // fixtures overlay sprite
-    var translationVector = [-this.width / 2, -this.height / 2];
-    translationVector = util.rotateVector(angle * Math.PI / 180, translationVector);
-
-    this.fixturesSprite = new Phaser.Sprite(state.game, x + translationVector[0], y + translationVector[1], fixturesKey);
-    if (angle) {
-        this.fixturesSprite.angle = angle;
-    }
-
     this.body.dynamic = false;
+    this.fixturesSprite.body.dynamic = false;
 };
 
 BathroomSink.prototype = Object.create(Phaser.Sprite.prototype);
@@ -46,12 +39,33 @@ BathroomSink.prototype.createPhysicsBody = function(state, angle)
         shape.sensor = true;
     });
 
-    this.body.addCircle(117, -477, -722);
-    this.body.addCircle(117, 491, -722);
-    this.body.addCircle(163, 0, -715);
+    this.body.onBeginContact.add(function (contactingBody) {
+        if (Car.prototype.isPrototypeOf(contactingBody.sprite) &&
+            ! (car.falling || car.airborne)) {
+            contactingBody.sprite.fall(
+                {
+                    x : this.x,
+                    y : this.y
+                },
+                true
+            );
+        }
+    }, this);
 
     if (angle) {
         this.body.angle = angle;
+    }
+
+    state.game.physics.p2.enable(this.fixturesSprite);
+
+    this.fixturesSprite.body.clearShapes();
+
+    this.fixturesSprite.body.addCircle(117, -477, -722);
+    this.fixturesSprite.body.addCircle(117, 491, -722);
+    this.fixturesSprite.body.addCircle(163, 0, -715);
+
+    if (angle) {
+        this.fixturesSprite.body.angle = angle;
     }
 };
 
@@ -59,6 +73,15 @@ BathroomSink.prototype.add = function(state)
 {
     state.add.existing(this);
     state.add.existing(this.fixturesSprite);
+};
+
+BathroomSink.prototype.addToCollisionGroup = function(collisionGroup)
+{
+    this.body.setCollisionGroup(collisionGroup);
+    this.body.collides(collisionGroup);
+
+    this.fixturesSprite.body.setCollisionGroup(collisionGroup);
+    this.fixturesSprite.body.collides(collisionGroup);
 };
 
 BathroomSink.prototype.postGameObjectPlacement = function()
