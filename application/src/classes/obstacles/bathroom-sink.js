@@ -41,7 +41,7 @@ BathroomSink.prototype.createPhysicsBody = function(state, angle)
 
     this.body.onBeginContact.add(function (contactingBody) {
         if (Car.prototype.isPrototypeOf(contactingBody.sprite) &&
-            ! (car.falling || car.airborne)) {
+            ! (contactingBody.sprite.falling || contactingBody.sprite.airborne)) {
             contactingBody.sprite.fall(
                 {
                     x : this.x,
