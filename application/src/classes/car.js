@@ -151,8 +151,6 @@ Car.prototype.fall = function(fallTargetLocation, easeToTarget)
     this.body.velocity.y = 0;
 
     if (easeToTarget) {
-        console.log('Translation tween!');
-        console.log(arguments);
         this.state.game.add.tween(this.body)
             .to(
                 {x : fallTargetLocation.x, y: fallTargetLocation.y},
