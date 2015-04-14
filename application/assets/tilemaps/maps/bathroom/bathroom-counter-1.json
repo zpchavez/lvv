@@ -501,6 +501,102 @@
                  "width":0,
                  "x":2881.15,
                  "y":427.786
+                }, 
+                {
+                 "gid":34,
+                 "height":0,
+                 "id":34,
+                 "name":"",
+                 "properties":
+                    {
+
+                    },
+                 "rotation":-152.56059850003,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":4771.59486395731,
+                 "y":822.908020946383
+                }, 
+                {
+                 "gid":34,
+                 "height":0,
+                 "id":35,
+                 "name":"",
+                 "properties":
+                    {
+
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":4660,
+                 "y":1026
+                }, 
+                {
+                 "gid":34,
+                 "height":0,
+                 "id":36,
+                 "name":"",
+                 "properties":
+                    {
+
+                    },
+                 "rotation":-53.7840005895336,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":4281.51346667591,
+                 "y":1432.67101453288
+                }, 
+                {
+                 "gid":34,
+                 "height":0,
+                 "id":37,
+                 "name":"",
+                 "properties":
+                    {
+
+                    },
+                 "rotation":-35.8655380487751,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3737.66781732772,
+                 "y":554.754226570655
+                }, 
+                {
+                 "gid":34,
+                 "height":0,
+                 "id":38,
+                 "name":"",
+                 "properties":
+                    {
+
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":5008,
+                 "y":630
+                }, 
+                {
+                 "gid":34,
+                 "height":0,
+                 "id":39,
+                 "name":"",
+                 "properties":
+                    {
+
+                    },
+                 "rotation":-128.328495388866,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3760.9424258933,
+                 "y":953.776238367957
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -536,7 +632,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":34,
+ "nextobjectid":40,
  "orientation":"orthogonal",
  "properties":
     {
@@ -685,6 +781,12 @@
                  "imageHeight":"1870",
                  "imageWidth":"1838",
                  "type":"BathroomSink"
+                },
+             "1":
+                {
+                 "imageHeight":"28",
+                 "imageWidth":"353",
+                 "type":"QTip"
                 }
             },
          "tiles":
@@ -692,6 +794,10 @@
              "0":
                 {
                  "image":"..\/..\/..\/img\/sink.png"
+                },
+             "1":
+                {
+                 "image":"..\/..\/..\/img\/q-tip.png"
                 }
             },
          "tilewidth":1838

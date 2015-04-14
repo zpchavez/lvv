@@ -3,7 +3,7 @@
 var _              = require('underscore');
 var AspirinBottle  = require('./aspirin-bottle');
 var AspirinPill    = require('./aspirin-pill');
-var BathroomSink  = require('./bathroom-sink');
+var BathroomSink   = require('./bathroom-sink');
 var Binder         = require('./binder');
 var ClownNose      = require('./clown-nose');
 var Comb           = require('./comb');
@@ -14,6 +14,7 @@ var MarkerGreen    = require('./marker-green');
 var MarkerRed      = require('./marker-red');
 var MarkerBlue     = require('./marker-blue');
 var MarkerBlack    = require('./marker-black');
+var QTip           = require('./q-tip');
 var Razor          = require('./razor');
 var StaticBox      = require('./static-box');
 var Toothbrush     = require('./toothbrush');
@@ -27,7 +28,7 @@ var ObstacleFactory = function(state) {
 ObstacleFactory.prototype.types = {
     'AspirinBottle'  : AspirinBottle,
     'AspirinPill'    : AspirinPill,
-    'BathroomSink'  : BathroomSink,
+    'BathroomSink'   : BathroomSink,
     'Binder'         : Binder,
     'ClownNose'      : ClownNose,
     'Comb'           : Comb,
@@ -38,6 +39,7 @@ ObstacleFactory.prototype.types = {
     'MarkerRed'      : MarkerRed,
     'MarkerBlue'     : MarkerBlue,
     'MarkerBlack'    : MarkerBlack,
+    'QTip'           : QTip,
     'Razor'          : Razor,
     'StaticBox'      : StaticBox,
     'Toothbrush'     : Toothbrush,
