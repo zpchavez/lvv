@@ -528,21 +528,6 @@
                  "width":916,
                  "x":3260,
                  "y":1148
-                }, 
-                {
-                 "height":0,
-                 "id":33,
-                 "name":"",
-                 "properties":
-                    {
-
-                    },
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":4192,
-                 "y":1152
                 }],
          "opacity":1,
          "type":"objectgroup",

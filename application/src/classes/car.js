@@ -5,11 +5,16 @@ var rotateVector = require('../util').rotateVector;
 
 var Car = function(state, x, y, key)
 {
+    var centerOfMassParticle;
+
     Phaser.Sprite.apply(this, [state.game, x, y, key]);
 
     this.state = state;
 
     this.state.game.physics.p2.enable(this);
+
+    centerOfMassParticle = this.body.addParticle(0, 0);
+    centerOfMassParticle.centerOfMassFor = this;
 
     this.constants = this.getConstants();
     Object.freeze(this.constants);
@@ -138,17 +143,33 @@ Car.prototype.applyForces = function()
     }
 };
 
-Car.prototype.fall = function(tileLocation)
+Car.prototype.fall = function(fallTargetLocation, easeToTarget)
 {
     this.falling = true;
-
-    this.body.x = tileLocation.x;
-    this.body.y = tileLocation.y;
 
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
 
-    this.state.game.add.tween(this.scale).to({x : 0.1, y: 0.1}, 500, Phaser.Easing.Linear.None, true)
+    if (easeToTarget) {
+        this.state.game.add.tween(this.body)
+            .to(
+                {x : fallTargetLocation.x, y: fallTargetLocation.y},
+                500,
+                Phaser.Easing.Linear.None,
+                true
+            );
+    } else {
+        this.body.x = fallTargetLocation.x;
+        this.body.y = fallTargetLocation.y;
+    }
+
+    this.state.game.add.tween(this.scale)
+        .to(
+            {x : 0.1, y: 0.1},
+            500,
+            Phaser.Easing.Linear.None,
+            true
+        )
         .onComplete.add(this.doneFalling, this);
 };
 

@@ -1,10 +1,10 @@
 'use strict';
 
-var Phaser = require('phaser');
+var AbstractObstacle = require('./abstract-obstacle');
 
 var AbstractDynamicObstacle = function(state, x, y, key, angle)
 {
-    Phaser.Sprite.apply(this, [state.game, x, y, key]);
+    AbstractObstacle.apply(this, arguments);
 
     this.createPhysicsBody(state, angle);
 
@@ -15,12 +15,7 @@ var AbstractDynamicObstacle = function(state, x, y, key, angle)
     this.body.angularDamping = this.constants.ANGULAR_DAMPING;
 };
 
-AbstractDynamicObstacle.prototype = Object.create(Phaser.Sprite.prototype);
-
-AbstractDynamicObstacle.prototype.getSpritePath = function()
-{
-    throw new Error('Attempted to load assets on abstract class');
-};
+AbstractDynamicObstacle.prototype = Object.create(AbstractObstacle.prototype);
 
 AbstractDynamicObstacle.prototype.getConstants = function()
 {
@@ -29,15 +24,6 @@ AbstractDynamicObstacle.prototype.getConstants = function()
         MASS                : 1,
         FRICTION_MULTIPLIER : 0.2
     };
-};
-
-AbstractDynamicObstacle.prototype.createPhysicsBody = function(state, angle)
-{
-    state.game.physics.p2.enable(this);
-
-    if (angle) {
-        this.body.angle = angle;
-    }
 };
 
 AbstractDynamicObstacle.prototype.update = function()

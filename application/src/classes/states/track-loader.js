@@ -103,6 +103,7 @@ TrackLoaderState.prototype.create = function()
     this.initTrack();
     this.createStartingPointVectors();
     this.initPlayers();
+    this.postGameObjectPlacement();
     this.initScore();
     this.initInputs();
 
@@ -261,10 +262,14 @@ TrackLoaderState.prototype.placeObstacles = function()
     });
 
     obstacles.forEach(function(obstacle) {
-        obstacle.body.setCollisionGroup(state.collisionGroup);
-        obstacle.body.collides(state.collisionGroup);
-        state.add.existing(obstacle);
+        obstacle.addToCollisionGroup(state.collisionGroup);
+        obstacle.add(state);
     });
+};
+
+TrackLoaderState.prototype.postGameObjectPlacement = function()
+{
+    this.game.world.callAll('postGameObjectPlacement', null);
 };
 
 TrackLoaderState.prototype.update = function()
@@ -407,7 +412,7 @@ TrackLoaderState.prototype.updateCamera = function()
         squaredDistance;
 
     for (var i = 0; i < this.playerCount; i += 1) {
-        if (this.cars[i].visible) {
+        if (this.cars[i].visible && ! this.cars[i].falling) {
             averagePlayerPosition[0] += this.cars[i].x;
             averagePlayerPosition[1] += this.cars[i].y;
             carCount += 1;
