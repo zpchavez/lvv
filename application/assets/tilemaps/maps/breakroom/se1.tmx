@@ -42,7 +42,7 @@
   </data>
  </layer>
  <objectgroup name="track">
-  <object id="23" type="marker" x="2332" y="362" width="1568" height="66" rotation="180">
+  <object id="23" type="marker" x="2324" y="130" width="1568" height="66" rotation="180">
    <properties>
     <property name="finish-line-candidate" value="0"/>
     <property name="index" value="0"/>
