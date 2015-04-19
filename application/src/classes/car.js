@@ -183,7 +183,7 @@ transformCallback = function(worldTransform, parentTransform)
         // then reapply the current translation
         .translate(translationCoordinates[0], translationCoordinates[1])
         // translate upward for jump height
-        .translate(0, -this.airborneHeight * 100);
+        .translate(0, -this.airborneHeight * 180);
 };
 
 Car.prototype.fall = function(fallTargetLocation, easeToTarget)
@@ -242,8 +242,8 @@ Car.prototype.jump = function(jumpScale)
         Math.pow(this.body.velocity.y, 2)
     );
 
-    jumpHeight   = this.constants.JUMP_HEIGHT_MULTIPLIER * jumpScale * speed;
-    timeToVertex = jumpHeight * 200;
+    jumpHeight   = this.constants.JUMP_HEIGHT_MULTIPLIER * speed * Math.sqrt(jumpScale);
+    timeToVertex = jumpHeight * 200 * Math.sqrt(jumpScale);
 
     if (jumpHeight > 1) {
         this.airborne = true;
