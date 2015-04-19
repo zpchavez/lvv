@@ -50,6 +50,7 @@ QTip.prototype.createPhysicsBody = function(state, angle)
                     this.contactingEntities[contactingBody.id] = {};
                 }
 
+                // Create a key in contactingEntites that corresponds to the two shapes in contact
                 this.contactingEntities[contactingBody.id][qTipContactingShape.id + '-' + otherContactingShape.id] = true;
             }
         }
@@ -58,12 +59,16 @@ QTip.prototype.createPhysicsBody = function(state, angle)
     this.body.onEndContact.add(function (contactingBody, qTipContactingShape, otherContactingShape) {
         if (Car.prototype.isPrototypeOf(contactingBody.sprite)) {
             if (this.contactingEntities[contactingBody.id]) {
+                // Remove the key in contactingEntities that corresponds to these two shapes
                 delete this.contactingEntities[contactingBody.id][qTipContactingShape.id + '-' + otherContactingShape.id]
+                // If there are no more shapes overlapping between the bodies, then to bodies are no longer in contact
                 if (_.keys(this.contactingEntities[contactingBody.id]).length === 0) {
                     delete this.contactingEntities[contactingBody.id];
                     contactingBody.sprite.removeFrictionMultiplier('qTip');
                 }
             } else {
+                // If there are no keys in contactingEntities that corrsepond to this object, then the bodies are no longer
+                // in contact
                 contactingBody.sprite.removeFrictionMultiplier('qTip');
             }
         }
