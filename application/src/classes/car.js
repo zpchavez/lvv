@@ -3,6 +3,7 @@
 var _            = require('underscore');
 var Phaser       = require('phaser');
 var rotateVector = require('../util').rotateVector;
+var transformCallback;
 
 var Car = function(state, x, y, key)
 {
@@ -25,9 +26,13 @@ var Car = function(state, x, y, key)
     this.victorySpinning = false;
     this.falling         = false;
     this.airborne        = false;
+    this.airborneHeight  = 0;
     this.onRoughTerrain  = false;
 
     this.frictionMultipliers = {};
+
+    this.transformCallback        = transformCallback;
+    this.transformCallbackContext = this;
 };
 
 Car.prototype = Object.create(Phaser.Sprite.prototype);
@@ -166,6 +171,21 @@ Car.prototype.removeFrictionMultiplier = function(key)
     delete this.frictionMultipliers[key];
 }
 
+transformCallback = function(worldTransform, parentTransform)
+{
+    var translationCoordinates = [worldTransform.tx, worldTransform.ty];
+
+    worldTransform
+        // reverse the current translation first so that the translation coordinates aren't scaled as well
+        .translate(-translationCoordinates[0], -translationCoordinates[1])
+        // scale up for jump height
+        .scale(this.airborneHeight + 1, this.airborneHeight + 1)
+        // then reapply the current translation
+        .translate(translationCoordinates[0], translationCoordinates[1])
+        // translate upward for jump height
+        .translate(0, -this.airborneHeight * 100);
+};
+
 Car.prototype.fall = function(fallTargetLocation, easeToTarget)
 {
     this.falling = true;
@@ -228,9 +248,9 @@ Car.prototype.jump = function(jumpScale)
     if (jumpHeight > 1) {
         this.airborne = true;
 
-        this.state.game.add.tween(this.scale)
-            .to({x : jumpHeight, y: jumpHeight}, timeToVertex, Phaser.Easing.Quadratic.Out)
-            .to({x : 1, y : 1}, timeToVertex, Phaser.Easing.Quadratic.In)
+        this.state.game.add.tween(this)
+            .to({airborneHeight : jumpHeight - 1}, timeToVertex, Phaser.Easing.Quadratic.Out)
+            .to({airborneHeight : 0}, timeToVertex, Phaser.Easing.Quadratic.In)
             .start()
             .onComplete.add(this.land, this);
     }
