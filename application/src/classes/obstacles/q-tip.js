@@ -42,9 +42,9 @@ QTip.prototype.createPhysicsBody = function(state, angle)
             ]);
 
             if (velocity > 600) {
-                contactingBody.sprite.jump(0.6);
+                contactingBody.sprite.jump(0.4);
             } else {
-                contactingBody.sprite.addFrictionMultiplier('qTip', 3);
+                contactingBody.sprite.addFrictionMultiplier('qTip', 4.5);
 
                 if (! this.contactingEntities[contactingBody.id]) {
                     this.contactingEntities[contactingBody.id] = {};
