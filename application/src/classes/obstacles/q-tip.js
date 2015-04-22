@@ -42,7 +42,7 @@ QTip.prototype.createPhysicsBody = function(state, angle)
 };
 
 /*
-    Upon detecting contact between this an a car object, trigger a jump or register the ids of the
+    Upon detecting contact between this and a car object, trigger a jump or register the ids of the
     overlapping shapes in the contactingEntities object and apply a friction multiplier.
 */
 onBeginContact = function (contactingBody, qTipContactingShape, otherContactingShape) {
