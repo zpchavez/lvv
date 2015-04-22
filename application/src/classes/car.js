@@ -1,8 +1,9 @@
 'use strict';
 
-var _            = require('underscore');
-var Phaser       = require('phaser');
-var rotateVector = require('../util').rotateVector;
+var _                  = require('underscore');
+var Phaser             = require('phaser');
+var rotateVector       = require('../util').rotateVector;
+var getVectorMagnitude = require('../util').getVectorMagnitude;
 var transformCallback;
 
 var Car = function(state, x, y, key)
@@ -237,10 +238,7 @@ Car.prototype.jump = function(jumpScale)
         jumpScale = 1.0;
     }
 
-    speed = Math.sqrt(
-        Math.pow(this.body.velocity.x, 2) +
-        Math.pow(this.body.velocity.y, 2)
-    );
+    speed = getVectorMagnitude([this.body.velocity.x, this.body.velocity.y]);
 
     jumpHeight   = this.constants.JUMP_HEIGHT_MULTIPLIER * speed * Math.sqrt(jumpScale);
     timeToVertex = jumpHeight * 200 * Math.sqrt(jumpScale);
