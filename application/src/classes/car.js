@@ -1,7 +1,9 @@
 'use strict';
 
-var Phaser       = require('phaser');
-var rotateVector = require('../util').rotateVector;
+var _                  = require('underscore');
+var Phaser             = require('phaser');
+var rotateVector       = require('../util').rotateVector;
+var getVectorMagnitude = require('../util').getVectorMagnitude;
 var transformCallback;
 
 var Car = function(state, x, y, key)
@@ -27,6 +29,8 @@ var Car = function(state, x, y, key)
     this.airborne        = false;
     this.airborneHeight  = 0;
     this.onRoughTerrain  = false;
+
+    this.frictionMultipliers = {};
 
     this.transformCallback        = transformCallback;
     this.transformCallbackContext = this;
@@ -103,6 +107,8 @@ Car.prototype.turnLeft = function()
 
 Car.prototype.applyForces = function()
 {
+    var frictionMultiplierTotal;
+
     this.body.setZeroRotation();
 
     if (this.airborne) {
@@ -114,6 +120,10 @@ Car.prototype.applyForces = function()
         [this.body.velocity.x, this.body.velocity.y]
     );
 
+    frictionMultiplierTotal = _.reduce(this.frictionMultipliers, function(total, element) {
+            return total * element;
+        }, 1);
+
     // apply rolling friction
     this.body.applyForce(
         rotateVector(
@@ -123,6 +133,7 @@ Car.prototype.applyForces = function()
                 carRefVelocity[1] *
                 this.constants.ROLLING_FRICTION_MULTIPLIER *
                 (this.onRoughTerrain ? this.constants.ROUGH_TERRAIN_MULTIPLIER : 1) *
+                frictionMultiplierTotal *
                 this.body.mass
             ]
         ),
@@ -135,7 +146,10 @@ Car.prototype.applyForces = function()
         rotateVector(
             this.body.rotation,
             [
-                carRefVelocity[0] * this.constants.SKID_FRICTION_MULTIPLIER * this.body.mass,
+                carRefVelocity[0] *
+                this.constants.SKID_FRICTION_MULTIPLIER *
+                frictionMultiplierTotal *
+                this.body.mass,
                 0
             ]
         ),
@@ -147,6 +161,16 @@ Car.prototype.applyForces = function()
         this.body.rotateRight(150);
     }
 };
+
+Car.prototype.addFrictionMultiplier = function(key, value)
+{
+    this.frictionMultipliers[key] = value;
+}
+
+Car.prototype.removeFrictionMultiplier = function(key)
+{
+    delete this.frictionMultipliers[key];
+}
 
 transformCallback = function(worldTransform, parentTransform)
 {
@@ -160,7 +184,7 @@ transformCallback = function(worldTransform, parentTransform)
         // then reapply the current translation
         .translate(translationCoordinates[0], translationCoordinates[1])
         // translate upward for jump height
-        .translate(0, -this.airborneHeight * 100);
+        .translate(0, -this.airborneHeight * 180);
 };
 
 Car.prototype.fall = function(fallTargetLocation, easeToTarget)
@@ -206,17 +230,18 @@ Car.prototype.setVictorySpinning = function(value)
     this.victorySpinning = value;
 };
 
-Car.prototype.jump = function()
+Car.prototype.jump = function(jumpScale)
 {
     var speed, jumpHeight, timeToVertex;
 
-    speed = Math.sqrt(
-        Math.pow(this.body.velocity.x, 2) +
-        Math.pow(this.body.velocity.y, 2)
-    );
+    if (typeof(jumpScale) === 'undefined') {
+        jumpScale = 1.0;
+    }
 
-    jumpHeight   = this.constants.JUMP_HEIGHT_MULTIPLIER * speed;
-    timeToVertex = jumpHeight * 200;
+    speed = getVectorMagnitude([this.body.velocity.x, this.body.velocity.y]);
+
+    jumpHeight   = this.constants.JUMP_HEIGHT_MULTIPLIER * speed * Math.sqrt(jumpScale);
+    timeToVertex = jumpHeight * 200 * Math.sqrt(jumpScale);
 
     if (jumpHeight > 1) {
         this.airborne = true;
