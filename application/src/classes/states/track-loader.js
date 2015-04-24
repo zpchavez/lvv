@@ -278,30 +278,7 @@ TrackLoaderState.prototype.update = function()
 
     this.updateCamera();
 
-    _.each(this.cars, function(car) {
-        if (car.visible) {
-            car.applyForces();
-
-            this.track.enforce(car);
-
-            this.handleDrops(car);
-            this.handleRamps(car);
-            this.handleRoughTerrain(car);
-
-            // If playing multiplayer, eliminate cars that go off-screen
-            if (this.playerCount > 1 && (
-                car.x < this.game.camera.x ||
-                car.x > (this.game.camera.x + this.game.camera.width) ||
-                car.y < this.game.camera.y ||
-                car.y > (this.game.camera.y + this.game.camera.height)))
-            {
-                car.visible = false;
-                if (! this.teams && this.playerCount > 2) {
-                    this.eliminationStack.push(car.playerNumber);
-                }
-            }
-        }
-    }, this);
+    this.eliminateOffCameraPlayers();
 
     if (this.raceOver) {
         return;
@@ -347,6 +324,34 @@ TrackLoaderState.prototype.update = function()
     }
 
     this.handleInput();
+};
+
+TrackLoaderState.prototype.eliminateOffCameraPlayers = function()
+{
+    _.each(this.cars, function(car) {
+        if (car.visible) {
+            car.applyForces();
+
+            this.track.enforce(car);
+
+            this.handleDrops(car);
+            this.handleRamps(car);
+            this.handleRoughTerrain(car);
+
+            // If playing multiplayer, eliminate cars that go off-screen
+            if (this.playerCount > 1 && (
+                car.x < this.game.camera.x ||
+                car.x > (this.game.camera.x + this.game.camera.width) ||
+                car.y < this.game.camera.y ||
+                car.y > (this.game.camera.y + this.game.camera.height)))
+            {
+                car.visible = false;
+                if (! this.teams && this.playerCount > 2) {
+                    this.eliminationStack.push(car.playerNumber);
+                }
+            }
+        }
+    }, this);
 };
 
 TrackLoaderState.prototype.handleInput = function()
