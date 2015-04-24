@@ -340,12 +340,7 @@ TrackLoaderState.prototype.update = function()
                 this.eliminationStack = [];
                 window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), NEXT_ROUND_DELAY);
             } else {
-                this.showMessage(
-                    playerColorNames[this.score.getWinner()]
-                        .toUpperCase()
-                        .concat(' WINS!'),
-                    {showFor : NEXT_GAME_DELAY}
-                );
+                this.showWinnerMessage();
                 window.setTimeout(_.bind(this.regenerate, this), NEXT_GAME_DELAY);
             }
         }
@@ -583,6 +578,18 @@ TrackLoaderState.prototype.showLapCounter = function()
     this.lapDisplay.fixedToCamera = true;
 };
 
+TrackLoaderState.prototype.showWinnerMessage = function()
+{
+    var winningPlayerOrTeamNumber = this.score.getWinner() || this.score.getLeaders()[0];
+
+    this.showMessage(
+        playerColorNames[winningPlayerOrTeamNumber]
+            .toUpperCase()
+            .concat(' WINS!'),
+        {showFor : NEXT_GAME_DELAY}
+    );
+};
+
 TrackLoaderState.prototype.showMessage = function(text, options)
 {
     options = options || {};
@@ -619,25 +626,26 @@ TrackLoaderState.prototype.showMessage = function(text, options)
 
 TrackLoaderState.prototype.completeLap = function()
 {
-    var leaders, state = this;
+    var leaderNumbers, leadingCars = [], state = this;
 
     if (this.lapNumber === this.laps) {
-        leaders = this.score.getLeaders();
+        leaderNumbers = this.score.getLeaders();
 
         // Eliminate non-leaders
         this.cars.map(function (car) {
-            if (! _(leaders).contains(state.teams ? car.teamNumber : car.playerNumber)) {
+            if (_(leaderNumbers).contains(state.teams ? car.teamNumber : car.playerNumber)) {
+                leadingCars.push(car);
+            } else {
                 car.visible = false;
             }
-            return car;
         });
 
-        if (leaders.length === 1) {
-            this.cars[leaders[0]].setVictorySpinning(true);
+        if (leadingCars.length === 1) {
+            leadingCars[0].setVictorySpinning(true);
             this.raceOver = true;
-        } else if (leaders.length === 2 && this.teams && this.cars[leaders[0]].teamNumber === this.cars[leaders[1]].teamNumber) {
-            this.cars[leaders[0]].setVictorySpinning(true);
-            this.cars[leaders[1]].setVictorySpinning(true);
+        } else if (leadingCars.length === 2 && this.teams && leadingCars[0].teamNumber === leadingCars[1].teamNumber) {
+            leadingCars[0].setVictorySpinning(true);
+            leadingCars[1].setVictorySpinning(true);
             this.raceOver = true;
         } else if (this.playerCount > 1) {
             this.suddenDeath = true;
@@ -646,6 +654,7 @@ TrackLoaderState.prototype.completeLap = function()
     }
 
     if (this.raceOver) {
+        this.showWinnerMessage();
         window.setTimeout(_.bind(this.regenerate, this), NEXT_GAME_DELAY);
     } else {
         this.lapNumber += 1;
