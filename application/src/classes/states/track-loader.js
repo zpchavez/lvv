@@ -619,14 +619,14 @@ TrackLoaderState.prototype.showMessage = function(text, options)
 
 TrackLoaderState.prototype.completeLap = function()
 {
-    var leaders;
+    var leaders, state = this;
 
     if (this.lapNumber === this.laps) {
         leaders = this.score.getLeaders();
 
         // Eliminate non-leaders
-        this.cars.map(function (car, index) {
-            if (! _(leaders).contains(index)) {
+        this.cars.map(function (car) {
+            if (! _(leaders).contains(state.teams ? car.teamNumber : car.playerNumber)) {
                 car.visible = false;
             }
             return car;
