@@ -639,7 +639,7 @@ TrackLoaderState.prototype.completeLap = function()
             this.cars[leaders[0]].setVictorySpinning(true);
             this.cars[leaders[1]].setVictorySpinning(true);
             this.raceOver = true;
-        } else {
+        } else if (this.playerCount > 1) {
             this.suddenDeath = true;
             this.showMessage('Showdown!');
         }
