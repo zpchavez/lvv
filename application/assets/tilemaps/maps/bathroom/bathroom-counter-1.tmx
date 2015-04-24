@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="48" height="20" tilewidth="128" tileheight="128" nextobjectid="34">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="48" height="20" tilewidth="128" tileheight="128" nextobjectid="90">
  <tileset firstgid="1" name="counter-surface-marble-3" tilewidth="128" tileheight="128">
   <image source="../../tiles/counter-surface-marble-3.png" width="512" height="512"/>
  </tileset>
@@ -19,6 +19,17 @@
    </properties>
    <image width="1838" height="1870" source="../../../img/sink.png"/>
   </tile>
+  <tile id="1">
+   <properties>
+    <property name="imageHeight" value="28"/>
+    <property name="imageWidth" value="353"/>
+    <property name="type" value="QTip"/>
+   </properties>
+   <image width="353" height="28" source="../../../img/q-tip.png"/>
+  </tile>
+ </tileset>
+ <tileset firstgid="35" name="meta-tile-128" tilewidth="128" tileheight="128">
+  <image source="../../tiles/meta-tile-128.png" width="128" height="128"/>
  </tileset>
  <layer name="floor" width="48" height="20">
   <data encoding="base64" compression="zlib">
@@ -35,9 +46,14 @@
    eJzt0DsKACAMBNG9hPi5/0FNp5WNyAaZB1ulGSItRfnVw43+9+j3ot+Lfi/6vej3ot/r5/4W68k3bh8AbCaYHQbb
   </data>
  </layer>
+ <layer name="drops" width="48" height="20">
+  <data encoding="base64" compression="zlib">
+   eJztzqENADAQw8Dskv13LCktKLL+5ZPM3SS9TdFHU/jP8p/lP8t/lv8s/1n+s7b+m/12AMfWIaM=
+  </data>
+ </layer>
  <objectgroup name="obstacles">
   <object id="1" gid="33" x="1097" y="1983"/>
-  <object id="3" gid="32" x="802.536" y="1430.45" rotation="-56.7958"/>
+  <object id="3" gid="32" x="744.897" y="1646.55" rotation="-337.35"/>
   <object id="4" gid="27" x="4728.76" y="1305.97" rotation="-244.256"/>
   <object id="5" gid="28" x="5285.7" y="1665.77" rotation="-19.1191"/>
   <object id="6" gid="28" x="5239" y="1725"/>
@@ -62,11 +78,139 @@
   <object id="25" gid="28" x="5200.07" y="1613.52" rotation="79.3803"/>
   <object id="26" gid="28" x="5573.43" y="1624.45" rotation="23.7884"/>
   <object id="27" gid="28" x="5223.4" y="2059.72" rotation="-33.1089"/>
-  <object id="28" gid="29" x="5232" y="1059"/>
-  <object id="29" gid="30" x="4158" y="646"/>
-  <object id="30" gid="31" x="2881.15" y="427.786" rotation="-209.756"/>
+  <object id="28" gid="29" x="5384" y="779"/>
+  <object id="29" gid="30" x="3359.67" y="620.342" rotation="22.7447"/>
+  <object id="30" gid="31" x="3073.93" y="446.52" rotation="-174.003"/>
+  <object id="34" gid="34" x="4024.95" y="379.454" rotation="-180.178"/>
+  <object id="35" gid="34" x="5451.6" y="74.6495" rotation="51.4694"/>
+  <object id="36" gid="34" x="4639.66" y="473.284" rotation="-323.887"/>
+  <object id="37" gid="34" x="3360.06" y="313.254" rotation="-350.688"/>
+  <object id="38" gid="34" x="3976" y="454"/>
+  <object id="39" gid="34" x="3376.27" y="333.74" rotation="168.044"/>
+  <object id="42" gid="31" x="228.132" y="1543.79" rotation="27.9012"/>
+  <object id="43" gid="30" x="1338.83" y="796.806" rotation="-23.0875"/>
+  <object id="44" gid="34" x="1131.35" y="909.569" rotation="99.3459"/>
+  <object id="45" gid="34" x="744" y="2158"/>
+  <object id="46" gid="34" x="448.354" y="1873.96" rotation="47.2227"/>
+  <object id="47" gid="34" x="528.397" y="995.214" rotation="-68.3505"/>
+  <object id="48" gid="29" x="1846.31" y="103.261" rotation="16.4848"/>
+  <object id="49" gid="34" x="1104.57" y="532.216" rotation="70.5645"/>
+  <object id="50" gid="34" x="610.065" y="703.091" rotation="-100.378"/>
+  <object id="51" gid="34" x="527.288" y="342.907" rotation="-43.1417"/>
+  <object id="52" gid="34" x="4282.56" y="370.952" rotation="15.2928"/>
+  <object id="53" gid="34" x="5681.79" y="592.442" rotation="-80.6976"/>
+  <object id="54" gid="34" x="4936.05" y="582.447" rotation="70.3813"/>
+  <object id="55" gid="34" x="5095.22" y="1393.05" rotation="274.95"/>
+  <object id="56" gid="34" x="2866.85" y="1514.57" rotation="-6.72522"/>
+  <object id="57" gid="34" x="3436.58" y="1231.89" rotation="-23.7453"/>
+  <object id="58" gid="34" x="3051.17" y="1408.54" rotation="-25.4684"/>
+  <object id="59" gid="34" x="4020" y="1082"/>
+  <object id="60" gid="34" x="4312.45" y="1137.28" rotation="35.3563"/>
+  <object id="61" gid="34" x="3720.26" y="1044.82" rotation="-337.307"/>
+  <object id="62" gid="32" x="3903.45" y="1377.13" rotation="-251.685"/>
+  <object id="63" gid="28" x="4583" y="2033"/>
+  <object id="64" gid="28" x="4535" y="1765"/>
+  <object id="65" gid="28" x="4903" y="1941"/>
+  <object id="66" gid="28" x="4835" y="2077"/>
+  <object id="67" gid="28" x="5311" y="1321"/>
+  <object id="68" gid="28" x="5059" y="2081"/>
+  <object id="69" gid="30" x="4499.5" y="1590.07" rotation="-192.555"/>
+  <object id="70" gid="31" x="5332.51" y="399.976" rotation="-68.0939"/>
  </objectgroup>
  <objectgroup name="track">
-  <object id="32" name="finish-line" type="finish-line" x="3260" y="1148" width="916" height="64"/>
+  <object id="32" name="finish-line" type="finish-line" x="2788" y="2556" width="1154" height="56" rotation="270">
+   <properties>
+    <property name="finish-line-candidate" value="1"/>
+   </properties>
+  </object>
+  <object id="41" type="marker" x="1976.07" y="2199.36" width="268" height="48" rotation="270">
+   <properties>
+    <property name="finish-line-candidate" value="0"/>
+    <property name="index" value="0"/>
+   </properties>
+  </object>
+  <object id="71" type="marker" x="297.333" y="1590.67" width="524" height="62.6667">
+   <properties>
+    <property name="finish-line-candidate" value="1"/>
+    <property name="index" value="1"/>
+   </properties>
+  </object>
+  <object id="72" type="marker" x="366.667" y="521.333" width="941.333" height="68">
+   <properties>
+    <property name="finish-line-candidate" value="1"/>
+    <property name="index" value="3"/>
+   </properties>
+  </object>
+  <object id="74" type="marker" x="321.333" y="940" width="841.333" height="34.6667">
+   <properties>
+    <property name="index" value="2"/>
+   </properties>
+  </object>
+  <object id="78" type="marker" x="1571.36" y="2.23135" width="262.667" height="62.6667" rotation="90">
+   <properties>
+    <property name="finish-line-candidate" value="0"/>
+    <property name="index" value="4"/>
+   </properties>
+  </object>
+  <object id="79" type="marker" x="1933.33" y="342.667" width="318.667" height="50.6667" rotation="180">
+   <properties>
+    <property name="finish-line-candidate" value="0"/>
+    <property name="index" value="5"/>
+   </properties>
+  </object>
+  <object id="80" type="marker" x="2273.94" y="274.061" width="465.333" height="76.4848" rotation="90">
+   <properties>
+    <property name="finish-line-candidate" value="0"/>
+    <property name="index" value="6"/>
+   </properties>
+  </object>
+  <object id="81" type="marker" x="2512" y="405.333" width="526.667" height="44">
+   <properties>
+    <property name="finish-line-candidate" value="0"/>
+    <property name="index" value="7"/>
+   </properties>
+  </object>
+  <object id="82" type="marker" x="3615.15" y="-109.091" width="551.515" height="51.5152" rotation="90">
+   <properties>
+    <property name="finish-line-candidate" value="1"/>
+    <property name="index" value="8"/>
+   </properties>
+  </object>
+  <object id="83" type="marker" x="4763.64" y="-12.1212" width="706.061" height="63.6364" rotation="90">
+   <properties>
+    <property name="finish-line-candidate" value="0"/>
+    <property name="index" value="9"/>
+   </properties>
+  </object>
+  <object id="84" type="marker" x="5648.48" y="866.667" width="696.97" height="81.8182" rotation="180">
+   <properties>
+    <property name="finish-line-candidate" value="0"/>
+    <property name="index" value="10"/>
+   </properties>
+  </object>
+  <object id="85" type="marker" x="5790.91" y="1575.76" width="696.97" height="72.7273" rotation="180">
+   <properties>
+    <property name="finish-line-candidate" value="0"/>
+    <property name="index" value="11"/>
+   </properties>
+  </object>
+  <object id="87" type="marker" x="4836.36" y="2169.7" width="533.333" height="57.5758" rotation="270">
+   <properties>
+    <property name="finsh-line-candidate" value="0"/>
+    <property name="index" value="12"/>
+   </properties>
+  </object>
+  <object id="88" type="marker" x="3930.3" y="1387.88" width="742.424" height="72.7273">
+   <properties>
+    <property name="finish-line-candidate" value="1"/>
+    <property name="index" value="13"/>
+   </properties>
+  </object>
+  <object id="89" type="marker" x="3418.18" y="2339.39" width="1496.97" height="84.8485" rotation="270">
+   <properties>
+    <property name="finish-line-candidate" value="0"/>
+    <property name="index" value="14"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

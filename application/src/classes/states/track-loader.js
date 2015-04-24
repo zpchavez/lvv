@@ -458,16 +458,19 @@ TrackLoaderState.prototype.updateCamera = function()
 
 TrackLoaderState.prototype.handleDrops = function(car)
 {
+    var width  = this.map.scaledTileWidth,
+        height = this.map.scaledTileHeight;
+
     if (this.map.getTilelayerIndex('drops') !== -1) {
         if (car.falling || car.airborne || car.onRamp) {
             return;
         }
 
-        if (this.map.getTileWorldXY(car.x, car.y, 32, 32, 'drops')) {
+        if (this.map.getTileWorldXY(car.x, car.y, width, height, 'drops')) {
             car.fall({
                 // This determines the center of the pit tile the car is above
-                x : Math.floor(car.x / 32) * 32 + 16,
-                y : Math.floor(car.y / 32) * 32 + 16
+                x : Math.floor(car.x / width) * width + (width / 2),
+                y : Math.floor(car.y / height) * height + (height / 2)
             });
         }
     }
