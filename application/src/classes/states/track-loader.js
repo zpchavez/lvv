@@ -274,8 +274,6 @@ TrackLoaderState.prototype.postGameObjectPlacement = function()
 
 TrackLoaderState.prototype.update = function()
 {
-    var visibleCars, winningCar;
-
     this.updateCamera();
 
     this.eliminateOffCameraPlayers();
@@ -284,44 +282,7 @@ TrackLoaderState.prototype.update = function()
         return;
     }
 
-    if (this.playerCount > 1) {
-        visibleCars = _.where(this.cars, {visible : true});
-
-        if (this.victorySpinning) {
-            return;
-        }
-
-        if (this.teams && visibleCars.length === 2 && visibleCars[0].teamNumber === visibleCars[1].teamNumber) {
-            visibleCars[0].setVictorySpinning(true);
-            visibleCars[1].setVictorySpinning(true);
-
-            winningCar = visibleCars[0];
-        } else if (visibleCars.length === 1) {
-            visibleCars[0].setVictorySpinning(true);
-            winningCar = visibleCars[0];
-        }
-
-        if (winningCar) {
-            this.victorySpinning = true;
-
-            if (this.playerCount === 2) {
-                this.score.awardTwoPlayerPointToPlayer(winningCar.playerNumber);
-            } else if (this.teams) {
-                this.score.awardTwoPlayerPointToPlayer(winningCar.teamNumber);
-            } else {
-                this.eliminationStack.push(winningCar.playerNumber);
-                this.score.awardPointsForFreeForAll(this.eliminationStack);
-            }
-
-            if (this.score.getWinner() === false && ! this.suddenDeath) {
-                this.eliminationStack = [];
-                window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), NEXT_ROUND_DELAY);
-            } else {
-                this.showWinnerMessage();
-                window.setTimeout(_.bind(this.regenerate, this), NEXT_GAME_DELAY);
-            }
-        }
-    }
+    this.awardPoints();
 
     this.handleInput();
 };
@@ -352,6 +313,48 @@ TrackLoaderState.prototype.eliminateOffCameraPlayers = function()
             }
         }
     }, this);
+};
+
+TrackLoaderState.prototype.awardPoints = function()
+{
+    var visibleCars, winningCar;
+
+    if (this.playerCount === 1 || this.victorySpinning) {
+        return;
+    }
+
+    visibleCars = _.where(this.cars, {visible : true});
+
+    if (this.teams && visibleCars.length === 2 && visibleCars[0].teamNumber === visibleCars[1].teamNumber) {
+        visibleCars[0].setVictorySpinning(true);
+        visibleCars[1].setVictorySpinning(true);
+        winningCar = visibleCars[0];
+    } else if (visibleCars.length === 1) {
+        visibleCars[0].setVictorySpinning(true);
+        winningCar = visibleCars[0];
+    }
+
+    if (winningCar) {
+        this.victorySpinning = true;
+
+        if (this.playerCount === 2) {
+            this.score.awardTwoPlayerPointToPlayer(winningCar.playerNumber);
+        } else if (this.teams) {
+            this.score.awardTwoPlayerPointToPlayer(winningCar.teamNumber);
+        } else {
+            this.eliminationStack.push(winningCar.playerNumber);
+            this.score.awardPointsForFreeForAll(this.eliminationStack);
+        }
+
+        if (this.score.getWinner() === false && ! this.suddenDeath) {
+            // Start next round if no overall winner
+            this.eliminationStack = [];
+            window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), NEXT_ROUND_DELAY);
+        } else {
+            this.showWinnerMessage();
+            window.setTimeout(_.bind(this.regenerate, this), NEXT_GAME_DELAY);
+        }
+    }
 };
 
 TrackLoaderState.prototype.handleInput = function()
