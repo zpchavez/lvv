@@ -12,7 +12,10 @@ module.exports = React.createClass({
         onSelectTrack           : React.PropTypes.func.isRequired,
         onChangeDebugMode       : React.PropTypes.func.isRequired,
         onChangeNumberOfPlayers : React.PropTypes.func.isRequired,
-        onSelectLaps            : React.PropTypes.func.isRequired
+        onSelectLaps            : React.PropTypes.func.isRequired,
+        initialPlayers          : React.PropTypes.any.isRequired,
+        initialDebug            : React.PropTypes.bool.isRequired,
+        initialLaps             : React.PropTypes.any.isRequired
     },
 
     getInitialState : function()
@@ -20,8 +23,8 @@ module.exports = React.createClass({
         return {
             selectedTheme : settings.theme,
             selectedTrack : settings.track,
-            playerCount   : 1,
-            laps          : 5
+            playerCount   : this.props.initialPlayers,
+            laps          : this.props.initialLaps
         };
     },
 
@@ -158,14 +161,14 @@ module.exports = React.createClass({
                 </div>
                 <div>
                     <label htmlFor="debug">Debug</label>
-                    <select id="debug" onChange={this.selectDebugMode}>
+                    <select id="debug" onChange={this.selectDebugMode} defaultValue={this.props.initialDebug}>
                         <option value={0}>off</option>
                         <option value={1}>on</option>
                     </select>
                 </div>
                 <div>
                     <label htmlFor="playerCount">Number of Players</label>
-                    <select id="playerCount" onChange={this.selectNumberOfPlayers}>
+                    <select id="playerCount" onChange={this.selectNumberOfPlayers} value={this.state.playerCount}>
                         <option value={1}>1</option>
                         <option value={2}>2</option>
                         <option value={3}>3</option>
