@@ -2,6 +2,7 @@
 
 var React     = require('react');
 var trackList = require('../track-list');
+var settings  = require('../settings');
 var _         = require('underscore');
 
 module.exports = React.createClass({
@@ -16,11 +17,9 @@ module.exports = React.createClass({
 
     getInitialState : function()
     {
-        var initialTheme = _(trackList).keys()[0];
-
         return {
-            selectedTheme : initialTheme,
-            selectedTrack : _(trackList[initialTheme]).keys()[0],
+            selectedTheme : settings.theme,
+            selectedTrack : settings.track,
             playerCount   : 1,
             laps          : 5
         };
@@ -120,7 +119,7 @@ module.exports = React.createClass({
         });
 
         return (
-            <select id="theme" onChange={this.selectTheme}>
+            <select id="theme" onChange={this.selectTheme} defaultValue={settings.theme}>
                 {options}
             </select>
         );
@@ -139,7 +138,7 @@ module.exports = React.createClass({
         });
 
         return (
-            <select id="track" onChange={this.selectTrack}>
+            <select id="track" onChange={this.selectTrack} defaultValue={settings.track}>
                 {options}
             </select>
         );

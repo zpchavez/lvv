@@ -1,20 +1,11 @@
-/* globals window */
 'use strict';
 
-var randomSeed = require('random-seed');
+var randomSeed  = require('random-seed');
+var settings    = require('./settings');
 
 var RNG = function()
 {
-    var seed, matches;
-
-    matches = /seed=([^&]+)/.exec(window.location.search);
-    if (matches) {
-        seed = matches[1];
-    } else {
-        seed = Date.now();
-    }
-
-    this.rng = randomSeed.create(seed);
+    this.rng = randomSeed.create(settings.seed);
 };
 
 RNG.prototype.getIntBetween = function(min, max)
