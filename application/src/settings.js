@@ -7,10 +7,12 @@ var trackList   = require('./track-list');
 
 var defaultTheme = _(trackList).keys()[0];
 
-var settings = _(queryString.parse(window.location.search)).defaults({
+var settings = queryString.parse(window.location.search);
+
+settings = _(settings).defaults({
     seed     : Date.now(),
     theme    : defaultTheme,
-    track    : _(trackList[defaultTheme]).keys()[0],
+    track    : _(trackList[settings.theme || defaultTheme]).keys()[0],
     players  : 1,
     teams    : false,
     laps     : 3,
