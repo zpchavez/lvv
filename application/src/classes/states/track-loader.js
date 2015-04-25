@@ -274,10 +274,21 @@ TrackLoaderState.prototype.postGameObjectPlacement = function()
 
 TrackLoaderState.prototype.update = function()
 {
-    var visibleCars, winningCar;
-
     this.updateCamera();
 
+    this.eliminateOffCameraPlayers();
+
+    if (this.raceOver) {
+        return;
+    }
+
+    this.awardPoints();
+
+    this.handleInput();
+};
+
+TrackLoaderState.prototype.eliminateOffCameraPlayers = function()
+{
     _.each(this.cars, function(car) {
         if (car.visible) {
             car.applyForces();
@@ -302,56 +313,48 @@ TrackLoaderState.prototype.update = function()
             }
         }
     }, this);
+};
 
-    if (this.raceOver) {
+TrackLoaderState.prototype.awardPoints = function()
+{
+    var visibleCars, winningCar;
+
+    if (this.playerCount === 1 || this.victorySpinning) {
         return;
     }
 
-    if (this.playerCount > 1) {
-        visibleCars = _.where(this.cars, {visible : true});
+    visibleCars = _.where(this.cars, {visible : true});
 
-        if (this.victorySpinning) {
-            return;
-        }
-
-        if (this.teams && visibleCars.length === 2 && visibleCars[0].teamNumber === visibleCars[1].teamNumber) {
-            visibleCars[0].setVictorySpinning(true);
-            visibleCars[1].setVictorySpinning(true);
-
-            winningCar = visibleCars[0];
-        } else if (visibleCars.length === 1) {
-            visibleCars[0].setVictorySpinning(true);
-            winningCar = visibleCars[0];
-        }
-
-        if (winningCar) {
-            this.victorySpinning = true;
-
-            if (this.playerCount === 2) {
-                this.score.awardTwoPlayerPointToPlayer(winningCar.playerNumber);
-            } else if (this.teams) {
-                this.score.awardTwoPlayerPointToPlayer(winningCar.teamNumber);
-            } else {
-                this.eliminationStack.push(winningCar.playerNumber);
-                this.score.awardPointsForFreeForAll(this.eliminationStack);
-            }
-
-            if (this.score.getWinner() === false && ! this.suddenDeath) {
-                this.eliminationStack = [];
-                window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), NEXT_ROUND_DELAY);
-            } else {
-                this.showMessage(
-                    playerColorNames[this.score.getWinner()]
-                        .toUpperCase()
-                        .concat(' WINS!'),
-                    {showFor : NEXT_GAME_DELAY}
-                );
-                window.setTimeout(_.bind(this.regenerate, this), NEXT_GAME_DELAY);
-            }
-        }
+    if (this.teams && visibleCars.length === 2 && visibleCars[0].teamNumber === visibleCars[1].teamNumber) {
+        visibleCars[0].setVictorySpinning(true);
+        visibleCars[1].setVictorySpinning(true);
+        winningCar = visibleCars[0];
+    } else if (visibleCars.length === 1) {
+        visibleCars[0].setVictorySpinning(true);
+        winningCar = visibleCars[0];
     }
 
-    this.handleInput();
+    if (winningCar) {
+        this.victorySpinning = true;
+
+        if (this.playerCount === 2) {
+            this.score.awardTwoPlayerPointToPlayer(winningCar.playerNumber);
+        } else if (this.teams) {
+            this.score.awardTwoPlayerPointToPlayer(winningCar.teamNumber);
+        } else {
+            this.eliminationStack.push(winningCar.playerNumber);
+            this.score.awardPointsForFreeForAll(this.eliminationStack);
+        }
+
+        if (this.score.getWinner() === false && ! this.suddenDeath) {
+            // Start next round if no overall winner
+            this.eliminationStack = [];
+            window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), NEXT_ROUND_DELAY);
+        } else {
+            this.showWinnerMessage();
+            window.setTimeout(_.bind(this.regenerate, this), NEXT_GAME_DELAY);
+        }
+    }
 };
 
 TrackLoaderState.prototype.handleInput = function()
@@ -586,6 +589,18 @@ TrackLoaderState.prototype.showLapCounter = function()
     this.lapDisplay.fixedToCamera = true;
 };
 
+TrackLoaderState.prototype.showWinnerMessage = function()
+{
+    var winningPlayerOrTeamNumber = this.score.getWinner() || this.score.getLeaders()[0];
+
+    this.showMessage(
+        playerColorNames[winningPlayerOrTeamNumber]
+            .toUpperCase()
+            .concat(' WINS!'),
+        {showFor : NEXT_GAME_DELAY}
+    );
+};
+
 TrackLoaderState.prototype.showMessage = function(text, options)
 {
     options = options || {};
@@ -622,33 +637,35 @@ TrackLoaderState.prototype.showMessage = function(text, options)
 
 TrackLoaderState.prototype.completeLap = function()
 {
-    var leaders;
+    var leaderNumbers, leadingCars = [], state = this;
 
     if (this.lapNumber === this.laps) {
-        leaders = this.score.getLeaders();
+        leaderNumbers = this.score.getLeaders();
 
         // Eliminate non-leaders
-        this.cars.map(function (car, index) {
-            if (! _(leaders).contains(index)) {
+        this.cars.map(function (car) {
+            if (_(leaderNumbers).contains(state.teams ? car.teamNumber : car.playerNumber)) {
+                leadingCars.push(car);
+            } else {
                 car.visible = false;
             }
-            return car;
         });
 
-        if (leaders.length === 1) {
-            this.cars[leaders[0]].setVictorySpinning(true);
+        if (leadingCars.length === 1) {
+            leadingCars[0].setVictorySpinning(true);
             this.raceOver = true;
-        } else if (leaders.length === 2 && this.teams && this.cars[leaders[0]].teamNumber === this.cars[leaders[1]].teamNumber) {
-            this.cars[leaders[0]].setVictorySpinning(true);
-            this.cars[leaders[1]].setVictorySpinning(true);
+        } else if (leadingCars.length === 2 && this.teams && leadingCars[0].teamNumber === leadingCars[1].teamNumber) {
+            leadingCars[0].setVictorySpinning(true);
+            leadingCars[1].setVictorySpinning(true);
             this.raceOver = true;
-        } else {
+        } else if (this.playerCount > 1) {
             this.suddenDeath = true;
             this.showMessage('Showdown!');
         }
     }
 
     if (this.raceOver) {
+        this.showWinnerMessage();
         window.setTimeout(_.bind(this.regenerate, this), NEXT_GAME_DELAY);
     } else {
         this.lapNumber += 1;
