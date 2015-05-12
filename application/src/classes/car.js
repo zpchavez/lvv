@@ -165,12 +165,12 @@ Car.prototype.applyForces = function()
 Car.prototype.addFrictionMultiplier = function(key, value)
 {
     this.frictionMultipliers[key] = value;
-}
+};
 
 Car.prototype.removeFrictionMultiplier = function(key)
 {
     delete this.frictionMultipliers[key];
-}
+};
 
 transformCallback = function(worldTransform, parentTransform)
 {
