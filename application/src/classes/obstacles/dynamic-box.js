@@ -11,7 +11,7 @@ DynamicBox.prototype = Object.create(AbstractDynamicObstacle.prototype);
 
 DynamicBox.prototype.getSpritePath = function()
 {
-    return 'assets/img/gray-box.png';
+    return 'assets/img/obstacles/gray-box.png';
 };
 
 DynamicBox.prototype.getConstants = function()

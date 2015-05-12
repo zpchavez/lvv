@@ -11,7 +11,7 @@ Razor.prototype = Object.create(AbstractStaticObstacle.prototype);
 
 Razor.prototype.getSpritePath = function()
 {
-    return ('assets/img/razor.png');
+    return ('assets/img/obstacles/razor.png');
 };
 
 Razor.prototype.createPhysicsBody = function(state, angle)
