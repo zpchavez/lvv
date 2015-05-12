@@ -11,7 +11,7 @@ Toothbrush.prototype = Object.create(AbstractStaticObstacle.prototype);
 
 Toothbrush.prototype.getSpritePath = function()
 {
-    return ('assets/img/toothbrush.png');
+    return ('assets/img/obstacles/toothbrush.png');
 };
 
 Toothbrush.prototype.createPhysicsBody = function(state, angle)

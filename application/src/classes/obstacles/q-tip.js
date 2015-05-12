@@ -17,7 +17,7 @@ QTip.prototype = Object.create(AbstractStaticObstacle.prototype);
 
 QTip.prototype.getSpritePath = function()
 {
-    return ('assets/img/q-tip.png');
+    return ('assets/img/obstacles/q-tip.png');
 };
 
 QTip.prototype.createPhysicsBody = function(state, angle)
@@ -79,7 +79,7 @@ onEndContact = function (contactingBody, qTipContactingShape, otherContactingSha
     if (Car.prototype.isPrototypeOf(contactingBody.sprite)) {
         if (this.contactingEntities[contactingBody.id]) {
             // Remove the key in contactingEntities that corresponds to these two shapes
-            delete this.contactingEntities[contactingBody.id][qTipContactingShape.id + '-' + otherContactingShape.id]
+            delete this.contactingEntities[contactingBody.id][qTipContactingShape.id + '-' + otherContactingShape.id];
             // If there are no more shapes overlapping between the bodies, then the bodies are no longer in contact
             if (_.keys(this.contactingEntities[contactingBody.id]).length === 0) {
                 delete this.contactingEntities[contactingBody.id];

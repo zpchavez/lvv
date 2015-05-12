@@ -11,7 +11,7 @@ AspirinBottle.prototype = Object.create(AbstractStaticObstacle.prototype);
 
 AspirinBottle.prototype.getSpritePath = function()
 {
-    return ('assets/img/aspirin-bottle.png');
+    return ('assets/img/obstacles/aspirin-bottle.png');
 };
 
 AspirinBottle.prototype.createPhysicsBody = function(state, angle)

@@ -11,7 +11,7 @@ ClownNose.prototype = Object.create(AbstractDynamicObstacle.prototype);
 
 ClownNose.prototype.getSpritePath = function()
 {
-    return 'assets/img/red-circle.png';
+    return 'assets/img/obstacles/red-circle.png';
 };
 
 ClownNose.prototype.getConstants = function()

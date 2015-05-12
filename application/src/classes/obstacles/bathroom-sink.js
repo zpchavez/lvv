@@ -2,7 +2,6 @@
 
 var _      = require('underscore');
 var Phaser = require('phaser');
-var util   = require('../../util');
 var Car    = require('../car');
 
 var fixturesKey = 'BathroomSinkFixtures';
@@ -23,8 +22,8 @@ BathroomSink.prototype = Object.create(Phaser.Sprite.prototype);
 
 BathroomSink.prototype.loadAssets = function(state, key)
 {
-    state.load.image(key, 'assets/img/sink-bowl.png');
-    state.load.image(fixturesKey, 'assets/img/sink-fixtures.png');
+    state.load.image(key, 'assets/img/obstacles/sink-bowl.png');
+    state.load.image(fixturesKey, 'assets/img/obstacles/sink-fixtures.png');
 };
 
 BathroomSink.prototype.createPhysicsBody = function(state, angle)
@@ -86,6 +85,6 @@ BathroomSink.prototype.addToCollisionGroup = function(collisionGroup)
 BathroomSink.prototype.postGameObjectPlacement = function()
 {
     this.fixturesSprite.bringToTop();
-}
+};
 
 module.exports = BathroomSink;

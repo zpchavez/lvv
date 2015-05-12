@@ -11,7 +11,7 @@ StaticBox.prototype = Object.create(AbstractStaticObstacle.prototype);
 
 StaticBox.prototype.getSpritePath = function()
 {
-    return 'assets/img/black-box.png';
+    return 'assets/img/obstacles/black-box.png';
 };
 
 module.exports = StaticBox;

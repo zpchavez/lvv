@@ -11,7 +11,7 @@ Comb.prototype = Object.create(AbstractStaticObstacle.prototype);
 
 Comb.prototype.getSpritePath = function()
 {
-    return ('assets/img/comb.png');
+    return ('assets/img/obstacles/comb.png');
 };
 
 Comb.prototype.createPhysicsBody = function(state, angle)

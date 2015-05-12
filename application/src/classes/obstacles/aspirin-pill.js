@@ -11,7 +11,7 @@ AspirinPill.prototype = Object.create(AbstractDynamicObstacle.prototype);
 
 AspirinPill.prototype.getSpritePath = function()
 {
-    return 'assets/img/aspirin-pill.png';
+    return 'assets/img/obstacles/aspirin-pill.png';
 };
 
 AspirinPill.prototype.getConstants = function()
