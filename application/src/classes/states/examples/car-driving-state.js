@@ -84,7 +84,7 @@ CarDrivingState.prototype.create = function()
 
     this.game.physics.p2.updateBoundsCollisionGroup();
 
-    this.car = this.carFactory.getNew(this.game.world.centerX, this.game.world.centerY, 'car');
+    this.car = this.carFactory.getNew(this.game.world.centerX, this.game.world.centerY, 'player1');
     this.game.world.addChild(this.car);
 
     this.car.body.setCollisionGroup(this.collisionGroup);
