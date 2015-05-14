@@ -23,6 +23,8 @@ module.exports = React.createClass({
         return {
             selectedTheme : settings.theme,
             selectedTrack : settings.track,
+            debug         : this.props.initialDebug,
+            teams         : settings.teams,
             playerCount   : this.props.initialPlayers,
             laps          : this.props.initialLaps
         };
@@ -68,9 +70,10 @@ module.exports = React.createClass({
 
     selectDebugMode : function(event)
     {
-        this.props.onChangeDebugMode(
-            !! parseInt(event.currentTarget.value, 10)
-        );
+        var debug = !! parseInt(event.currentTarget.value, 10)
+        this.props.onChangeDebugMode(debug);
+
+        this.setState({debug : debug})
     },
 
     selectNumberOfPlayers : function(event)
@@ -89,7 +92,10 @@ module.exports = React.createClass({
 
         this.props.onChangeNumberOfPlayers(playerCount, teams);
 
-        this.setState({playerCount : playerCount});
+        this.setState({
+            playerCount : playerCount,
+            teams       : teams
+        });
     },
 
     selectLaps : function(event)
@@ -107,6 +113,22 @@ module.exports = React.createClass({
         this.props.onSelectLaps(value);
 
         this.setState({laps : value});
+    },
+
+    getPermalinkUrl : function()
+    {
+        return (
+            'http://' + window.location.host +
+            '?state=track' +
+            '&theme=' + this.state.selectedTheme +
+            '&track=' + this.state.selectedTrack +
+            '&players=' + this.state.playerCount +
+            '&laps=' + this.state.laps +
+            (this.state.teams ? '&teams=true' : '') +
+            (this.state.debug ? '&debug=true' : '') +
+            (settings.profiler ? '&profiler=true' : '') +
+            (settings.seed ? '&seed=' + settings.seed : '')
+        );
     },
 
     renderThemeSelector : function()
@@ -162,8 +184,8 @@ module.exports = React.createClass({
                 <div>
                     <label htmlFor="debug">Debug</label>
                     <select id="debug" onChange={this.selectDebugMode} defaultValue={this.props.initialDebug}>
-                        <option value={0}>off</option>
-                        <option value={1}>on</option>
+                        <option value={false}>off</option>
+                        <option value={true}>on</option>
                     </select>
                 </div>
                 <div>
@@ -188,6 +210,9 @@ module.exports = React.createClass({
                 </div>
                 <div>
                     <button onClick={this.restart}>Restart</button>
+                </div>
+                <div>
+                    <a href={this.getPermalinkUrl()}>Permalink</a>
                 </div>
             </div>
         );
