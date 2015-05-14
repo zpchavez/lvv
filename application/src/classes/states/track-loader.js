@@ -734,10 +734,10 @@ TrackLoaderState.prototype.reload = function()
         new TrackLoaderState(
             this.trackData,
             {
-                playerCount : this.playerCount,
-                debug       : this.debug,
-                teams       : this.teams,
-                laps        : this.laps
+                players : this.playerCount,
+                debug   : this.debug,
+                teams   : this.teams,
+                laps    : this.laps
             }
         ),
         true
