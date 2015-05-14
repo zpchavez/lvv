@@ -118,7 +118,7 @@ module.exports = React.createClass({
     getPermalinkUrl : function()
     {
         return (
-            'http://' + window.location.host +
+            'http://' + window.location.host + window.location.pathname +
             '?state=track' +
             '&theme=' + this.state.selectedTheme +
             '&track=' + this.state.selectedTrack +
