@@ -5,10 +5,9 @@ var Phaser = require('phaser');
 var CarDrivingState          = require('../examples/car-driving-state');
 var TrackMarkerState         = require('../examples/track-marker-state');
 var BathroomObstacleSetState = require('../examples/bathroom-obstacle-set-state');
-var TrackLoaderState = require('../track-loader');
-var TrackLoader      = require('../../track-loader');
-var trackList        = require('../../../track-list');
-var _                = require('underscore');
+var TrackLoaderState         = require('../track-loader');
+var TrackLoader              = require('../../track-loader');
+var settings                 = require('../../../settings');
 
 var MainMenuState = function()
 {
@@ -27,8 +26,6 @@ MainMenuState.prototype.preload = function()
 
 MainMenuState.prototype.create = function()
 {
-    var matches;
-
     this.add.button(120, 10, 'button-driving-example', this.onDrivingExampleClick);
 
     this.add.button(230, 10, 'button-track-marker-example', this.onTrackMarkerExampleClick);
@@ -37,9 +34,12 @@ MainMenuState.prototype.create = function()
 
     this.add.button(10, 120, 'button-bathroom-obstacle-set', this.onBathroomObstacleSetClick);
 
-    matches = /debug=([^&]+)/.exec(window.location.search);
-    if (matches) {
+    if (settings.profiler) {
         this.game.add.plugin(Phaser.Plugin.Debug);
+    }
+
+    if (settings.state === 'track') {
+        this.onTrackLoaderClick();
     }
 };
 
@@ -60,15 +60,11 @@ MainMenuState.prototype.onBathroomObstacleSetClick = function()
 
 MainMenuState.prototype.onTrackLoaderClick = function()
 {
-    var trackLoader, firstTheme, firstTrack, stateManager = this.game.state;
+    var trackLoader, stateManager = this.game.state;
 
     trackLoader = new TrackLoader(this.game.load);
 
-    firstTheme = _(trackList).keys()[0];
-
-    firstTrack = _(trackList[firstTheme]).keys()[0];
-
-    trackLoader.load(firstTheme, firstTrack, function(data) {
+    trackLoader.load(settings.theme, settings.track, function(data) {
         stateManager.add(
             'track-loader',
             new TrackLoaderState(data),

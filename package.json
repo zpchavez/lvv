@@ -37,6 +37,7 @@
     "dependencies" : {
         "phaser"       : "2.3.0",
         "phaser-tiled" : "1.4.1",
+        "query-string" : "1.0.0",
         "react"        : "0.12.2",
         "random-seed"  : "0.2.0",
         "underscore"   : "1.8.2"

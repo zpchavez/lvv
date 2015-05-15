@@ -12,6 +12,7 @@ var Score            = require('../score');
 var _                = require('underscore');
 var util             = require('../../util');
 var playerColorNames = require('../../player-color-names');
+var settings         = require('../../settings');
 
 var NEXT_GAME_DELAY  = 5000;
 var NEXT_ROUND_DELAY = 2500;
@@ -20,13 +21,13 @@ var TrackLoaderState = function(trackData, options)
 {
     options = options || {};
     _(options).defaults({
-        debug       : false,
-        playerCount : 1,
-        teams       : false,
-        laps        : 5
+        debug       : settings.debug,
+        players     : settings.players,
+        teams       : settings.teams,
+        laps        : settings.laps
     });
 
-    if (options.teams && options.playerCount !== 4) {
+    if (options.teams && options.players !== 4) {
         throw new Error('Invalid number of players for team mode');
     }
 
@@ -41,11 +42,11 @@ var TrackLoaderState = function(trackData, options)
     this.obstacleFactory  = new ObstacleFactory(this);
     this.track            = new Track(this);
     this.teams            = options.teams;
-    this.score            = new Score(this, options.teams ? 2 : options.playerCount);
+    this.score            = new Score(this, options.teams ? 2 : options.players);
     this.lapNumber        = 1;
     this.laps             = options.laps;
     this.raceOver         = false;
-    this.playerCount      = options.playerCount || 1;
+    this.playerCount      = options.teams ? 4 : options.players;
     this.suddenDeath      = false;
     this.eliminationStack = [];
 
@@ -733,10 +734,10 @@ TrackLoaderState.prototype.reload = function()
         new TrackLoaderState(
             this.trackData,
             {
-                playerCount : this.playerCount,
-                debug       : this.debug,
-                teams       : this.teams,
-                laps        : this.laps
+                players : this.playerCount,
+                debug   : this.debug,
+                teams   : this.teams,
+                laps    : this.laps
             }
         ),
         true
@@ -761,7 +762,10 @@ TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
             onSelectTrack           : this.selectTrack.bind(this),
             onChangeDebugMode       : this.changeDebugMode.bind(this),
             onChangeNumberOfPlayers : this.changeNumberOfPlayers.bind(this),
-            onSelectLaps            : this.setLaps.bind(this)
+            onSelectLaps            : this.setLaps.bind(this),
+            initialPlayers          : this.teams ? 'teams' : this.playerCount,
+            initialDebug            : this.debug,
+            initialLaps             : this.laps
         }),
         window.document.getElementById('content')
     );

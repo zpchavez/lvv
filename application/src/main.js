@@ -1,6 +1,24 @@
 'use strict';
 
-var Phaser        = require('phaser');
-var MainMenuState = require('./classes/states/menus/main-menu-state');
+var Phaser           = require('phaser');
+var TrackLoaderState = require('./classes/states/track-loader');
+var MainMenuState    = require('./classes/states/menus/main-menu-state');
+var settings         = require('./settings');
 
-var game = new Phaser.Game(960, 540, Phaser.AUTO, 'phaser-template', new MainMenuState());
+var InitialState;
+
+if (settings.state === 'track') {
+    InitialState = TrackLoaderState;
+} else {
+    InitialState = MainMenuState;
+}
+
+var game = new Phaser.Game(
+    960,
+    540,
+    Phaser.AUTO,
+    'phaser-template',
+    new MainMenuState()
+);
+
+module.exports = game;

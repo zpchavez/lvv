@@ -2,6 +2,7 @@
 
 var React     = require('react');
 var trackList = require('../track-list');
+var settings  = require('../settings');
 var _         = require('underscore');
 
 module.exports = React.createClass({
@@ -11,18 +12,21 @@ module.exports = React.createClass({
         onSelectTrack           : React.PropTypes.func.isRequired,
         onChangeDebugMode       : React.PropTypes.func.isRequired,
         onChangeNumberOfPlayers : React.PropTypes.func.isRequired,
-        onSelectLaps            : React.PropTypes.func.isRequired
+        onSelectLaps            : React.PropTypes.func.isRequired,
+        initialPlayers          : React.PropTypes.any.isRequired,
+        initialDebug            : React.PropTypes.bool.isRequired,
+        initialLaps             : React.PropTypes.any.isRequired
     },
 
     getInitialState : function()
     {
-        var initialTheme = _(trackList).keys()[0];
-
         return {
-            selectedTheme : initialTheme,
-            selectedTrack : _(trackList[initialTheme]).keys()[0],
-            playerCount   : 1,
-            laps          : 5
+            selectedTheme : settings.theme,
+            selectedTrack : settings.track,
+            debug         : this.props.initialDebug,
+            teams         : settings.teams,
+            playerCount   : this.props.initialPlayers,
+            laps          : this.props.initialLaps
         };
     },
 
@@ -66,9 +70,10 @@ module.exports = React.createClass({
 
     selectDebugMode : function(event)
     {
-        this.props.onChangeDebugMode(
-            !! parseInt(event.currentTarget.value, 10)
-        );
+        var debug = !! parseInt(event.currentTarget.value, 10)
+        this.props.onChangeDebugMode(debug);
+
+        this.setState({debug : debug})
     },
 
     selectNumberOfPlayers : function(event)
@@ -87,7 +92,10 @@ module.exports = React.createClass({
 
         this.props.onChangeNumberOfPlayers(playerCount, teams);
 
-        this.setState({playerCount : playerCount});
+        this.setState({
+            playerCount : playerCount,
+            teams       : teams
+        });
     },
 
     selectLaps : function(event)
@@ -107,6 +115,22 @@ module.exports = React.createClass({
         this.setState({laps : value});
     },
 
+    getPermalinkUrl : function()
+    {
+        return (
+            'http://' + window.location.host + window.location.pathname +
+            '?state=track' +
+            '&theme=' + this.state.selectedTheme +
+            '&track=' + this.state.selectedTrack +
+            '&players=' + this.state.playerCount +
+            '&laps=' + this.state.laps +
+            (this.state.teams ? '&teams=true' : '') +
+            (this.state.debug ? '&debug=true' : '') +
+            (settings.profiler ? '&profiler=true' : '') +
+            (settings.seed ? '&seed=' + settings.seed : '')
+        );
+    },
+
     renderThemeSelector : function()
     {
         var themes, options = [];
@@ -120,7 +144,7 @@ module.exports = React.createClass({
         });
 
         return (
-            <select id="theme" onChange={this.selectTheme}>
+            <select id="theme" onChange={this.selectTheme} defaultValue={settings.theme}>
                 {options}
             </select>
         );
@@ -139,7 +163,7 @@ module.exports = React.createClass({
         });
 
         return (
-            <select id="track" onChange={this.selectTrack}>
+            <select id="track" onChange={this.selectTrack} defaultValue={settings.track}>
                 {options}
             </select>
         );
@@ -159,14 +183,14 @@ module.exports = React.createClass({
                 </div>
                 <div>
                     <label htmlFor="debug">Debug</label>
-                    <select id="debug" onChange={this.selectDebugMode}>
-                        <option value={0}>off</option>
-                        <option value={1}>on</option>
+                    <select id="debug" onChange={this.selectDebugMode} defaultValue={this.props.initialDebug}>
+                        <option value={false}>off</option>
+                        <option value={true}>on</option>
                     </select>
                 </div>
                 <div>
                     <label htmlFor="playerCount">Number of Players</label>
-                    <select id="playerCount" onChange={this.selectNumberOfPlayers}>
+                    <select id="playerCount" onChange={this.selectNumberOfPlayers} value={this.state.playerCount}>
                         <option value={1}>1</option>
                         <option value={2}>2</option>
                         <option value={3}>3</option>
@@ -186,6 +210,9 @@ module.exports = React.createClass({
                 </div>
                 <div>
                     <button onClick={this.restart}>Restart</button>
+                </div>
+                <div>
+                    <a href={this.getPermalinkUrl()}>Permalink</a>
                 </div>
             </div>
         );
