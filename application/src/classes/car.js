@@ -106,11 +106,11 @@ Car.prototype.turnLeft = function()
     this.body.rotateLeft(this.constants.TURNING_VELOCITY);
 };
 
-Car.prototype.applyForces = function()
+// Straighten out if not turning
+Car.prototype.applyRotationSnap = function()
 {
-    var frictionMultiplierTotal, rotationSnapDeviation;
+    var rotationSnapDeviation;
 
-    // Straighten out if not turning
     if (this.body.angularVelocity === 0) {
         rotationSnapDeviation = this.body.angle % this.constants.ROTATION_SNAP;
 
@@ -128,47 +128,55 @@ Car.prototype.applyForces = function()
             }
         }
     }
+};
 
-    this.body.setZeroRotation();
-
-    if (this.airborne) {
-        return;
-    }
-
-    var carRefVelocity = rotateVector(
+Car.prototype.getCarRefVelocity = function()
+{
+    return rotateVector(
         -this.body.rotation,
         [this.body.velocity.x, this.body.velocity.y]
     );
+};
 
-    frictionMultiplierTotal = _.reduce(this.frictionMultipliers, function(total, element) {
+Car.prototype.getFrictionMultiplierTotal = function()
+{
+    return _.reduce(
+        this.frictionMultipliers,
+        function(total, element) {
             return total * element;
-        }, 1);
+        },
+        1
+    );
+};
 
-    // apply rolling friction
+Car.prototype.applyRollingFriction = function()
+{
     this.body.applyForce(
         rotateVector(
             this.body.rotation,
             [
                 0,
-                carRefVelocity[1] *
+                this.getCarRefVelocity()[1] *
                 this.constants.ROLLING_FRICTION_MULTIPLIER *
                 (this.onRoughTerrain ? this.constants.ROUGH_TERRAIN_MULTIPLIER : 1) *
-                frictionMultiplierTotal *
+                this.getFrictionMultiplierTotal() *
                 this.body.mass
             ]
         ),
         this.body.x,
         this.body.y
     );
+};
 
-    // apply skid friction
+Car.prototype.applySkidFriction = function()
+{
     this.body.applyForce(
         rotateVector(
             this.body.rotation,
             [
-                carRefVelocity[0] *
+                this.getCarRefVelocity()[0] *
                 this.constants.SKID_FRICTION_MULTIPLIER *
-                frictionMultiplierTotal *
+                this.getFrictionMultiplierTotal() *
                 this.body.mass,
                 0
             ]
@@ -176,6 +184,19 @@ Car.prototype.applyForces = function()
         this.body.x,
         this.body.y
     );
+};
+
+Car.prototype.applyForces = function()
+{
+    this.applyRotationSnap();
+
+    this.body.setZeroRotation();
+
+    if (! this.airborne) {
+        this.applyRollingFriction();
+
+        this.applySkidFriction();
+    }
 
     if (this.victorySpinning) {
         this.body.rotateRight(150);
