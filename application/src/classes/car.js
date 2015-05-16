@@ -48,7 +48,8 @@ Car.prototype.getConstants = function()
         ACCELERATION_FORCE          : 1600,
         BRAKE_FORCE                 : -500,
         TURNING_VELOCITY            : 80,
-        JUMP_HEIGHT_MULTIPLIER      : 0.002
+        JUMP_HEIGHT_MULTIPLIER      : 0.002,
+        ROTATION_SNAP               : 10
     };
 };
 
@@ -107,7 +108,26 @@ Car.prototype.turnLeft = function()
 
 Car.prototype.applyForces = function()
 {
-    var frictionMultiplierTotal;
+    var frictionMultiplierTotal, rotationSnapDeviation;
+
+    // Straighten out if not turning
+    if (this.body.angularVelocity === 0) {
+        rotationSnapDeviation = this.body.angle % this.constants.ROTATION_SNAP;
+
+        if (rotationSnapDeviation) {
+            if (rotationSnapDeviation <= (this.constants.ROTATION_SNAP / 2)) {
+                this.body.angle = (
+                    this.constants.ROTATION_SNAP *
+                    Math.floor(this.body.angle / this.constants.ROTATION_SNAP)
+                );
+            } else {
+                this.body.angle = (
+                    this.constants.ROTATION_SNAP *
+                    Math.ceil(this.body.angle / this.constants.ROTATION_SNAP)
+                );
+            }
+        }
+    }
 
     this.body.setZeroRotation();
 
