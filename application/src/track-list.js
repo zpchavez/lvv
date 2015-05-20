@@ -7,18 +7,22 @@ module.exports = {
         'Table Hop'   : [
             [
                 [
-                    urlRoot + 'breakroom/nw1.json'
+                    urlRoot + 'breakroom/nw1.json',
+                    urlRoot + 'breakroom/nw2.json'
                 ],
                 [
-                    urlRoot + 'breakroom/ne1.json'
+                    urlRoot + 'breakroom/ne1.json',
+                    urlRoot + 'breakroom/ne2.json'
                 ]
             ],
             [
                 [
-                    urlRoot + 'breakroom/sw1.json'
+                    urlRoot + 'breakroom/sw1.json',
+                    urlRoot + 'breakroom/sw2.json'
                 ],
                 [
-                    urlRoot + 'breakroom/se1.json'
+                    urlRoot + 'breakroom/se1.json',
+                    urlRoot + 'breakroom/se2.json'
                 ]
             ]
         ]

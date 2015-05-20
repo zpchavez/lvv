@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" nextobjectid="36">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" nextobjectid="23">
  <tileset firstgid="1" source="../../tilesets/breakroom.tsx"/>
  <tileset firstgid="257" source="../../tilesets/breakroom-obstacles.tsx"/>
  <tileset firstgid="264" source="../../tilesets/meta-tile.tsx"/>
@@ -15,67 +15,63 @@
  </layer>
  <layer name="drops" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJzt0bEJACAQBEHN7L9iW9BAWHAWLn9+1hxjmZmZmZl9OL2JRyserXi04tGKRyserXi04tGKRyserXi04tGKRyserXi04tGKRyserXi04tGKRyserXi04tGKRyserXi04tGKRyserXi04tGKRyserXi04tGKRyserXi04tGKRyserXi04tGKRyserXi04tGKRyserXi04tGKRyserXi04tGKRyserXi04tGKRyserfy+FY9WPFrxaMWjFY9WPFrxaMWjFY9WPFrxaMWjFY9WPFrxaMWjFY9WPFrxaMWjFY9WPFoVPE5uMB7V8WiNh5mZ3WwD7WFUIg==
+   eJzt0UEJACAAwED92T+xHQRh4h0swdYcY0mSJEkfxh1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tPjR4keLHy1+tJz+kCRJkl5vAwXpW40=
   </data>
  </layer>
  <imagelayer name="drawn-track-se">
-  <image source="../../../img/drawn-tracks/breakroom/se1.png"/>
+  <image source="../../../img/drawn-tracks/breakroom/se2.png"/>
  </imagelayer>
  <objectgroup name="obstacles">
-  <object id="14" gid="257" x="2230.24" y="578.184" rotation="87.5631"/>
-  <object id="15" gid="260" x="1286.74" y="2012.61" rotation="-89.6207"/>
-  <object id="16" gid="260" x="865" y="1927"/>
-  <object id="17" gid="260" x="1149" y="1931"/>
-  <object id="18" gid="260" x="1890.07" y="630.299" rotation="-159.381"/>
-  <object id="19" gid="260" x="2610.93" y="2672.08" rotation="-58.5424"/>
-  <object id="20" gid="262" x="859.453" y="3119.75" rotation="-90.3131"/>
-  <object id="21" gid="260" x="2202.9" y="2434.82" rotation="240.632"/>
-  <object id="22" gid="260" x="1699.45" y="2648.06" rotation="-57.3114"/>
-  <object id="25" gid="260" x="1655" y="1035.36" rotation="-93.6715"/>
-  <object id="26" gid="260" x="1153.64" y="1075.34" rotation="-80.8033"/>
-  <object id="32" gid="260" x="1751.63" y="1907.28" rotation="90.8773"/>
-  <object id="35" gid="260" x="1314.76" y="2321.83" rotation="-62.2002"/>
+  <object id="2" gid="260" x="652.289" y="757.724" rotation="-271.112"/>
+  <object id="3" gid="260" x="1149.47" y="750.197" rotation="-269.338"/>
+  <object id="4" gid="260" x="1641.99" y="755.266" rotation="91.3546"/>
+  <object id="5" gid="260" x="1112.61" y="1231.49" rotation="-270.588"/>
+  <object id="6" gid="260" x="1609.26" y="1227.39" rotation="-269.621"/>
+  <object id="7" gid="260" x="2105.29" y="1235.24" rotation="-269.585"/>
+  <object id="8" gid="260" x="1290.69" y="1652.98" rotation="-255.393"/>
+  <object id="9" gid="260" x="1747.1" y="1818.35" rotation="69.0769"/>
+  <object id="10" gid="260" x="1952.79" y="2298.84" rotation="46.5389"/>
+  <object id="11" gid="260" x="2545.86" y="2356.99" rotation="-101.683"/>
+  <object id="12" gid="257" x="286.716" y="1518.81" rotation="34.226"/>
+  <object id="13" gid="260" x="1471.66" y="2300.57" rotation="-272.249"/>
+  <object id="14" gid="260" x="1565.92" y="2456.3" rotation="-278.255"/>
+  <object id="15" gid="260" x="1395" y="2605"/>
+  <object id="17" gid="262" x="1021.9" y="2987.6" rotation="-90.8849"/>
  </objectgroup>
  <layer name="ramps" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJzt0aERACAQwLDHsf/EWCyKimSC3nUGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgZa/fBdz8aPGjxY8WP1r8aPGjxY8WP1r8aPGjxY8WP1r8aPGjxY8WP1r8aPGjxY8WP1r8aPGjxY8WP1r8aPEDgBcHzLQA9A==
+   eJzt0TENACAAwDD48K+YFwEEdrQKlmwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHhrzd8FnPxo8aPFjxY/Wvxo8aPFjxY/Wvxo8aPFjxY/Wvxo8aPFjxY/Wvxo8aPFjxY/Wvxo8aPFjxY/Wvxo8QMAALhpA6jSAPQ=
   </data>
  </layer>
  <objectgroup name="track">
-  <object id="27" type="marker" x="792" y="1010" width="640" height="60" rotation="180">
+  <object id="18" type="marker" x="164" y="724" width="648" height="108">
    <properties>
     <property name="finish-line-candidate" value="0"/>
     <property name="index" value="0"/>
    </properties>
   </object>
-  <object id="28" type="marker" x="1282" y="1058" width="428" height="54" rotation="90">
+  <object id="19" type="marker" x="1708" y="780" width="472" height="108" rotation="90">
    <properties>
     <property name="finish-line-candidate" value="1"/>
     <property name="index" value="1"/>
    </properties>
   </object>
-  <object id="29" type="marker" x="2548" y="774" width="436" height="54">
+  <object id="20" type="marker" x="1600" y="1768" width="472" height="108" rotation="270">
    <properties>
     <property name="finish-line-candidate" value="0"/>
     <property name="index" value="2"/>
    </properties>
   </object>
-  <object id="31" type="marker" x="1926" y="2062" width="866" height="64" rotation="180">
+  <object id="21" type="marker" x="2004" y="1816" width="472" height="108" rotation="90">
    <properties>
     <property name="finish-line-candidate" value="0"/>
     <property name="index" value="3"/>
    </properties>
   </object>
-  <object id="33" type="marker" x="3126" y="2536" width="602" height="60" rotation="180">
+  <object id="22" type="marker" x="1384" y="2972" width="472" height="108" rotation="270">
    <properties>
     <property name="finish-line-candidate" value="0"/>
     <property name="index" value="4"/>
-   </properties>
-  </object>
-  <object id="34" type="marker" x="1226" y="3206" width="884" height="58" rotation="270">
-   <properties>
-    <property name="finish-line-candidate" value="0"/>
-    <property name="index" value="5"/>
    </properties>
   </object>
  </objectgroup>
