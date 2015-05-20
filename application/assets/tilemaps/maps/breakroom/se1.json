@@ -281,29 +281,13 @@
          "name":"track",
          "objects":[
                 {
-                 "height":66,
-                 "id":23,
-                 "name":"",
-                 "properties":
-                    {
-                     "finish-line-candidate":"0",
-                     "index":"0"
-                    },
-                 "rotation":180,
-                 "type":"marker",
-                 "visible":true,
-                 "width":1568,
-                 "x":2324,
-                 "y":130
-                }, 
-                {
                  "height":60,
                  "id":27,
                  "name":"",
                  "properties":
                     {
                      "finish-line-candidate":"0",
-                     "index":"1"
+                     "index":"0"
                     },
                  "rotation":180,
                  "type":"marker",
@@ -319,7 +303,7 @@
                  "properties":
                     {
                      "finish-line-candidate":"1",
-                     "index":"2"
+                     "index":"1"
                     },
                  "rotation":90,
                  "type":"marker",
@@ -335,7 +319,7 @@
                  "properties":
                     {
                      "finish-line-candidate":"0",
-                     "index":"3"
+                     "index":"2"
                     },
                  "rotation":0,
                  "type":"marker",
@@ -351,7 +335,7 @@
                  "properties":
                     {
                      "finish-line-candidate":"0",
-                     "index":"4"
+                     "index":"3"
                     },
                  "rotation":180,
                  "type":"marker",
@@ -367,7 +351,7 @@
                  "properties":
                     {
                      "finish-line-candidate":"0",
-                     "index":"5"
+                     "index":"4"
                     },
                  "rotation":180,
                  "type":"marker",
@@ -383,7 +367,7 @@
                  "properties":
                     {
                      "finish-line-candidate":"0",
-                     "index":"6"
+                     "index":"5"
                     },
                  "rotation":270,
                  "type":"marker",
