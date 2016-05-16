@@ -61,7 +61,6 @@ MainMenuState.prototype.onBathroomObstacleSetClick = function()
 MainMenuState.prototype.onTrackLoaderClick = function()
 {
     var trackLoader, stateManager = this.game.state;
-
     trackLoader = new TrackLoader(this.game.load);
 
     trackLoader.load(settings.theme, settings.track, function(data) {
@@ -70,6 +69,7 @@ MainMenuState.prototype.onTrackLoaderClick = function()
             new TrackLoaderState(data),
             true
         );
+        this.shutdown();
     });
 };
 

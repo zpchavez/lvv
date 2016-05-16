@@ -37,13 +37,13 @@ paths = {
     libs:   [
         './node_modules/phaser/build/phaser.js',
         './node_modules/phaser-debug/dist/phaser-debug.js',
-        './node_modules/phaser-tiled/dist/phaser-tiled.js',
-        './node_modules/phaser-tiled/node_modules/zlibjs/bin/node-zlib.js.map'
+        // 'https://github.com/englercj/phaser-tiled/releases/download/v2.0.2/phaser-tiled.js'
     ],
     js: [
         'application/src/*.js',
         'application/src/**/*.js',
-        'application/src/components/**/*.jsx'
+        'application/src/components/**/*.jsx',
+        './node_modules/phaser-tiled/src/browser.js'
     ],
     entry: './application/src/main.js',
     dist: './build/',

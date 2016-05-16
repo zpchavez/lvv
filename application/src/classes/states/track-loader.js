@@ -2,6 +2,7 @@
 'use strict';
 
 var Phaser           = require('phaser');
+var Tiled            = require('phaser-tiled/src/browser');
 var React            = require('react');
 var CarFactory       = require('../car-factory');
 var ObstacleFactory  = require('../obstacles/obstacle-factory');
@@ -19,7 +20,16 @@ var NEXT_ROUND_DELAY = 2500;
 
 var TrackLoaderState = function(trackData, options)
 {
-    options = options || {};
+    Phaser.State.apply(this, arguments);
+    this.trackData = trackData;
+    this.options = options;
+};
+
+TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
+
+TrackLoaderState.prototype.preload = function()
+{
+    var options = this.options || {};
     _(options).defaults({
         debug       : settings.debug,
         players     : settings.players,
@@ -31,11 +41,7 @@ var TrackLoaderState = function(trackData, options)
         throw new Error('Invalid number of players for team mode');
     }
 
-    this.trackData = trackData;
-
     this.debug = options.debug;
-
-    Phaser.State.apply(this, arguments);
 
     this.victorySpinning  = false;
     this.carFactory       = new CarFactory(this, {teams : options.teams});
@@ -51,20 +57,31 @@ var TrackLoaderState = function(trackData, options)
     this.eliminationStack = [];
 
     this.track.setDebug(this.debug);
-};
 
-TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
-
-TrackLoaderState.prototype.preload = function()
-{
-    var state = this,
-        cacheKey = Phaser.Plugin.Tiled.utils.cacheKey;
-
-    this.game.add.plugin(Phaser.Plugin.Tiled);
+    this.game.add.plugin(Tiled);
 
     this.carFactory.loadAssets();
     this.track.loadAssets();
     this.score.loadAssets();
+
+    if (this.trackData) {
+        this.loadTrack();
+    } else {
+        var trackLoader = new TrackLoader(this.game.load);
+
+        var state = this;
+        trackLoader.load(settings.theme, settings.track, function(data) {
+            state.trackData = data;
+            state.loadTrack();
+            console.log('load that track');
+        });
+    }
+};
+
+TrackLoaderState.prototype.loadTrack = function()
+{
+    var state = this;
+    var cacheKey = Tiled.utils.cacheKey;
 
     this.load.tiledmap(
         cacheKey('track', 'tiledmap'),
@@ -697,7 +714,6 @@ TrackLoaderState.prototype.selectTrack = function(trackTheme, trackName)
     };
 
     trackLoader = new TrackLoader(this.load);
-
     trackLoader.load(trackTheme, trackName, callback);
 };
 

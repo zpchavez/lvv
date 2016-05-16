@@ -122,7 +122,6 @@ TrackLoader.prototype.load = function(theme, name, callback)
             var data = trackLoader.phaserLoader.game.cache.getJSON('track-data');
             callback(trackLoader.adjustTrackData(data));
         });
-        this.phaserLoader.start();
         return;
     }
 
@@ -151,6 +150,7 @@ TrackLoader.prototype.load = function(theme, name, callback)
         callback(trackLoader.adjustTrackData(assembledTrackData));
     });
 
+    // this.phaserLoader.resetLocked = true;
     this.phaserLoader.start();
 };
 

@@ -18,7 +18,7 @@ var game = new Phaser.Game(
     540,
     Phaser.AUTO,
     'phaser-template',
-    new MainMenuState()
+    new InitialState()
 );
 
 module.exports = game;
