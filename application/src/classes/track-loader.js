@@ -150,7 +150,6 @@ TrackLoader.prototype.load = function(theme, name, callback)
         callback(trackLoader.adjustTrackData(assembledTrackData));
     });
 
-    // this.phaserLoader.resetLocked = true;
     this.phaserLoader.start();
 };
 

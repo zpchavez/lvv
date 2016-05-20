@@ -1,24 +1,41 @@
 'use strict';
 
 var Phaser           = require('phaser');
-var TrackLoaderState = require('./classes/states/track-loader');
+var TrackLoaderState = require('./classes/states/track-loader-state');
+var TrackLoader      = require('./classes/track-loader');
 var MainMenuState    = require('./classes/states/menus/main-menu-state');
 var settings         = require('./settings');
-
-var InitialState;
-
-if (settings.state === 'track') {
-    InitialState = TrackLoaderState;
-} else {
-    InitialState = MainMenuState;
-}
 
 var game = new Phaser.Game(
     960,
     540,
     Phaser.AUTO,
     'phaser-template',
-    new InitialState()
+    null
 );
 
-module.exports = game;
+var loadTrack = function() {
+    // If loader not yet initialized, try again in a bit
+    if (! game.load) {
+        setTimeout(
+            loadTrack,
+            100
+        );
+        return;
+    }
+    var trackLoader = new TrackLoader(game.load);
+
+    trackLoader.load(settings.theme, settings.track, function(data) {
+        game.state.add(
+            'track-loader',
+            new TrackLoaderState(data),
+            true
+        );
+    });
+}
+
+if (settings.state === 'track') {
+    loadTrack();
+} else {
+    game.state.add('main-menu', new MainMenuState, true);
+}
