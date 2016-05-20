@@ -26,13 +26,13 @@ MainMenuState.prototype.preload = function()
 
 MainMenuState.prototype.create = function()
 {
-    this.add.button(120, 10, 'button-driving-example', this.onDrivingExampleClick);
+    this.add.button(120, 10, 'button-driving-example', this.onDrivingExampleClick.bind(this));
 
-    this.add.button(230, 10, 'button-track-marker-example', this.onTrackMarkerExampleClick);
+    this.add.button(230, 10, 'button-track-marker-example', this.onTrackMarkerExampleClick.bind(this));
 
-    this.add.button(400, 10, 'button-track-loader', this.onTrackLoaderClick);
+    this.add.button(400, 10, 'button-track-loader', this.onTrackLoaderClick.bind(this));
 
-    this.add.button(10, 120, 'button-bathroom-obstacle-set', this.onBathroomObstacleSetClick);
+    this.add.button(10, 120, 'button-bathroom-obstacle-set', this.onBathroomObstacleSetClick.bind(this));
 
     if (settings.profiler) {
         this.game.add.plugin(Phaser.Plugin.Debug);
@@ -61,6 +61,7 @@ MainMenuState.prototype.onBathroomObstacleSetClick = function()
 MainMenuState.prototype.onTrackLoaderClick = function()
 {
     var trackLoader, stateManager = this.game.state;
+    var mainMenu = this;
     trackLoader = new TrackLoader(this.game.load);
 
     trackLoader.load(settings.theme, settings.track, function(data) {
@@ -69,7 +70,7 @@ MainMenuState.prototype.onTrackLoaderClick = function()
             new TrackLoaderState(data),
             true
         );
-        this.shutdown();
+        mainMenu.shutdown();
     });
 };
 
