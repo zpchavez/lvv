@@ -122,6 +122,7 @@ TrackLoader.prototype.load = function(theme, name, callback)
             var data = trackLoader.phaserLoader.game.cache.getJSON('track-data');
             callback(trackLoader.adjustTrackData(data));
         });
+        this.phaserLoader.start();
         return;
     }
 
