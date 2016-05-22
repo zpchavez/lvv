@@ -1,14 +1,14 @@
 'use strict';
 
 var Phaser           = require('phaser');
-var TrackLoaderState = require('./classes/states/track-loader');
+var RaceState        = require('./classes/states/race-state');
 var MainMenuState    = require('./classes/states/menus/main-menu-state');
 var settings         = require('./settings');
 
 var InitialState;
 
 if (settings.state === 'track') {
-    InitialState = TrackLoaderState;
+    InitialState = RaceState;
 } else {
     InitialState = MainMenuState;
 }
