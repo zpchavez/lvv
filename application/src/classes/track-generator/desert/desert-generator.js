@@ -56,10 +56,26 @@ DesertGenerator.prototype._getLayer = function(data, name) {
 
 DesertGenerator.prototype._generateBackground = function(data) {
     var background = this._getLayer(data, 'background');
+
+    // Start with all sand
     background.data.push.apply(
         background.data,
         (new Array(100 * 100)).fill(SAND)
     );
+
+    // Draw a rect
+    var rect = {
+        nwPos: [10, 10],
+        ewLength: 70,
+        nsLength: 70,
+        width: 3,
+    };
+
+    this._drawHorizontalLine(background.data, PAVEMENT, rect.nwPos, rect.ewLength);
+    this._drawVerticalLine(background.data, PAVEMENT, rect.nwPos, rect.nsLength);
+    this._drawVerticalLine(background.data, PAVEMENT, [rect.nwPos[0] + rect.ewLength, rect.nwPos[1]], rect.nsLength);
+    this._drawHorizontalLine(background.data, PAVEMENT, [rect.nwPos[0], rect.nwPos[1] + rect.nsLength], rect.ewLength);
+
     return data;
 }
 
@@ -96,6 +112,24 @@ DesertGenerator.prototype._generateTrackMarkers = function(data) {
         }
     );
     return data;
+};
+
+DesertGenerator.prototype._drawHorizontalLine = function(data, tile, leftPos, length) {
+    var x = leftPos[0];
+    var y = leftPos[1];
+    data.splice.apply(data, [
+        (this.template.width * y) + x,
+        length,
+    ].concat(new Array(length).fill(tile)));
+};
+
+DesertGenerator.prototype._drawVerticalLine = function(data, tile, topPos, length) {
+    var x = topPos[0];
+    var y = topPos[1];
+
+    for (var pos = y; pos <= y + length; pos += 1) {
+        data[(pos * this.template.width) + x] = tile;
+    }
 };
 
 module.exports = DesertGenerator;
