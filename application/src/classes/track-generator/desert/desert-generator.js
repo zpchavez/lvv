@@ -1,6 +1,6 @@
 var getTemplate = require('./get-desert-template');
 
-var DESERT = 39;
+var SAND = 39;
 var PAVEMENT = 46;
 var PAVEMENT_INNER_NW = 34;
 var PAVEMENT_INNER_N = 35;
@@ -23,6 +23,10 @@ var GRAVEL_INNER_E = 19;
 var GRAVEL_INNER_SW = 28;
 var GRAVEL_INNER_S = 29;
 var GRAVEL_INNER_SE = 30;
+var GRAVEL_OUTER_NW = 4;
+var GRAVEL_OUTER_NE = 5;
+var GRAVEL_OUTER_SW = 15;
+var GRAVEL_OUTER_SE = 16;
 
 var DesertGenerator = function(options) {
     this.options = options;
@@ -32,43 +36,8 @@ var DesertGenerator = function(options) {
 DesertGenerator.prototype.generate = function() {
     var data = Object.assign({}, this.template);
 
-    var background = this._getLayer(data, 'background');
-    background.data.push.apply(
-        background.data,
-        (new Array(100 * 100)).fill(39)
-    );
-
-    var track = this._getLayer(data, 'track');
-
-    track.objects.push(
-        {
-            "height":32,
-            "id":18,
-            "name":"finish-line",
-            "properties": {},
-            "rotation":0,
-            "type":"finish-line",
-            "visible":true,
-            "width":681,
-            "x":90,
-            "y":2176
-        },
-        {
-         "height":33,
-         "id":19,
-         "name":"",
-         "properties":
-            {
-             "index":"0"
-            },
-         "rotation":0,
-         "type":"marker",
-         "visible":true,
-         "width":910,
-         "x":18,
-         "y":705
-        }
-    );
+    this._generateBackground(data);
+    this._generateTrackMarkers(data);
 
     return data;
 };
@@ -83,6 +52,50 @@ DesertGenerator.prototype._getLayer = function(data, name) {
     });
 
     return returnedLayer;
+};
+
+DesertGenerator.prototype._generateBackground = function(data) {
+    var background = this._getLayer(data, 'background');
+    background.data.push.apply(
+        background.data,
+        (new Array(100 * 100)).fill(SAND)
+    );
+    return data;
+}
+
+DesertGenerator.prototype._generateTrackMarkers = function(data) {
+    var track = this._getLayer(data, 'track');
+
+    track.objects.push(
+        {
+            "height":32,
+            "id":18,
+            "name":"finish-line",
+            "properties": {},
+            "rotation":0,
+            "type":"finish-line",
+            "visible":true,
+            "width":681,
+            "x":500,
+            "y":2176
+        },
+        {
+         "height":33,
+         "id":19,
+         "name":"",
+         "properties":
+            {
+             "index":"0"
+            },
+         "rotation":0,
+         "type":"marker",
+         "visible":true,
+         "width":910,
+         "x":500,
+         "y":705
+        }
+    );
+    return data;
 };
 
 module.exports = DesertGenerator;
