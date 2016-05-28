@@ -1,5 +1,6 @@
 var getTemplate = require('./get-desert-template');
 var rng = require('../../../rng');
+var _ = require('underscore');
 
 var SAND = 39;
 var PAVEMENT = 46;
@@ -29,7 +30,18 @@ var GRAVEL_OUTER_NE = 5;
 var GRAVEL_OUTER_SW = 15;
 var GRAVEL_OUTER_SE = 16;
 
+var NORTH = 0;
+var EAST = 90;
+var SOUTH = 180;
+var WEST = 270;
+
 var DesertGenerator = function(options) {
+    options = options || {};
+
+    _(options).defaults({
+        trackWidth: 5
+    });
+
     this.options = options;
     this.template = getTemplate();
 };
@@ -37,8 +49,9 @@ var DesertGenerator = function(options) {
 DesertGenerator.prototype.generate = function() {
     var data = Object.assign({}, this.template);
 
-    this._generateBackground(data);
-    this._generateTrackMarkers(data);
+    var points = this._plotPoints();
+    this._generateBackground(points, data);
+    this._generateTrackMarkers(points, data);
 
     return data;
 };
@@ -55,7 +68,7 @@ DesertGenerator.prototype._getLayer = function(data, name) {
     return returnedLayer;
 };
 
-DesertGenerator.prototype._generateBackground = function(data) {
+DesertGenerator.prototype._generateBackground = function(points, data) {
     var background = this._getLayer(data, 'background');
 
     // Start with all sand
@@ -64,54 +77,63 @@ DesertGenerator.prototype._generateBackground = function(data) {
         (new Array(100 * 100)).fill(SAND)
     );
 
-    var points = this._plotPoints();
-
     console.log('points', JSON.stringify(points));
 
     points.forEach(function(point) {
-        background.data[point[0] * background.width + point[1]] = PAVEMENT;
+        background.data[point[0] + (point[1] * background.width)] = PAVEMENT;
     });
 
     return data;
 }
 
-DesertGenerator.prototype._generateTrackMarkers = function(data) {
+DesertGenerator.prototype._generateTrackMarkers = function(points, data) {
     var track = this._getLayer(data, 'track');
+
+    var finishLine = points[0];
 
     track.objects.push(
         {
-            "height":32,
-            "id":18,
+            "height": this.template.tileheight,
+            "width": this.template.tilewidth * this.options.trackWidth * 3,
+            "id": 1,
             "name":"finish-line",
             "properties": {},
-            "rotation":0,
+            "rotation": finishLine[2],
             "type":"finish-line",
             "visible":true,
-            "width":681,
-            "x":500,
-            "y":2176
-        },
-        {
-         "height":33,
-         "id":19,
-         "name":"",
-         "properties":
-            {
-             "index":"0"
-            },
-         "rotation":0,
-         "type":"marker",
-         "visible":true,
-         "width":910,
-         "x":500,
-         "y":705
+            "x": finishLine[0] * this.template.tilewidth,
+            "y": finishLine[1] * this.template.tileheight
         }
     );
+
+    points.slice(1).forEach(function (point, index) {
+        track.objects.push(
+            {
+                "height": this.template.tileheight,
+                "width": this.template.tilewidth * this.options.trackWidth * 3,
+                "id": index + 2,
+                "name": "",
+                "properties": {
+                    index: index
+                },
+                "rotation": point[2],
+                "type": "marker",
+                "visible": true,
+                "x": point[0] * this.template.tilewidth,
+                "y": point[1] * this.template.tileheight
+            }
+        );
+    }.bind(this));
+
+    console.log('points', track.objects);
+
     return data;
 };
 
 DesertGenerator.prototype._plotPoints = function() {
-    // Pick starting point
+    // tiles to leave between the track and the world bounds and other parts of the track
+    var TRACK_BUFFER = 5;
+    var points = [];
     var corners = [
         [0, 0],
         [this.template.width, 0],
@@ -120,28 +142,65 @@ DesertGenerator.prototype._plotPoints = function() {
     ];
     var awayFromCornerMultipliers = [
         [1, 1],
-        [1, -1],
-        [-1, -1],
         [-1, 1],
+        [-1, -1],
+        [1, -1],
     ];
+    var quadrantDirection = [EAST, SOUTH, WEST, NORTH];
     var startingPoint;
     var startingQuadrant = rng.getIntBetween(0,3);
     var corner = corners[startingQuadrant];
     var multiplier = awayFromCornerMultipliers[startingQuadrant];
+
     var startingPoint = [
         rng.getIntBetween(
-            corner[0] + 5 * multiplier[0],
-            corner[0] + 15 * multiplier[0]
+            corner[0] + (TRACK_BUFFER * multiplier[0]),
+            corner[0] + ((TRACK_BUFFER + 10) * multiplier[0])
         ),
         rng.getIntBetween(
-            corner[1] + 5 * multiplier[1],
-            corner[1] + 15 * multiplier[1]
-        )
+            corner[1] + (TRACK_BUFFER * multiplier[1]),
+            corner[1] + ((TRACK_BUFFER + 10) * multiplier[1])
+        ),
+        quadrantDirection[startingQuadrant]
     ];
+    points.push(startingPoint);
 
-    return [
-        startingPoint
-    ];
+    var nextPoint;
+    var prevPoint = points[points.length - 1];
+    switch (prevPoint[2]) {
+        case NORTH:
+            nextPoint = [
+                prevPoint[0],
+                rng.getIntBetween(prevPoint[1] + 30, TRACK_BUFFER),
+                EAST,
+            ];
+            break;
+        case EAST:
+            nextPoint = [
+                rng.getIntBetween(prevPoint[0] + 30, this.template.width - TRACK_BUFFER),
+                prevPoint[1],
+                SOUTH,
+            ];
+            break;
+        case SOUTH:
+            nextPoint = [
+                prevPoint[0],
+                rng.getIntBetween(prevPoint[1] + 30, this.template.height - TRACK_BUFFER),
+                WEST
+            ];
+            break;
+        case WEST:
+            nextPoint = [
+                rng.getIntBetween(prevPoint[0] + 30, TRACK_BUFFER),
+                prevPoint[1],
+                NORTH,
+            ];
+            break;
+    }
+
+    points.push(nextPoint);
+
+    return points;
 };
 
 DesertGenerator.prototype._drawHorizontalLine = function(data, tile, leftPos, length) {
