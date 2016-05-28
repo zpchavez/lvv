@@ -1,4 +1,5 @@
 var getTemplate = require('./get-desert-template');
+var rng = require('../../../rng');
 
 var SAND = 39;
 var PAVEMENT = 46;
@@ -63,18 +64,13 @@ DesertGenerator.prototype._generateBackground = function(data) {
         (new Array(100 * 100)).fill(SAND)
     );
 
-    // Draw a rect
-    var rect = {
-        nwPos: [10, 10],
-        ewLength: 70,
-        nsLength: 70,
-        width: 3,
-    };
+    var points = this._plotPoints();
 
-    this._drawHorizontalLine(background.data, PAVEMENT, rect.nwPos, rect.ewLength);
-    this._drawVerticalLine(background.data, PAVEMENT, rect.nwPos, rect.nsLength);
-    this._drawVerticalLine(background.data, PAVEMENT, [rect.nwPos[0] + rect.ewLength, rect.nwPos[1]], rect.nsLength);
-    this._drawHorizontalLine(background.data, PAVEMENT, [rect.nwPos[0], rect.nwPos[1] + rect.nsLength], rect.ewLength);
+    console.log('points', JSON.stringify(points));
+
+    points.forEach(function(point) {
+        background.data[point[0] * background.width + point[1]] = PAVEMENT;
+    });
 
     return data;
 }
@@ -112,6 +108,40 @@ DesertGenerator.prototype._generateTrackMarkers = function(data) {
         }
     );
     return data;
+};
+
+DesertGenerator.prototype._plotPoints = function() {
+    // Pick starting point
+    var corners = [
+        [0, 0],
+        [this.template.width, 0],
+        [this.template.width, this.template.height],
+        [0, this.template.height],
+    ];
+    var awayFromCornerMultipliers = [
+        [1, 1],
+        [1, -1],
+        [-1, -1],
+        [-1, 1],
+    ];
+    var startingPoint;
+    var startingQuadrant = rng.getIntBetween(0,3);
+    var corner = corners[startingQuadrant];
+    var multiplier = awayFromCornerMultipliers[startingQuadrant];
+    var startingPoint = [
+        rng.getIntBetween(
+            corner[0] + 5 * multiplier[0],
+            corner[0] + 15 * multiplier[0]
+        ),
+        rng.getIntBetween(
+            corner[1] + 5 * multiplier[1],
+            corner[1] + 15 * multiplier[1]
+        )
+    ];
+
+    return [
+        startingPoint
+    ];
 };
 
 DesertGenerator.prototype._drawHorizontalLine = function(data, tile, leftPos, length) {
