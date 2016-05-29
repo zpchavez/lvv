@@ -3,8 +3,8 @@ var _ = require('underscore');
 module.exports = function(options) {
     options = options || {};
     _(options).defaults({
-        height: 100,
-        width: 100,
+        height: 200,
+        width: 200,
     });
     return {
         "height":options.height,
