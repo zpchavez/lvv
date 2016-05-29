@@ -171,7 +171,7 @@ DesertGenerator.prototype._plotPoints = function() {
         case NORTH:
             nextPoint = [
                 prevPoint[0],
-                rng.getIntBetween(prevPoint[1] + 30, TRACK_BUFFER),
+                rng.getIntBetween(prevPoint[1] - 30, TRACK_BUFFER),
                 EAST,
             ];
             break;
@@ -191,7 +191,7 @@ DesertGenerator.prototype._plotPoints = function() {
             break;
         case WEST:
             nextPoint = [
-                rng.getIntBetween(prevPoint[0] + 30, TRACK_BUFFER),
+                rng.getIntBetween(prevPoint[0] - 30, TRACK_BUFFER),
                 prevPoint[1],
                 NORTH,
             ];
