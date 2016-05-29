@@ -159,42 +159,102 @@ DesertGenerator.prototype._plotPoints = function() {
     ];
     points.push(startingPoint);
 
-    var nextPoint;
-    var prevPoint = points[points.length - 1];
-    switch (prevPoint[2]) {
-        case NORTH:
-            nextPoint = [
-                prevPoint[0],
-                rng.getIntBetween(prevPoint[1] - 30, TRACK_BUFFER),
-                EAST,
-            ];
-            break;
-        case EAST:
-            nextPoint = [
-                rng.getIntBetween(prevPoint[0] + 30, this.template.width - TRACK_BUFFER),
-                prevPoint[1],
-                SOUTH,
-            ];
-            break;
-        case SOUTH:
-            nextPoint = [
-                prevPoint[0],
-                rng.getIntBetween(prevPoint[1] + 30, this.template.height - TRACK_BUFFER),
-                WEST
-            ];
-            break;
-        case WEST:
-            nextPoint = [
-                rng.getIntBetween(prevPoint[0] - 30, TRACK_BUFFER),
-                prevPoint[1],
-                NORTH,
-            ];
-            break;
+    var plotNextPoint = function (retry) {
+        retry = retry || 0;
+        if (retry > 100) {
+            throw new Error('too many retries');
+        }
+
+        var nextPoint;
+        var prevPoints = points.slice().reverse();
+        var nextDirection;
+        switch (prevPoints[0]) {
+            case NORTH:
+                if (prevPoints[1] === null) {
+                    nextDirection = EAST;
+                } else {
+                    nextDirection = rng.pickValueFromArray([EAST, WEST]);
+                }
+                break;
+            case EAST:
+                if (prevPrevPoint === null) {
+                    nextDirection = SOUTH;
+                } else {
+                    nextDirection = rng.pickValueFromArray([NORTH, SOUTH]);
+                }
+                break;
+            case SOUTH:
+                if (prevPoints[1] === null) {
+                    nextDirection = WEST;
+                } else {
+                    nextDirection = rng.pickValueFromArray([EAST, WEST]);
+                }
+                break;
+            case WEST:
+                if (prevPrevPoint === null) {
+                    nextDirection = NORTH;
+                } else {
+                    nextDirection = rng.pickValueFromArray([NORTH, SOUTH]);
+                }
+                break;
+        }
+
+        switch (nextDirection) {
+            case EAST:
+                nextPoint = [
+                    prevPoint[0],
+                    rng.getIntBetween(prevPoint[1] - 30, TRACK_BUFFER),
+                    EAST,
+                ];
+                break;
+            case WEST:
+                nextPoint = [
+                    prevPoint[0],
+                    rng.getIntBetween(prevPoint[1] + 30, this.template.height - TRACK_BUFFER),
+                    WEST
+                ];
+                break;
+            case SOUTH:
+                nextPoint = [
+                    rng.getIntBetween(prevPoint[0] + 30, this.template.width - TRACK_BUFFER),
+                    prevPoint[1],
+                    SOUTH,
+                ];
+                break;
+            case NORTH:
+                nextPoint = [
+                    rng.getIntBetween(prevPoint[0] - 30, TRACK_BUFFER),
+                    prevPoint[1],
+                    NORTH,
+                ];
+                break;
+        }
+
+        if (this._isValidNextPoint(points, nextPoint)) {
+            return nextPoint;
+        } else {
+            return plotNextPoint(retries + 1);
+        }
+    }.bind(this);
+
+    var loops = 0;
+    while (! this._pointsAreCompletable(points)) {
+        if (loops > 500) {
+            throw new Error('trying too hard');
+        }
+        points.push(plotNextPoint());
+        loops += 1;
     }
 
-    points.push(nextPoint);
-
     return points;
+};
+
+DesertGenerator.prototype._isValidNextPoint = function(points, nextPoint) {
+
+};
+
+DesertGenerator.prototype._pointsAreCompletable = function(points) {
+
 };
 
 DesertGenerator.prototype._drawHorizontalLine = function(data, tile, leftPos, length) {
