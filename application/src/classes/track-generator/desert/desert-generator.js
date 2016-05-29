@@ -89,41 +89,35 @@ DesertGenerator.prototype._generateBackground = function(points, data) {
 DesertGenerator.prototype._generateTrackMarkers = function(points, data) {
     var track = this._getLayer(data, 'track');
 
-    var finishLine = points[0];
+    var getMarker = function (point, index, isFinish) {
+        var id = isFinish ? index : index + 1;
 
-    track.objects.push(
-        {
+        var marker = {
+            "id": id,
             "height": this.template.tileheight,
             "width": this.template.tilewidth * this.options.trackWidth * 3,
-            "id": 1,
-            "name":"finish-line",
-            "properties": {},
-            "rotation": finishLine[2],
-            "type":"finish-line",
+            "x": point[0] * this.template.tilewidth,
+            "y": point[1] * this.template.tileheight,
+            "rotation": point[2],
             "visible":true,
-            "x": finishLine[0] * this.template.tilewidth,
-            "y": finishLine[1] * this.template.tileheight
+        };
+
+        if (isFinish) {
+            marker.name = 'finish-line';
+            marker.type = 'finish-line';
+        } else {
+            marker.name = '';
+            marker.properties = { index: index };
         }
-    );
+
+        return marker;
+    }.bind(this);
+
+    track.objects.push(getMarker(points[0], 0, true));
 
     points.slice(1).forEach(function (point, index) {
-        track.objects.push(
-            {
-                "height": this.template.tileheight,
-                "width": this.template.tilewidth * this.options.trackWidth * 3,
-                "id": index + 2,
-                "name": "",
-                "properties": {
-                    index: index
-                },
-                "rotation": point[2],
-                "type": "marker",
-                "visible": true,
-                "x": point[0] * this.template.tilewidth,
-                "y": point[1] * this.template.tileheight
-            }
-        );
-    }.bind(this));
+        track.objects.push(getMarker(point, index));
+    });
 
     console.log('points', track.objects);
 
