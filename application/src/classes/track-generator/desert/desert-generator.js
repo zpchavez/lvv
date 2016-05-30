@@ -35,10 +35,15 @@ var EAST = 90;
 var SOUTH = 180;
 var WEST = 270;
 
-// tiles to leave between the track and the world bounds and other parts of the track
-var TRACK_BUFFER = 5;
 var TRACK_WIDTH  = 5;
 var MAP_SIZE     = 200;
+
+EMBEL_NONE = 'EMBEL_NONE';
+EMBEL_T = 'EMBEL_T';
+INWARD = 'INWARD';
+OUTWARD = 'OUTWARD';
+LEFT = 'LEFT';
+RIGHT = 'RIGHT';
 
 var DesertGenerator = function(options) {
     options = options || {};
@@ -85,7 +90,6 @@ DesertGenerator.prototype._generateBackground = function(points, data) {
     var drawPoints = points.slice();
     drawPoints.push(points[0]);
     drawPoints.forEach(function(point, index) {
-        // background.data[point[0] + (point[1] * background.width)] = PAVEMENT;
         if (index > 0) {
             var prevPoint = points[index - 1];
             if ([NORTH, SOUTH].indexOf(prevPoint[2]) !== -1) {
@@ -188,6 +192,134 @@ DesertGenerator.prototype._plotPoints = function() {
         [MAP_SIZE - 50, 50, SOUTH],
         [MAP_SIZE - 50, MAP_SIZE - 50, WEST]
     );
+
+    this._embellishTrack(points);
+
+    return points;
+};
+
+DesertGenerator.prototype._embellishTrack = function(points) {
+    var embellishmentTypes = [
+        EMBEL_NONE,
+        EMBEL_T,
+    ];
+    var centerEmbellishments = [
+        rng.pickValueFromArray(embellishmentTypes),
+        rng.pickValueFromArray(embellishmentTypes),
+        rng.pickValueFromArray(embellishmentTypes),
+        rng.pickValueFromArray(embellishmentTypes),
+    ];
+
+    var addedPoints = 0;
+    centerEmbellishments.forEach(function (embelType, index) {
+        addedPoints += this._addEmbellishment(
+            points,
+            embelType,
+            INWARD,
+            addedPoints + index
+        );
+    }.bind(this));
+};
+
+// Mutates 'points' and returns the number of points added
+DesertGenerator.prototype._addEmbellishment = function(points, type, orientation, index) {
+    if (type === EMBEL_NONE) {
+        return 0;
+    }
+
+    // Get the midpoint
+    var lineStart = points[index];
+    var lineEnd   = points.length === index + 1 ? points[0] : points[index + 1];
+    var midpoint = [
+        Math.min(lineStart[0], lineEnd[0]) + Math.abs(lineStart[0] - lineEnd[0]),
+        Math.min(lineStart[1], lineEnd[1]) + Math.abs(lineStart[1] - lineEnd[1]),
+    ];
+    var headingDirection = lineStart[2];
+    switch (headingDirection) {
+        case NORTH:
+            midpoint[1] -= 15;
+            midpoint[2] = INWARD ? EAST : WEST;
+            break;
+        case SOUTH:
+            midpoint[1] -= 15;
+            midpoint[2] = INWARD ? WEST : EAST;
+            break;
+        case EAST:
+            midpoint[0] -= 15;
+            midpoint[2] = INWARD ? SOUTH : NORTH;
+            break;
+        case WEST:
+            midpoint[0] -= 15;
+            midpoint[2] = INWARD ? NORTH : SOUTH;
+            break;
+    }
+    var embellishment = [];
+
+    switch (type) {
+        case EMBEL_T:
+            embellishment = this._plotPointsLogoStyle(
+                midpoint,
+                [
+                    20,
+                    LEFT,
+                    20,
+                    RIGHT,
+                    20,
+                    RIGHT,
+                    40,
+                    RIGHT,
+                    20,
+                    RIGHT,
+                    20,
+                    LEFT,
+                    20
+                ]
+            )
+            break;
+    }
+
+    points.splice.apply(points, [index + 1, 0].concat(embellishment));
+    return embellishment.length;
+};
+
+DesertGenerator.prototype._plotPointsLogoStyle = function(startingPoint, instructions) {
+    var points = [startingPoint];
+
+    var cursor = startingPoint.slice();
+    instructions.forEach(function (instruction) {
+        var axisIndex;
+        var multiplier;
+        switch (cursor[2]) {
+            case NORTH:
+                axisIndex = 1;
+                multiplier = 1;
+                break;
+            case SOUTH:
+                axisIndex = 1;
+                multiplier = -1;
+                break;
+            case EAST:
+                axisIndex = 0;
+                multiplier = 1;
+                break;
+            case WEST:
+                axisIndex = 0;
+                multiplier = -1;
+                break;
+        }
+        if (typeof instruction === 'number') {
+            cursor[axisIndex] += (instruction * multiplier),
+            points.push(cursor.slice());
+        } else if ([LEFT, RIGHT].indexOf(instruction) !== -1) {
+            if (instruction === LEFT) {
+                cursor[2] = cursor[2] === 0 ? 270 : cursor[2] - 90;
+            } else {
+                cursor[2] = cursor[2] === 270 ? 0 : cursor[2] + 90;
+            }
+        } else {
+            throw new Error('Unknown instruction: ' + instruction);
+        }
+    });
 
     return points;
 };
