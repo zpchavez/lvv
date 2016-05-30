@@ -40,7 +40,6 @@
     "query-string": "1.0.0",
     "random-seed": "0.2.0",
     "react": "0.12.2",
-    "robust-segment-intersect": "^1.0.1",
     "underscore": "1.8.2"
   },
   "browser": {
