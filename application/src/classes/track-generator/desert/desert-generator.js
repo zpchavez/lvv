@@ -36,7 +36,7 @@ var SOUTH = 180;
 var WEST = 270;
 
 var TRACK_WIDTH  = 5;
-var MAP_SIZE     = 300;
+var MAP_SIZE     = 400;
 
 EMBEL_NONE = 'EMBEL_NONE';
 EMBEL_T = 'EMBEL_T';
@@ -80,13 +80,14 @@ DesertGenerator.prototype._getLayer = function(data, name) {
 DesertGenerator.prototype._generateBackground = function(points, data) {
     var background = this._getLayer(data, 'background');
 
-    // Start with all sand
-    background.data.push.apply(
-        background.data,
-        (new Array(MAP_SIZE * MAP_SIZE)).fill(SAND)
-    );
-
-    console.log(JSON.stringify(points));
+    // Start with all sand tiles. Do it in batches to avoid "max call stack exceeded"
+    var totalTiles = MAP_SIZE * MAP_SIZE;
+    for (var i = 0; i < MAP_SIZE; i += 1) {
+        background.data.push.apply(
+            background.data,
+            (new Array(MAP_SIZE)).fill(SAND)
+        );
+    }
 
     // Draw line between all points, including between the first and last
     var drawPoints = points.slice();
@@ -95,18 +96,19 @@ DesertGenerator.prototype._generateBackground = function(points, data) {
         if (index > 0) {
             var prevPoint = points[index - 1];
             if ([NORTH, SOUTH].indexOf(prevPoint[2]) !== -1) {
-                this._drawVerticalLine(
+                this._drawVerticalTrack(
                     background.data,
-                    PAVEMENT,
+                    // PAVEMENT,
                     prevPoint[1] < point[1] ? prevPoint : point,
                     Math.abs(point[1] - prevPoint[1])
                 )
             } else {
-                this._drawHorizontalLine(
+                var leftPoint = (prevPoint[0] < point[0] ? prevPoint : point).slice();
+                leftPoint[0] -= 3; // -3 to fill in corners
+                this._drawHorizontalTrack(
                     background.data,
-                    PAVEMENT,
-                    prevPoint[0] < point[0] ? prevPoint : point,
-                    Math.abs(point[0] - prevPoint[0])
+                    leftPoint,
+                    Math.abs(point[0] - prevPoint[0]) + 7 // +7 to fill in corners
                 )
             }
         }
@@ -218,6 +220,7 @@ DesertGenerator.prototype._embellishTrack = function(points) {
             points,
             embelType,
             INWARD,
+            // rng.pickValueFromArray([INWARD, OUTWARD]),
             addedPoints + index
         );
     }.bind(this));
@@ -241,19 +244,19 @@ DesertGenerator.prototype._addEmbellishment = function(points, type, orientation
     switch (headingDirection) {
         case NORTH:
             midpoint[1] -= 10;
-            midpoint[2] = INWARD ? EAST : WEST;
+            midpoint[2] = orientation === INWARD ? EAST : WEST;
             break;
         case SOUTH:
             midpoint[1] -= 10;
-            midpoint[2] = INWARD ? WEST : EAST;
+            midpoint[2] = orientation === INWARD ? WEST : EAST;
             break;
         case EAST:
             midpoint[0] -= 10;
-            midpoint[2] = INWARD ? SOUTH : NORTH;
+            midpoint[2] = orientation === INWARD ? SOUTH : NORTH;
             break;
         case WEST:
             midpoint[0] -= 10;
-            midpoint[2] = INWARD ? NORTH : SOUTH;
+            midpoint[2] = orientation === INWARD ? NORTH : SOUTH;
             break;
     }
     var embellishment = [];
@@ -281,8 +284,6 @@ DesertGenerator.prototype._addEmbellishment = function(points, type, orientation
             )
             break;
     }
-
-    console.log('embel', JSON.stringify(embellishment));
 
     points.splice.apply(points, [index + 1, 0].concat(embellishment));
     return embellishment.length;
@@ -328,6 +329,18 @@ DesertGenerator.prototype._plotPointsLogoStyle = function(startingPoint, instruc
     });
 
     return points;
+};
+
+DesertGenerator.prototype._drawHorizontalTrack = function(data, leftPos, length) {
+    for (var y = leftPos[1] - 3; y <= leftPos[1] + 3; y += 1) {
+        this._drawHorizontalLine(data, PAVEMENT, [leftPos[0], y], length);
+    }
+};
+
+DesertGenerator.prototype._drawVerticalTrack = function(data, topPos, length) {
+    for (var x = topPos[0] - 3; x <= topPos[0] + 3; x += 1) {
+        this._drawVerticalLine(data, PAVEMENT, [x, topPos[1]], length);
+    }
 };
 
 DesertGenerator.prototype._drawHorizontalLine = function(data, tile, leftPos, length) {
