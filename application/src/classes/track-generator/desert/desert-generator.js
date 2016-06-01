@@ -263,19 +263,20 @@ DesertGenerator.prototype._addEmbellishment = function(points, type, orientation
             embellishment = this._plotPointsLogoStyle(
                 midpoint,
                 [
-                    20,
+                    30,
                     INWARD ? RIGHT : LEFT,
-                    20,
+                    30,
                     INWARD ? LEFT : RIGHT,
-                    20,
+                    30,
                     INWARD ? LEFT : RIGHT,
-                    60,
+                    90,
                     INWARD ? LEFT : RIGHT,
-                    20,
+                    30,
                     INWARD ? LEFT : RIGHT,
-                    20,
+                    30,
                     INWARD ? RIGHT : LEFT,
-                    20
+                    30,
+                    INWARD ? RIGHT : LEFT,
                 ]
             )
             break;
