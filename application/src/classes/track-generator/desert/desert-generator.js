@@ -36,7 +36,7 @@ var SOUTH = 180;
 var WEST = 270;
 
 var TRACK_WIDTH  = 5;
-var MAP_SIZE     = 400;
+var MAP_SIZE     = 500;
 
 EMBEL_NONE = 'EMBEL_NONE';
 EMBEL_T = 'EMBEL_T';
@@ -191,10 +191,10 @@ DesertGenerator.prototype._plotPoints = function() {
     var points = [];
 
     points.push(
-        [50, MAP_SIZE - 50, NORTH],
-        [50, 50, EAST],
-        [MAP_SIZE - 50, 50, SOUTH],
-        [MAP_SIZE - 50, MAP_SIZE - 50, WEST]
+        [150, MAP_SIZE - 150, NORTH],
+        [150, 150, EAST],
+        [MAP_SIZE - 150, 150, SOUTH],
+        [MAP_SIZE - 150, MAP_SIZE - 150, WEST]
     );
 
     this._embellishTrack(points);
@@ -219,8 +219,7 @@ DesertGenerator.prototype._embellishTrack = function(points) {
         addedPoints += this._addEmbellishment(
             points,
             embelType,
-            INWARD,
-            // rng.pickValueFromArray([INWARD, OUTWARD]),
+            rng.pickValueFromArray([INWARD, OUTWARD]),
             addedPoints + index
         );
     }.bind(this));
@@ -244,19 +243,19 @@ DesertGenerator.prototype._addEmbellishment = function(points, type, orientation
     switch (headingDirection) {
         case NORTH:
             midpoint[1] -= 10;
-            midpoint[2] = orientation === INWARD ? EAST : WEST;
+            midpoint[2] = inward ? EAST : WEST;
             break;
         case SOUTH:
             midpoint[1] -= 10;
-            midpoint[2] = orientation === INWARD ? WEST : EAST;
+            midpoint[2] = inward ? WEST : EAST;
             break;
         case EAST:
             midpoint[0] -= 10;
-            midpoint[2] = orientation === INWARD ? SOUTH : NORTH;
+            midpoint[2] = inward ? SOUTH : NORTH;
             break;
         case WEST:
             midpoint[0] -= 10;
-            midpoint[2] = orientation === INWARD ? NORTH : SOUTH;
+            midpoint[2] = inward ? NORTH : SOUTH;
             break;
     }
     var embellishment = [];
@@ -267,19 +266,19 @@ DesertGenerator.prototype._addEmbellishment = function(points, type, orientation
                 midpoint,
                 [
                     30,
-                    INWARD ? RIGHT : LEFT,
+                    inward ? RIGHT : LEFT,
                     30,
-                    INWARD ? LEFT : RIGHT,
+                    inward ? LEFT : RIGHT,
                     30,
-                    INWARD ? LEFT : RIGHT,
+                    inward ? LEFT : RIGHT,
                     90,
-                    INWARD ? LEFT : RIGHT,
+                    inward ? LEFT : RIGHT,
                     30,
-                    INWARD ? LEFT : RIGHT,
+                    inward ? LEFT : RIGHT,
                     30,
-                    INWARD ? RIGHT : LEFT,
+                    inward ? RIGHT : LEFT,
                     30,
-                    INWARD ? RIGHT : LEFT,
+                    inward ? RIGHT : LEFT,
                 ]
             )
             break;
