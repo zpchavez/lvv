@@ -29,6 +29,7 @@ var GRAVEL_OUTER_NW = 4;
 var GRAVEL_OUTER_NE = 5;
 var GRAVEL_OUTER_SW = 15;
 var GRAVEL_OUTER_SE = 16;
+var PIT = 21;
 
 var NORTH = 0;
 var EAST = 90;
@@ -128,12 +129,11 @@ DesertGenerator.prototype._generateRoughTerrain = function(data) {
 
     this._fillLayer(rough.data, 0);
 
-    // Fill ~25% of the map with rough terrain
     var totalTiles = MAP_SIZE * MAP_SIZE;
-    var quarter = Math.round(totalTiles * .25);
-    for (i = 0; i < quarter; i += 1) {
+    var roughTileCount = Math.round(totalTiles * .25);
+    for (i = 0; i < roughTileCount; i += 1) {
         var r = rng.getIntBetween(0, totalTiles);
-        if (background.data[r] === SAND) {
+        if (background.data[r] !== PAVEMENT) {
             background.data[r] = GRAVEL;
             rough.data[r] = 1;
         }
