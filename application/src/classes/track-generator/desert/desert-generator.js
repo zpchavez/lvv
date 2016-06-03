@@ -59,8 +59,9 @@ DesertGenerator.prototype.generate = function() {
     var data = Object.assign({}, this.template);
 
     var points = this._plotPoints();
-    this._generateBackground(points, data);
+    this._generateTrack(points, data);
     this._generateTrackMarkers(points, data);
+    this._generateRoughTerrain(data);
 
     return data;
 };
@@ -77,17 +78,21 @@ DesertGenerator.prototype._getLayer = function(data, name) {
     return returnedLayer;
 };
 
-DesertGenerator.prototype._generateBackground = function(points, data) {
-    var background = this._getLayer(data, 'background');
-
-    // Start with all sand tiles. Do it in batches to avoid "max call stack exceeded"
+DesertGenerator.prototype._fillLayer = function(layerData, value) {
+    // Do it in batches to avoid "max call stack exceeded"
     var totalTiles = MAP_SIZE * MAP_SIZE;
     for (var i = 0; i < MAP_SIZE; i += 1) {
-        background.data.push.apply(
-            background.data,
-            (new Array(MAP_SIZE)).fill(SAND)
+        layerData.push.apply(
+            layerData,
+            (new Array(MAP_SIZE)).fill(value)
         );
     }
+};
+
+DesertGenerator.prototype._generateTrack = function(points, data) {
+    var background = this._getLayer(data, 'background');
+
+    this._fillLayer(background.data, SAND);
 
     // Draw line between all points, including between the first and last
     var drawPoints = points.slice();
@@ -116,6 +121,24 @@ DesertGenerator.prototype._generateBackground = function(points, data) {
 
     return data;
 }
+
+DesertGenerator.prototype._generateRoughTerrain = function(data) {
+    var background = this._getLayer(data, 'background');
+    var rough = this._getLayer(data, 'rough');
+
+    this._fillLayer(rough.data, 0);
+
+    // Fill ~25% of the map with rough terrain
+    var totalTiles = MAP_SIZE * MAP_SIZE;
+    var quarter = Math.round(totalTiles * .25);
+    for (i = 0; i < quarter; i += 1) {
+        var r = rng.getIntBetween(0, totalTiles);
+        if (background.data[r] === SAND) {
+            background.data[r] = GRAVEL;
+            rough.data[r] = 1;
+        }
+    }
+};
 
 DesertGenerator.prototype._generateTrackMarkers = function(points, data) {
     var track = this._getLayer(data, 'track');

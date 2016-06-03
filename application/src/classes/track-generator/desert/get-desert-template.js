@@ -32,7 +32,41 @@ module.exports = function(options) {
              "width":0,
              "x":0,
              "y":0
-            }],
+            },
+            {
+             "data":[],
+             "height":options.height,
+             "name":"rough",
+             "opacity":1,
+             "type":"tilelayer",
+             "visible":false,
+             "width":options.width,
+             "x":0,
+             "y":0
+            },
+            {
+             "data":[],
+             "height":options.height,
+             "name":"drops",
+             "opacity":1,
+             "type":"tilelayer",
+             "visible":false,
+             "width":options.width,
+             "x":0,
+             "y":0
+            },
+            {
+             "data":[],
+             "height":options.height,
+             "name":"ramps",
+             "opacity":1,
+             "type":"tilelayer",
+             "visible":false,
+             "width":options.width,
+             "x":0,
+             "y":0
+            }
+        ],
         "nextobjectid":28,
         "orientation":"orthogonal",
         "properties": {},
