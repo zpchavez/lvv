@@ -39,12 +39,12 @@ var WEST = 270;
 var TRACK_WIDTH  = 5;
 var MAP_SIZE     = 500;
 
-EMBEL_NONE = 'EMBEL_NONE';
-EMBEL_T = 'EMBEL_T';
-INWARD = 'INWARD';
-OUTWARD = 'OUTWARD';
-LEFT = 'LEFT';
-RIGHT = 'RIGHT';
+var EMBEL_NONE = 'EMBEL_NONE';
+var EMBEL_T = 'EMBEL_T';
+var INWARD = 'INWARD';
+var OUTWARD = 'OUTWARD';
+var LEFT = 'LEFT';
+var RIGHT = 'RIGHT';
 
 var DesertGenerator = function(options) {
     options = options || {};
@@ -146,9 +146,9 @@ DesertGenerator.prototype._generateTrackMarkers = function(points, data) {
     var getMarker = function (point, index, isFinish) {
         var id = isFinish ? index : index + 1;
 
-        var adjustment = 5;
         var markerPoint = [point[0], point[1]];
-        var multiplier;
+        var coordinateMultiplier;
+        var rotationMultiplier;
         var pointIdx;
         var prevPoint = isFinish ? points[points.length - 1] : points[index];
         var headedFromDirection;
@@ -160,22 +160,40 @@ DesertGenerator.prototype._generateTrackMarkers = function(points, data) {
         switch (headedFromDirection) {
             case NORTH:
                 pointIdx = 1;
-                multiplier = isFinish ? -1 : 1;
+                coordinateMultiplier = isFinish ? -1 : 1;
+                rotationMultiplier = point[2] === EAST ? -1 : 1;
                 break;
             case SOUTH:
-                multiplier = isFinish ? 1 : -1;
+                coordinateMultiplier = isFinish ? 1 : -1;
                 pointIdx = 1;
+                rotationMultiplier = point[2] === EAST ? 1 : -1;
                 break;
             case EAST:
-                multiplier = isFinish ? 1 : -1;
+                coordinateMultiplier = isFinish ? 1 : -1;
                 pointIdx = 0;
+                rotationMultiplier = point[2] === SOUTH ? -1 : 1;
                 break;
             case WEST:
-                multiplier = isFinish ? -1 : 1;
+                coordinateMultiplier = isFinish ? -1 : 1;
                 pointIdx = 0;
+                rotationMultiplier = point[2] === SOUTH ? 1 : -1;
                 break;
         }
-        markerPoint[pointIdx] = point[pointIdx] + (adjustment * multiplier);
+        var adjustment = 5;
+        markerPoint[pointIdx] = point[pointIdx] + (adjustment * coordinateMultiplier);
+
+        // I might be able to do this neater by putting the directions in an array
+        // and mathing the indexes
+        var markerRotation;
+        if (isFinish) {
+            markerRotation = point[2];
+        } else if (rotationMultiplier === -1 && point[2] === 0) {
+            markerRotation = 270;
+        } else if (rotationMultiplier === 1 && point[2] === 270) {
+            markerRotation = 0;
+        } else {
+            markerRotation = point[2] + (90 * rotationMultiplier)
+        }
 
         var marker = {
             "id": id,
@@ -183,9 +201,7 @@ DesertGenerator.prototype._generateTrackMarkers = function(points, data) {
             "width": this.template.tilewidth * TRACK_WIDTH * 3,
             "x": markerPoint[0] * this.template.tilewidth,
             "y": markerPoint[1] * this.template.tileheight,
-            "rotation": isFinish ? point[2] : (
-                point[2] === 0 ? 270 : point[2] - 90
-            ),
+            "rotation": markerRotation,
             "visible":true,
         };
 
@@ -318,26 +334,26 @@ DesertGenerator.prototype._plotPointsLogoStyle = function(startingPoint, instruc
     instructions.forEach(function (instruction) {
         if (typeof instruction === 'number') {
             var axisIndex;
-            var multiplier;
+            var coordinateMultiplier;
             switch (cursor[2]) {
                 case NORTH:
                     axisIndex = 1;
-                    multiplier = -1;
+                    coordinateMultiplier = -1;
                     break;
                 case SOUTH:
                     axisIndex = 1;
-                    multiplier = 1;
+                    coordinateMultiplier = 1;
                     break;
                 case EAST:
                     axisIndex = 0;
-                    multiplier = 1;
+                    coordinateMultiplier = 1;
                     break;
                 case WEST:
                     axisIndex = 0;
-                    multiplier = -1;
+                    coordinateMultiplier = -1;
                     break;
             }
-            cursor[axisIndex] += (instruction * multiplier);
+            cursor[axisIndex] += (instruction * coordinateMultiplier);
         } else if ([LEFT, RIGHT].indexOf(instruction) !== -1) {
             if (instruction === LEFT) {
                 cursor[2] = cursor[2] === 0 ? 270 : cursor[2] - 90;
