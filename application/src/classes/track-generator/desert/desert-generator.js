@@ -37,7 +37,7 @@ var SOUTH = 180;
 var WEST = 270;
 
 var TRACK_WIDTH  = 5;
-var MAP_SIZE     = 500;
+var MAP_SIZE     = 600;
 
 var EMBEL_NONE = 'EMBEL_NONE';
 var EMBEL_T = 'EMBEL_T';
