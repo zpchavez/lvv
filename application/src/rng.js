@@ -13,6 +13,10 @@ RNG.prototype.getIntBetween = function(min, max)
     return Math.round(this.rng.random() * (max - min) + min);
 };
 
+RNG.prototype.happensGivenProbability = function(chance) {
+    return this.rng.random() <= chance;
+};
+
 RNG.prototype.pickValueFromArray = function(array)
 {
     var max, selectedIndex;

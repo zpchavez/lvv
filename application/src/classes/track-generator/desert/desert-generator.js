@@ -62,7 +62,7 @@ DesertGenerator.prototype.generate = function() {
     var points = this._plotPoints();
     this._generateTrack(points, data);
     this._generateTrackMarkers(points, data);
-    this._generateRoughTerrain(data);
+    this._generateGravel(data);
 
     return data;
 };
@@ -123,21 +123,78 @@ DesertGenerator.prototype._generateTrack = function(points, data) {
     return data;
 }
 
-DesertGenerator.prototype._generateRoughTerrain = function(data) {
+DesertGenerator.prototype._generateGravel = function(data) {
     var background = this._getLayer(data, 'background');
     var rough = this._getLayer(data, 'rough');
 
     this._fillLayer(rough.data, 0);
 
     var totalTiles = MAP_SIZE * MAP_SIZE;
-    var roughTileCount = Math.round(totalTiles * .25);
-    for (i = 0; i < roughTileCount; i += 1) {
-        var r = rng.getIntBetween(0, totalTiles);
-        if (background.data[r] !== PAVEMENT) {
-            background.data[r] = GRAVEL;
-            rough.data[r] = 1;
-        }
+    var roughPathCount = Math.round(totalTiles * .005);
+    for (i = 0; i < roughPathCount; i += 1) {
+        this._generatePatch(
+            rng.getIntBetween(0, totalTiles),
+            background.data,
+            GRAVEL,
+            rough.data,
+            1
+        );
     }
+};
+
+DesertGenerator.prototype._generatePatch = function(
+    pointIndex, backgroundData, backgroundTile, layerData, layerTile
+) {
+     if (backgroundData[pointIndex] !== SAND) {
+         return false;
+     }
+
+     backgroundData[pointIndex] = backgroundTile;
+     layerData[pointIndex] = layerTile;
+
+     var addPatchPoints = function(centerIndex, chance) {
+         if (chance <= 0 || ! chance) {
+             return;
+         }
+
+         var possiblePoints = this._getSurroundingAreas(centerIndex);
+         possiblePoints.forEach(function (possiblePointIndex) {
+            if (
+                backgroundData[possiblePointIndex] === SAND &&
+                rng.happensGivenProbability(chance)
+            ) {
+                backgroundData[possiblePointIndex] = backgroundTile;
+                layerData[possiblePointIndex] = layerTile;
+                // Gets less likely the further out we go
+                addPatchPoints(possiblePointIndex, chance - .1);
+            }
+         });
+     }.bind(this);
+
+     addPatchPoints(pointIndex, .8);
+}
+
+DesertGenerator.prototype._getSurroundingAreas = function(tileIndex) {
+    var surroundingAreas = [
+        // diagonals
+        tileIndex - this.template.width - 1, // top left
+        tileIndex - this.template.width + 1, // top right
+        tileIndex + this.template.width - 1, // bottom left
+        tileIndex + this.template.width + 1, // bottom right
+
+        // orthogonals
+        tileIndex - this.template.width, // top
+        tileIndex - 1, // left
+        tileIndex + 1, // right,
+        tileIndex + this.template.width, // bottom
+    ];
+
+    // Filter out points that go off the map
+    surroundingAreas = surroundingAreas.filter(function (tileIndex) {
+       return tileIndex > 0 && tileIndex < MAP_SIZE * MAP_SIZE;
+    });
+
+    return surroundingAreas;
 };
 
 DesertGenerator.prototype._generateTrackMarkers = function(points, data) {
