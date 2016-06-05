@@ -17,18 +17,18 @@ var PAVEMENT_OUTER_NE = 49;
 var PAVEMENT_OUTER_SW = 59;
 var PAVEMENT_OUTER_SE = 60;
 var GRAVEL = 18;
-var GRAVEL_INNER_NW = 6;
-var GRAVEL_INNER_N = 7;
-var GRAVEL_INNER_NE = 8;
-var GRAVEL_INNER_W = 17;
-var GRAVEL_INNER_E = 19;
-var GRAVEL_INNER_SW = 28;
-var GRAVEL_INNER_S = 29;
-var GRAVEL_INNER_SE = 30;
-var GRAVEL_OUTER_NW = 4;
-var GRAVEL_OUTER_NE = 5;
-var GRAVEL_OUTER_SW = 15;
-var GRAVEL_OUTER_SE = 16;
+var GRAVEL_EDGE_NW = 6;
+var GRAVEL_EDGE_N = 7;
+var GRAVEL_EDGE_NE = 8;
+var GRAVEL_EDGE_W = 17;
+var GRAVEL_EDGE_E = 19;
+var GRAVEL_EDGE_SW = 28;
+var GRAVEL_EDGE_S = 29;
+var GRAVEL_EDGE_SE = 30;
+var GRAVEL_CORNER_SE = 4;
+var GRAVEL_CORNER_SW = 5;
+var GRAVEL_CORNER_NE = 15;
+var GRAVEL_CORNER_NW = 16;
 var PIT = 21;
 
 var NORTH = 0;
@@ -56,6 +56,22 @@ var S = 'S';
 var SE = 'SE';
 var SW = 'SW';
 
+var edges = {};
+edges[GRAVEL] = {
+    EDGE_NW: GRAVEL_EDGE_NW,
+    EDGE_N: GRAVEL_EDGE_N,
+    EDGE_NE: GRAVEL_EDGE_NE,
+    EDGE_W: GRAVEL_EDGE_W,
+    EDGE_E: GRAVEL_EDGE_E,
+    EDGE_SW: GRAVEL_EDGE_SW,
+    EDGE_S: GRAVEL_EDGE_S,
+    EDGE_SE: GRAVEL_EDGE_SE,
+    CORNER_NW: GRAVEL_CORNER_NW,
+    CORNER_NE: GRAVEL_CORNER_NE,
+    CORNER_SW: GRAVEL_CORNER_SW,
+    CORNER_SE: GRAVEL_CORNER_SE,
+};
+
 var DesertGenerator = function(options) {
     options = options || {};
 
@@ -64,6 +80,8 @@ var DesertGenerator = function(options) {
         height: MAP_SIZE,
         width: MAP_SIZE,
     });
+    this.gravelIndices = [];
+    this.pitIndices = [];
 };
 
 DesertGenerator.prototype.generate = function() {
@@ -74,6 +92,7 @@ DesertGenerator.prototype.generate = function() {
     this._generateTrackMarkers(points, data);
     this._generateGravel(data);
     this._generatePits(data);
+    this._addEdgeTiles(data, this.gravelIndices, GRAVEL);
 
     return data;
 };
@@ -99,6 +118,49 @@ DesertGenerator.prototype._fillLayer = function(layerData, value) {
             (new Array(MAP_SIZE)).fill(value)
         );
     }
+};
+
+DesertGenerator.prototype._addEdgeTiles = function(data, tileIndices, tile) {
+    tileIndices.forEach(function (index) {
+        var adj = this._getAdjacentTileIndex.bind(this);
+        var bg = this._getLayer(data, 'background').data;
+        if (bg[adj(index, N)] !== tile && bg[adj(index, NW)] !== tile && bg[adj(index, NE)] !== tile) {
+            bg[adj(index, N)] = edges[tile].EDGE_N;
+        }
+        if (bg[adj(index, S)] !== tile && bg[adj(index, SW)] !== tile && bg[adj(index, SE)] !== tile) {
+            bg[adj(index, S)] = edges[tile].EDGE_S;
+        }
+        if (bg[adj(index, W)] !== tile && bg[adj(index, NW)] !== tile && bg[adj(index, SW)] !== tile) {
+            bg[adj(index, W)] = edges[tile].EDGE_W;
+        }
+        if (bg[adj(index, E)] !== tile && bg[adj(index, NE)] !== tile && bg[adj(index, SE)] !== tile) {
+            bg[adj(index, E)] = edges[tile].EDGE_E;
+        }
+        if (bg[adj(index, NW)] !== tile && bg[adj(index, W)] !== tile && bg[adj(index, N)] !== tile) {
+            bg[adj(index, NW)] = edges[tile].EDGE_NW;
+        }
+        if (bg[adj(index, NE)] !== tile && bg[adj(index, N)] !== tile && bg[adj(index, E)] !== tile) {
+            bg[adj(index, NE)] = edges[tile].EDGE_NE;
+        }
+        if (bg[adj(index, SE)] !== tile && bg[adj(index, E)] !== tile && bg[adj(index, S)] !== tile) {
+            bg[adj(index, SE)] = edges[tile].EDGE_SE;
+        }
+        if (bg[adj(index, SW)] !== tile && bg[adj(index, W)] !== tile && bg[adj(index, S)] !== tile) {
+            bg[adj(index, SW)] = edges[tile].EDGE_SW;
+        }
+        if (bg[adj(index, E)] !== tile && bg[adj(index, SE)] === tile) {
+            bg[adj(index, E)] = edges[tile].CORNER_NE;
+        }
+        if (bg[adj(index, E)] !== tile && bg[adj(index, NE)] === tile) {
+            bg[adj(index, E)] = edges[tile].CORNER_SE;
+        }
+        if (bg[adj(index, W)] !== tile && bg[adj(index, NW)] === tile) {
+            bg[adj(index, W)] = edges[tile].CORNER_SW;
+        }
+        if (bg[adj(index, W)] !== tile && bg[adj(index, SW)] === tile) {
+            bg[adj(index, W)] = edges[tile].CORNER_NW;
+        }
+    }.bind(this));
 };
 
 DesertGenerator.prototype._generateTrack = function(points, data) {
@@ -148,7 +210,8 @@ DesertGenerator.prototype._generateGravel = function(data) {
     //     background.data,
     //     GRAVEL,
     //     rough.data,
-    //     1
+    //     1,
+    //     this.gravelIndices
     // );
 
     var totalTiles = MAP_SIZE * MAP_SIZE;
@@ -159,7 +222,8 @@ DesertGenerator.prototype._generateGravel = function(data) {
             background.data,
             GRAVEL,
             rough.data,
-            1
+            1,
+            this.gravelIndices
         );
     }
 };
@@ -178,13 +242,14 @@ DesertGenerator.prototype._generatePits = function(data) {
             background.data,
             PIT,
             drops.data,
-            1
+            1,
+            this.pitIndices
         );
     }
 };
 
 DesertGenerator.prototype._generatePatch = function(
-    pointIndex, backgroundData, backgroundTile, layerData, layerTile
+    pointIndex, backgroundData, backgroundTile, layerData, layerTile, tileIndices
 ) {
      if (backgroundData[pointIndex] !== SAND) {
          return false;
@@ -192,7 +257,7 @@ DesertGenerator.prototype._generatePatch = function(
 
      var tooCloseToAnotherSpecialTile = function(tileIndex) {
          var adj = this._getAdjacentTileIndex.bind(this);
-         var data = backgroundData;
+         var bg = backgroundData;
          var tooClose = false;
 
          // Tile can't be touching a non-sand, non-patch-type tile
@@ -200,65 +265,65 @@ DesertGenerator.prototype._generatePatch = function(
             if (tooClose) {
                 return;
             }
-            if ([SAND, backgroundTile].indexOf(data[adj(tileIndex, direction)]) === -1) {
+            if ([SAND, backgroundTile].indexOf(bg[adj(tileIndex, direction)]) === -1) {
                 tooClose = true;
             }
          });
 
-         if (data[adj(tileIndex, N)] === SAND) {
+         if (bg[adj(tileIndex, N)] === SAND) {
              if (
-                 data[adj(adj(tileIndex, N), N)] !== SAND ||
-                 data[adj(adj(tileIndex, N), NW)] !== SAND ||
-                 data[adj(adj(tileIndex, N), NE)] !== SAND
+                 bg[adj(adj(tileIndex, N), N)] !== SAND ||
+                 bg[adj(adj(tileIndex, N), NW)] !== SAND ||
+                 bg[adj(adj(tileIndex, N), NE)] !== SAND
              ) {
                  tooClose = true;
              }
          }
-         if (! tooClose && data[adj(tileIndex, S)] === SAND) {
+         if (! tooClose && bg[adj(tileIndex, S)] === SAND) {
              if (
-                 data[adj(adj(tileIndex, S), S)] !== SAND ||
-                 data[adj(adj(tileIndex, S), SW)] !== SAND ||
-                 data[adj(adj(tileIndex, S), SE)] !== SAND
+                 bg[adj(adj(tileIndex, S), S)] !== SAND ||
+                 bg[adj(adj(tileIndex, S), SW)] !== SAND ||
+                 bg[adj(adj(tileIndex, S), SE)] !== SAND
              ) {
                  tooClose = true;
              }
          }
-         if (! tooClose && data[adj(tileIndex, E)] === SAND) {
+         if (! tooClose && bg[adj(tileIndex, E)] === SAND) {
              if (
-                 data[adj(adj(tileIndex, E), E)] !== SAND ||
-                 data[adj(adj(tileIndex, E), NE)] !== SAND ||
-                 data[adj(adj(tileIndex, E), SE)] !== SAND
+                 bg[adj(adj(tileIndex, E), E)] !== SAND ||
+                 bg[adj(adj(tileIndex, E), NE)] !== SAND ||
+                 bg[adj(adj(tileIndex, E), SE)] !== SAND
              ) {
                  tooClose = true;
              };
          }
-         if (! tooClose && data[adj(tileIndex, W)] === SAND) {
+         if (! tooClose && bg[adj(tileIndex, W)] === SAND) {
              if (
-                 data[adj(adj(tileIndex, W), W)] !== SAND ||
-                 data[adj(adj(tileIndex, W), NW)] !== SAND ||
-                 data[adj(adj(tileIndex, W), SW)] !== SAND
+                 bg[adj(adj(tileIndex, W), W)] !== SAND ||
+                 bg[adj(adj(tileIndex, W), NW)] !== SAND ||
+                 bg[adj(adj(tileIndex, W), SW)] !== SAND
              ) {
                  tooClose = true;
              };
          }
 
-         if (! tooClose && data[adj(tileIndex, NE)] === SAND) {
-             if (data[adj(adj(tileIndex, NE), NE)] !== SAND) {
+         if (! tooClose && bg[adj(tileIndex, NE)] === SAND) {
+             if (bg[adj(adj(tileIndex, NE), NE)] !== SAND) {
                  tooClose = true;
              }
          }
-         if (! tooClose && data[adj(tileIndex, NW)] === SAND) {
-             if (data[adj(adj(tileIndex, NW), NW)] !== SAND) {
+         if (! tooClose && bg[adj(tileIndex, NW)] === SAND) {
+             if (bg[adj(adj(tileIndex, NW), NW)] !== SAND) {
                  tooClose = true;
              }
          }
-         if (! tooClose && data[adj(tileIndex, SE)] === SAND) {
-             if (data[adj(adj(tileIndex, SE), SE)] !== SAND) {
+         if (! tooClose && bg[adj(tileIndex, SE)] === SAND) {
+             if (bg[adj(adj(tileIndex, SE), SE)] !== SAND) {
                  tooClose = true;
              }
          }
-         if (! tooClose && data[adj(tileIndex, SW)] === SAND) {
-             if (data[adj(adj(tileIndex, SW), SW)] !== SAND) {
+         if (! tooClose && bg[adj(tileIndex, SW)] === SAND) {
+             if (bg[adj(adj(tileIndex, SW), SW)] !== SAND) {
                  tooClose = true;
              }
          }
@@ -266,9 +331,11 @@ DesertGenerator.prototype._generatePatch = function(
          return tooClose;
      }.bind(this);
 
+     // Add the center point
      if (! tooCloseToAnotherSpecialTile(pointIndex)) {
          backgroundData[pointIndex] = backgroundTile;
          layerData[pointIndex] = layerTile;
+         tileIndices.push(pointIndex);
      }
 
      var checkedIndexes = [];
@@ -286,6 +353,7 @@ DesertGenerator.prototype._generatePatch = function(
             ) {
                 backgroundData[possiblePointIndex] = backgroundTile;
                 layerData[possiblePointIndex] = layerTile;
+                tileIndices.push(possiblePointIndex);
                 // Gets less likely the further out we go
                 addPatchPoints(possiblePointIndex, chance - .1);
             }
