@@ -194,6 +194,17 @@ DesertGenerator.prototype._generatePatch = function(
          var adj = this._getAdjacentTileIndex.bind(this);
          var data = backgroundData;
          var tooClose = false;
+
+         // Tile can't be touching a non-sand, non-patch-type tile
+         [N, S, E, W, NE, NW, SE, SW].forEach(function (direction) {
+            if (tooClose) {
+                return;
+            }
+            if ([SAND, backgroundTile].indexOf(data[adj(tileIndex, direction)]) === -1) {
+                tooClose = true;
+            }
+         });
+
          if (data[adj(tileIndex, N)] === SAND) {
              if (
                  data[adj(adj(tileIndex, N), N)] !== SAND ||
