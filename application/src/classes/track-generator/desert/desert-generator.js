@@ -63,6 +63,7 @@ DesertGenerator.prototype.generate = function() {
     this._generateTrack(points, data);
     this._generateTrackMarkers(points, data);
     this._generateGravel(data);
+    this._generatePits(data);
 
     return data;
 };
@@ -137,6 +138,25 @@ DesertGenerator.prototype._generateGravel = function(data) {
             background.data,
             GRAVEL,
             rough.data,
+            1
+        );
+    }
+};
+
+DesertGenerator.prototype._generatePits = function(data) {
+    var background = this._getLayer(data, 'background');
+    var drops = this._getLayer(data, 'drops');
+
+    this._fillLayer(drops.data, 0);
+
+    var totalTiles = MAP_SIZE * MAP_SIZE;
+    var roughPathCount = Math.round(totalTiles * .001);
+    for (i = 0; i < roughPathCount; i += 1) {
+        this._generatePatch(
+            rng.getIntBetween(0, totalTiles),
+            background.data,
+            PIT,
+            drops.data,
             1
         );
     }
