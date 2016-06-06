@@ -44,6 +44,11 @@ var S = 'S';
 var SE = 'SE';
 var SW = 'SW';
 
+// constants for point arrays
+var X = 0;
+var Y = 1;
+var ANGLE = 2;
+
 var edges = {};
 edges[GRAVEL] = {
     EDGE_NW: 6,
@@ -84,6 +89,7 @@ var DesertGenerator = function(options) {
     });
     this.gravelIndices = [];
     this.pitIndices = [];
+    this.trackIndices = [];
 };
 
 DesertGenerator.prototype.generate = function() {
@@ -177,20 +183,20 @@ DesertGenerator.prototype._generateTrack = function(points, data) {
     drawPoints.forEach(function(point, index) {
         if (index > 0) {
             var prevPoint = points[index - 1];
-            if ([NORTH, SOUTH].indexOf(prevPoint[2]) !== -1) {
+            if ([NORTH, SOUTH].indexOf(prevPoint[ANGLE]) !== -1) {
                 this._drawVerticalTrack(
                     background.data,
                     // PAVEMENT,
-                    prevPoint[1] < point[1] ? prevPoint : point,
-                    Math.abs(point[1] - prevPoint[1])
+                    prevPoint[Y] < point[Y] ? prevPoint : point,
+                    Math.abs(point[Y] - prevPoint[Y])
                 )
             } else {
-                var leftPoint = (prevPoint[0] < point[0] ? prevPoint : point).slice();
-                leftPoint[0] -= 3; // -3 to fill in corners
+                var leftPoint = (prevPoint[X] < point[X] ? prevPoint : point).slice();
+                leftPoint[X] -= 3; // -3 to fill in corners
                 this._drawHorizontalTrack(
                     background.data,
                     leftPoint,
-                    Math.abs(point[0] - prevPoint[0]) + 7 // +7 to fill in corners
+                    Math.abs(point[X] - prevPoint[X]) + 7 // +7 to fill in corners
                 )
             }
         }
@@ -438,37 +444,37 @@ DesertGenerator.prototype._generateTrackMarkers = function(points, data) {
     var getMarker = function (point, index, isFinish) {
         var id = isFinish ? index : index + 1;
 
-        var markerPoint = [point[0], point[1]];
+        var markerPoint = [point[X], point[Y]];
         var coordinateMultiplier;
         var rotationMultiplier;
         var pointIdx;
         var prevPoint = isFinish ? points[points.length - 1] : points[index];
         var headedFromDirection;
         if (isFinish) {
-            headedFromDirection = point[2];
+            headedFromDirection = point[ANGLE];
         }  else {
-            headedFromDirection = prevPoint[2]
+            headedFromDirection = prevPoint[ANGLE]
         }
         switch (headedFromDirection) {
             case NORTH:
                 pointIdx = 1;
                 coordinateMultiplier = isFinish ? -1 : 1;
-                rotationMultiplier = point[2] === EAST ? -1 : 1;
+                rotationMultiplier = point[ANGLE] === EAST ? -1 : 1;
                 break;
             case SOUTH:
                 coordinateMultiplier = isFinish ? 1 : -1;
                 pointIdx = 1;
-                rotationMultiplier = point[2] === EAST ? 1 : -1;
+                rotationMultiplier = point[ANGLE] === EAST ? 1 : -1;
                 break;
             case EAST:
                 coordinateMultiplier = isFinish ? 1 : -1;
                 pointIdx = 0;
-                rotationMultiplier = point[2] === SOUTH ? -1 : 1;
+                rotationMultiplier = point[ANGLE] === SOUTH ? -1 : 1;
                 break;
             case WEST:
                 coordinateMultiplier = isFinish ? -1 : 1;
                 pointIdx = 0;
-                rotationMultiplier = point[2] === SOUTH ? 1 : -1;
+                rotationMultiplier = point[ANGLE] === SOUTH ? 1 : -1;
                 break;
         }
         var adjustment = 5;
@@ -478,21 +484,21 @@ DesertGenerator.prototype._generateTrackMarkers = function(points, data) {
         // and mathing the indexes
         var markerRotation;
         if (isFinish) {
-            markerRotation = point[2];
-        } else if (rotationMultiplier === -1 && point[2] === 0) {
+            markerRotation = point[ANGLE];
+        } else if (rotationMultiplier === -1 && point[ANGLE] === 0) {
             markerRotation = 270;
-        } else if (rotationMultiplier === 1 && point[2] === 270) {
+        } else if (rotationMultiplier === 1 && point[ANGLE] === 270) {
             markerRotation = 0;
         } else {
-            markerRotation = point[2] + (90 * rotationMultiplier)
+            markerRotation = point[ANGLE] + (90 * rotationMultiplier)
         }
 
         var marker = {
             "id": id,
             "height": this.template.tileheight,
             "width": this.template.tilewidth * TRACK_WIDTH * 3,
-            "x": markerPoint[0] * this.template.tilewidth,
-            "y": markerPoint[1] * this.template.tileheight,
+            "x": markerPoint[X] * this.template.tilewidth,
+            "y": markerPoint[Y] * this.template.tileheight,
             "rotation": markerRotation,
             "visible":true,
         };
@@ -566,27 +572,27 @@ DesertGenerator.prototype._addEmbellishment = function(points, type, orientation
     var lineStart = points[index];
     var lineEnd   = points.length === index + 1 ? points[0] : points[index + 1];
     var midpoint = [
-        (lineStart[0] + lineEnd[0]) / 2,
-        (lineStart[1] + lineEnd[1]) / 2,
+        (lineStart[X] + lineEnd[X]) / 2,
+        (lineStart[Y] + lineEnd[Y]) / 2,
     ];
-    var headingDirection = lineStart[2];
+    var headingDirection = lineStart[ANGLE];
     var inward = orientation === INWARD;
     switch (headingDirection) {
         case NORTH:
-            midpoint[1] -= 10;
-            midpoint[2] = inward ? EAST : WEST;
+            midpoint[Y] -= 10;
+            midpoint[ANGLE] = inward ? EAST : WEST;
             break;
         case SOUTH:
-            midpoint[1] -= 10;
-            midpoint[2] = inward ? WEST : EAST;
+            midpoint[Y] -= 10;
+            midpoint[ANGLE] = inward ? WEST : EAST;
             break;
         case EAST:
-            midpoint[0] -= 10;
-            midpoint[2] = inward ? SOUTH : NORTH;
+            midpoint[X] -= 10;
+            midpoint[ANGLE] = inward ? SOUTH : NORTH;
             break;
         case WEST:
-            midpoint[0] -= 10;
-            midpoint[2] = inward ? NORTH : SOUTH;
+            midpoint[X] -= 10;
+            midpoint[ANGLE] = inward ? NORTH : SOUTH;
             break;
     }
     var embellishment = [];
@@ -627,7 +633,7 @@ DesertGenerator.prototype._plotPointsLogoStyle = function(startingPoint, instruc
         if (typeof instruction === 'number') {
             var axisIndex;
             var coordinateMultiplier;
-            switch (cursor[2]) {
+            switch (cursor[ANGLE]) {
                 case NORTH:
                     axisIndex = 1;
                     coordinateMultiplier = -1;
@@ -648,9 +654,9 @@ DesertGenerator.prototype._plotPointsLogoStyle = function(startingPoint, instruc
             cursor[axisIndex] += (instruction * coordinateMultiplier);
         } else if ([LEFT, RIGHT].indexOf(instruction) !== -1) {
             if (instruction === LEFT) {
-                cursor[2] = cursor[2] === 0 ? 270 : cursor[2] - 90;
+                cursor[ANGLE] = cursor[ANGLE] === 0 ? 270 : cursor[ANGLE] - 90;
             } else {
-                cursor[2] = cursor[2] === 270 ? 0 : cursor[2] + 90;
+                cursor[ANGLE] = cursor[ANGLE] === 270 ? 0 : cursor[ANGLE] + 90;
             }
             points.push(cursor.slice());
         } else {
@@ -662,20 +668,20 @@ DesertGenerator.prototype._plotPointsLogoStyle = function(startingPoint, instruc
 };
 
 DesertGenerator.prototype._drawHorizontalTrack = function(data, leftPos, length) {
-    for (var y = leftPos[1] - 3; y <= leftPos[1] + 3; y += 1) {
-        this._drawHorizontalLine(data, PAVEMENT, [leftPos[0], y], length);
+    for (var y = leftPos[Y] - 3; y <= leftPos[Y] + 3; y += 1) {
+        this._drawHorizontalLine(data, PAVEMENT, [leftPos[X], y], length);
     }
 };
 
 DesertGenerator.prototype._drawVerticalTrack = function(data, topPos, length) {
-    for (var x = topPos[0] - 3; x <= topPos[0] + 3; x += 1) {
-        this._drawVerticalLine(data, PAVEMENT, [x, topPos[1]], length);
+    for (var x = topPos[X] - 3; x <= topPos[X] + 3; x += 1) {
+        this._drawVerticalLine(data, PAVEMENT, [x, topPos[Y]], length);
     }
 };
 
 DesertGenerator.prototype._drawHorizontalLine = function(data, tile, leftPos, length) {
-    var x = leftPos[0];
-    var y = leftPos[1];
+    var x = leftPos[X];
+    var y = leftPos[Y];
     data.splice.apply(data, [
         (this.template.width * y) + x,
         length,
@@ -683,8 +689,8 @@ DesertGenerator.prototype._drawHorizontalLine = function(data, tile, leftPos, le
 };
 
 DesertGenerator.prototype._drawVerticalLine = function(data, tile, topPos, length) {
-    var x = topPos[0];
-    var y = topPos[1];
+    var x = topPos[X];
+    var y = topPos[Y];
 
     for (var pos = y; pos <= y + length; pos += 1) {
         data[(pos * this.template.width) + x] = tile;
