@@ -71,6 +71,20 @@ edges[GRAVEL] = {
     CORNER_SW: GRAVEL_CORNER_SW,
     CORNER_SE: GRAVEL_CORNER_SE,
 };
+edges[PIT] = {
+    EDGE_NW: 9,
+    EDGE_N: 10,
+    EDGE_NE: 11,
+    EDGE_W: 20,
+    EDGE_E: 22,
+    EDGE_SW: 31,
+    EDGE_S: 32,
+    EDGE_SE: 33,
+    CORNER_NW: 54,
+    CORNER_NE: 53,
+    CORNER_SW: 43,
+    CORNER_SE: 42,
+}
 
 var DesertGenerator = function(options) {
     options = options || {};
@@ -93,6 +107,7 @@ DesertGenerator.prototype.generate = function() {
     this._generateGravel(data);
     this._generatePits(data);
     this._addEdgeTiles(data, this.gravelIndices, GRAVEL);
+    this._addEdgeTiles(data, this.pitIndices, PIT);
 
     return data;
 };
