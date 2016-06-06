@@ -4,18 +4,6 @@ var _ = require('underscore');
 
 var SAND = 39;
 var PAVEMENT = 46;
-var PAVEMENT_INNER_NW = 34;
-var PAVEMENT_INNER_N = 35;
-var PAVEMENT_INNER_NE = 36;
-var PAVEMENT_INNER_W = 45;
-var PAVEMENT_INNER_E = 47;
-var PAVEMENT_INNER_SW = 56;
-var PAVEMENT_INNER_W = 57;
-var PAVEMENT_INNER_SE = 58;
-var PAVEMENT_OUTER_NW = 48;
-var PAVEMENT_OUTER_NE = 49;
-var PAVEMENT_OUTER_SW = 59;
-var PAVEMENT_OUTER_SE = 60;
 var GRAVEL = 18;
 var PIT = 21;
 
@@ -24,7 +12,7 @@ var EAST = 90;
 var SOUTH = 180;
 var WEST = 270;
 
-var TRACK_WIDTH  = 5;
+var TRACK_WIDTH  = 6;
 var MAP_SIZE     = 600;
 
 var EMBEL_NONE = 'EMBEL_NONE';
@@ -78,6 +66,20 @@ edges[PIT] = {
     CORNER_SW: 43,
     CORNER_SE: 42,
 }
+edges[PAVEMENT] = {
+    EDGE_NW: 34,
+    EDGE_N: 35,
+    EDGE_NE: 36,
+    EDGE_W: 45,
+    EDGE_E: 47,
+    EDGE_SW: 56,
+    EDGE_S: 57,
+    EDGE_SE: 58,
+    CORNER_SE: 48,
+    CORNER_NW: 60,
+    CORNER_NE: 59,
+    CORNER_SW: 49,
+}
 
 var DesertGenerator = function(options) {
     options = options || {};
@@ -102,6 +104,7 @@ DesertGenerator.prototype.generate = function() {
     this._generatePits(data);
     this._addEdgeTiles(data, this.gravelIndices, GRAVEL);
     this._addEdgeTiles(data, this.pitIndices, PIT);
+    this._addEdgeTiles(data, this.trackIndices, PAVEMENT);
 
     return data;
 };
@@ -196,7 +199,7 @@ DesertGenerator.prototype._generateTrack = function(points, data) {
                 this._drawHorizontalTrack(
                     background.data,
                     leftPoint,
-                    Math.abs(point[X] - prevPoint[X]) + 7 // +7 to fill in corners
+                    Math.abs(point[X] - prevPoint[X]) + 6 // +6 to fill in corners
                 )
             }
         }
@@ -210,7 +213,6 @@ DesertGenerator.prototype._generateGravel = function(data) {
     var rough = this._getLayer(data, 'rough');
 
     this._fillLayer(rough.data, 0);
-
 
     // Debug: Add a single patch right by the starting line
     // var startPatchPoint = 150 + (MAP_SIZE * (MAP_SIZE - 150)) - 10;
@@ -668,33 +670,58 @@ DesertGenerator.prototype._plotPointsLogoStyle = function(startingPoint, instruc
 };
 
 DesertGenerator.prototype._drawHorizontalTrack = function(data, leftPos, length) {
-    for (var y = leftPos[Y] - 3; y <= leftPos[Y] + 3; y += 1) {
-        this._drawHorizontalLine(data, PAVEMENT, [leftPos[X], y], length);
+    var pad = TRACK_WIDTH / 2;
+    for (var y = leftPos[Y] - pad; y <= leftPos[Y] + pad; y += 1) {
+        var indexes;
+        if (y === leftPos[Y] - pad || y === leftPos[Y] + pad) {
+            indexes = this.trackIndices;
+        }
+        this._drawHorizontalLine(data, PAVEMENT, [leftPos[X], y], length, indexes);
     }
 };
 
 DesertGenerator.prototype._drawVerticalTrack = function(data, topPos, length) {
-    for (var x = topPos[X] - 3; x <= topPos[X] + 3; x += 1) {
-        this._drawVerticalLine(data, PAVEMENT, [x, topPos[Y]], length);
+    var pad = TRACK_WIDTH / 2;
+    for (var x = topPos[X] - pad; x <= topPos[X] + pad; x += 1) {
+        var indexes;
+        if (x === topPos[X] - pad || x === topPos[X] + pad) {
+            indexes = this.trackIndices;
+        }
+        this._drawVerticalLine(data, PAVEMENT, [x, topPos[Y]], length, indexes);
     }
 };
 
-DesertGenerator.prototype._drawHorizontalLine = function(data, tile, leftPos, length) {
+// indexes is an array that, if present, will be mutated to contain the point indexes
+// where tiles were set
+DesertGenerator.prototype._drawHorizontalLine = function(data, tile, leftPos, length, indexes) {
     var x = leftPos[X];
     var y = leftPos[Y];
-    data.splice.apply(data, [
-        (this.template.width * y) + x,
-        length,
-    ].concat(new Array(length).fill(tile)));
+
+    for (var pos = x; pos <= x + length; pos += 1) {
+        var index = this._convertPointToIndex([pos, y]);
+        data[index] = tile;
+        if (indexes) {
+            indexes.push(index);
+        }
+    }
 };
 
-DesertGenerator.prototype._drawVerticalLine = function(data, tile, topPos, length) {
+DesertGenerator.prototype._drawVerticalLine = function(data, tile, topPos, length, indexes) {
     var x = topPos[X];
     var y = topPos[Y];
 
     for (var pos = y; pos <= y + length; pos += 1) {
-        data[(pos * this.template.width) + x] = tile;
+        var index = this._convertPointToIndex([x, pos]);
+        data[index] = tile;
+        if (indexes) {
+            indexes.push(index);
+        }
     }
+    return indexes;
+};
+
+DesertGenerator.prototype._convertPointToIndex = function(point) {
+    return (point[Y] * this.template.width) + point[X];
 };
 
 module.exports = DesertGenerator;
