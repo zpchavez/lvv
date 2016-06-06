@@ -498,7 +498,7 @@ DesertGenerator.prototype._generateTrackMarkers = function(points, data) {
         var marker = {
             "id": id,
             "height": this.template.tileheight,
-            "width": this.template.tilewidth * TRACK_WIDTH * 3,
+            "width": this.template.tilewidth * TRACK_WIDTH * 4,
             "x": markerPoint[X] * this.template.tilewidth,
             "y": markerPoint[Y] * this.template.tileheight,
             "rotation": markerRotation,
