@@ -17,7 +17,7 @@ var settings         = require('../../settings');
 var NEXT_GAME_DELAY  = 5000;
 var NEXT_ROUND_DELAY = 2500;
 
-var TrackLoaderState = function(trackData, options)
+var RaceState = function(trackData, options)
 {
     options = options || {};
     _(options).defaults({
@@ -53,9 +53,9 @@ var TrackLoaderState = function(trackData, options)
     this.track.setDebug(this.debug);
 };
 
-TrackLoaderState.prototype = Object.create(Phaser.State.prototype);
+RaceState.prototype = Object.create(Phaser.State.prototype);
 
-TrackLoaderState.prototype.preload = function()
+RaceState.prototype.preload = function()
 {
     var state = this,
         cacheKey = Phaser.Plugin.Tiled.utils.cacheKey;
@@ -94,7 +94,7 @@ TrackLoaderState.prototype.preload = function()
     this.obstacleFactory.loadAssets(_.keys(this.trackData.placedObjectClasses));
 };
 
-TrackLoaderState.prototype.create = function()
+RaceState.prototype.create = function()
 {
     this.showTrackSelectorOffCanvas();
 
@@ -103,11 +103,10 @@ TrackLoaderState.prototype.create = function()
 
     this.initTrack();
     this.createStartingPointVectors();
-    this.initPlayers();
     this.postGameObjectPlacement();
+    this.initPlayers();
     this.initScore();
     this.initInputs();
-
     this.showLapCounter();
 
     this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
@@ -116,7 +115,7 @@ TrackLoaderState.prototype.create = function()
     this.game.add.graphics();
 };
 
-TrackLoaderState.prototype.initTrack = function()
+RaceState.prototype.initTrack = function()
 {
     this.map = this.game.add.tiledmap('track');
 
@@ -129,7 +128,7 @@ TrackLoaderState.prototype.initTrack = function()
     this.placeObstacles();
 };
 
-TrackLoaderState.prototype.createStartingPointVectors = function()
+RaceState.prototype.createStartingPointVectors = function()
 {
     var xOffset = 20;
     var yOffset = 30;
@@ -153,7 +152,7 @@ TrackLoaderState.prototype.createStartingPointVectors = function()
     }
 };
 
-TrackLoaderState.prototype.initPlayers = function()
+RaceState.prototype.initPlayers = function()
 {
     var offsetVector, state = this;
 
@@ -185,12 +184,12 @@ TrackLoaderState.prototype.initPlayers = function()
     }, this);
 };
 
-TrackLoaderState.prototype.initScore = function()
+RaceState.prototype.initScore = function()
 {
     this.score.show();
 };
 
-TrackLoaderState.prototype.initInputs = function()
+RaceState.prototype.initInputs = function()
 {
     this.cursors = this.game.input.keyboard.createCursorKeys();
 
@@ -203,7 +202,7 @@ TrackLoaderState.prototype.initInputs = function()
     this.game.input.gamepad.start();
 };
 
-TrackLoaderState.prototype.placeTrackMarkers = function()
+RaceState.prototype.placeTrackMarkers = function()
 {
     var data, trackLayer, state = this;
 
@@ -243,7 +242,7 @@ TrackLoaderState.prototype.placeTrackMarkers = function()
     this.track.setMarkerSkippedCallback(this.moveCarToLastActivatedMarker, this);
 };
 
-TrackLoaderState.prototype.placeObstacles = function()
+RaceState.prototype.placeObstacles = function()
 {
     var obstacles = [], obstaclesLayer, state = this;
 
@@ -268,12 +267,12 @@ TrackLoaderState.prototype.placeObstacles = function()
     });
 };
 
-TrackLoaderState.prototype.postGameObjectPlacement = function()
+RaceState.prototype.postGameObjectPlacement = function()
 {
     this.game.world.callAll('postGameObjectPlacement', null);
 };
 
-TrackLoaderState.prototype.update = function()
+RaceState.prototype.update = function()
 {
     this.updateCamera();
 
@@ -288,7 +287,7 @@ TrackLoaderState.prototype.update = function()
     this.handleInput();
 };
 
-TrackLoaderState.prototype.eliminateOffCameraPlayers = function()
+RaceState.prototype.eliminateOffCameraPlayers = function()
 {
     _.each(this.cars, function(car) {
         if (car.visible) {
@@ -316,7 +315,7 @@ TrackLoaderState.prototype.eliminateOffCameraPlayers = function()
     }, this);
 };
 
-TrackLoaderState.prototype.awardPoints = function()
+RaceState.prototype.awardPoints = function()
 {
     var visibleCars, winningCar;
 
@@ -358,7 +357,7 @@ TrackLoaderState.prototype.awardPoints = function()
     }
 };
 
-TrackLoaderState.prototype.handleInput = function()
+RaceState.prototype.handleInput = function()
 {
     if (this.cursors.up.isDown) {
         this.cars[0].accelerate();
@@ -405,7 +404,7 @@ TrackLoaderState.prototype.handleInput = function()
     }
 };
 
-TrackLoaderState.prototype.updateCamera = function()
+RaceState.prototype.updateCamera = function()
 {
     var BUFFER_VALUE           = 100,
         averagePlayerPosition  = [0,0],
@@ -460,7 +459,7 @@ TrackLoaderState.prototype.updateCamera = function()
     }
 };
 
-TrackLoaderState.prototype.handleDrops = function(car)
+RaceState.prototype.handleDrops = function(car)
 {
     var width  = this.map.scaledTileWidth,
         height = this.map.scaledTileHeight;
@@ -480,7 +479,7 @@ TrackLoaderState.prototype.handleDrops = function(car)
     }
 };
 
-TrackLoaderState.prototype.handleRamps = function(car)
+RaceState.prototype.handleRamps = function(car)
 {
     if (this.map.getTilelayerIndex('ramps') !== -1) {
         if (car.falling || car.airborne) {
@@ -497,7 +496,7 @@ TrackLoaderState.prototype.handleRamps = function(car)
     }
 };
 
-TrackLoaderState.prototype.handleRoughTerrain = function(car)
+RaceState.prototype.handleRoughTerrain = function(car)
 {
     if (this.map.getTilelayerIndex('rough') !== -1) {
         if (car.airborne) {
@@ -513,7 +512,7 @@ TrackLoaderState.prototype.handleRoughTerrain = function(car)
 };
 
 // Move camera towards a target point instead of directly to it for a less abrupt transition
-TrackLoaderState.prototype.easeCamera = function(x, y)
+RaceState.prototype.easeCamera = function(x, y)
 {
     var currentCenter,
         differenceVector,
@@ -535,7 +534,7 @@ TrackLoaderState.prototype.easeCamera = function(x, y)
     );
 };
 
-TrackLoaderState.prototype.moveCarToLastActivatedMarker = function(car)
+RaceState.prototype.moveCarToLastActivatedMarker = function(car)
 {
     var carIndex, offsetVector, lastActivatedMarker;
 
@@ -561,7 +560,7 @@ TrackLoaderState.prototype.moveCarToLastActivatedMarker = function(car)
     car.body.angle = lastActivatedMarker.angle;
 };
 
-TrackLoaderState.prototype.resetAllCarsToLastMarker = function()
+RaceState.prototype.resetAllCarsToLastMarker = function()
 {
     this.victorySpinning = false;
 
@@ -574,7 +573,7 @@ TrackLoaderState.prototype.resetAllCarsToLastMarker = function()
     this.updateCamera();
 };
 
-TrackLoaderState.prototype.showLapCounter = function()
+RaceState.prototype.showLapCounter = function()
 {
     this.lapDisplay = this.game.add.text(
         30,
@@ -590,7 +589,7 @@ TrackLoaderState.prototype.showLapCounter = function()
     this.lapDisplay.fixedToCamera = true;
 };
 
-TrackLoaderState.prototype.showWinnerMessage = function()
+RaceState.prototype.showWinnerMessage = function()
 {
     var winningPlayerOrTeamNumber = this.score.getWinner() || this.score.getLeaders()[0];
 
@@ -602,7 +601,7 @@ TrackLoaderState.prototype.showWinnerMessage = function()
     );
 };
 
-TrackLoaderState.prototype.showMessage = function(text, options)
+RaceState.prototype.showMessage = function(text, options)
 {
     options = options || {};
 
@@ -636,7 +635,7 @@ TrackLoaderState.prototype.showMessage = function(text, options)
     }
 };
 
-TrackLoaderState.prototype.completeLap = function()
+RaceState.prototype.completeLap = function()
 {
     var leaderNumbers, leadingCars = [], state = this;
 
@@ -674,14 +673,14 @@ TrackLoaderState.prototype.completeLap = function()
     }
 };
 
-TrackLoaderState.prototype.selectTrack = function(trackTheme, trackName)
+RaceState.prototype.selectTrack = function(trackTheme, trackName)
 {
     var callback, trackLoader, state = this;
 
     callback = function(data) {
         state.game.state.add(
             'track-loader',
-            new TrackLoaderState(
+            new RaceState(
                 data,
                 {
                     playerCount : state.playerCount,
@@ -701,7 +700,7 @@ TrackLoaderState.prototype.selectTrack = function(trackTheme, trackName)
     trackLoader.load(trackTheme, trackName, callback);
 };
 
-TrackLoaderState.prototype.changeDebugMode = function(value)
+RaceState.prototype.changeDebugMode = function(value)
 {
     if (value) {
         this.track.enableDebug();
@@ -712,7 +711,7 @@ TrackLoaderState.prototype.changeDebugMode = function(value)
     }
 };
 
-TrackLoaderState.prototype.changeNumberOfPlayers = function(value, teams)
+RaceState.prototype.changeNumberOfPlayers = function(value, teams)
 {
     teams = _(teams).isUndefined() ? false : teams;
 
@@ -722,16 +721,16 @@ TrackLoaderState.prototype.changeNumberOfPlayers = function(value, teams)
     this.reload();
 };
 
-TrackLoaderState.prototype.setLaps = function(laps)
+RaceState.prototype.setLaps = function(laps)
 {
     this.laps = laps;
 };
 
-TrackLoaderState.prototype.reload = function()
+RaceState.prototype.reload = function()
 {
     this.game.state.add(
         'track-loader',
-        new TrackLoaderState(
+        new RaceState(
             this.trackData,
             {
                 players : this.playerCount,
@@ -746,7 +745,7 @@ TrackLoaderState.prototype.reload = function()
     this.shutdown();
 };
 
-TrackLoaderState.prototype.regenerate = function()
+RaceState.prototype.regenerate = function()
 {
     this.selectTrack(
         this.trackSelector.state.selectedTheme,
@@ -754,7 +753,7 @@ TrackLoaderState.prototype.regenerate = function()
     );
 };
 
-TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
+RaceState.prototype.showTrackSelectorOffCanvas = function()
 {
     this.trackSelector = React.render(
         React.createElement(TrackSelector, {
@@ -771,7 +770,7 @@ TrackLoaderState.prototype.showTrackSelectorOffCanvas = function()
     );
 };
 
-TrackLoaderState.prototype.toggleFullscreen = function()
+RaceState.prototype.toggleFullscreen = function()
 {
     if (this.game.scale.isFullScreen) {
         this.game.scale.stopFullScreen();
@@ -780,4 +779,4 @@ TrackLoaderState.prototype.toggleFullscreen = function()
     }
 };
 
-module.exports = TrackLoaderState;
+module.exports = RaceState;
