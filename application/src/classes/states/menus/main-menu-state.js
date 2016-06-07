@@ -5,7 +5,7 @@ var Phaser = require('phaser');
 var CarDrivingState          = require('../examples/car-driving-state');
 var TrackMarkerState         = require('../examples/track-marker-state');
 var BathroomObstacleSetState = require('../examples/bathroom-obstacle-set-state');
-var TrackLoaderState         = require('../track-loader-state');
+var RaceState                = require('../race-state');
 var TrackLoader              = require('../../track-loader');
 var settings                 = require('../../../settings');
 
@@ -66,8 +66,8 @@ MainMenuState.prototype.onTrackLoaderClick = function()
 
     trackLoader.load(settings.theme, settings.track, function(data) {
         stateManager.add(
-            'track-loader',
-            new TrackLoaderState(data),
+            'race',
+            new RaceState(data),
             true
         );
         mainMenu.shutdown();

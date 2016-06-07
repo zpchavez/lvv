@@ -120,6 +120,7 @@ TrackLoader.prototype.load = function(theme, name, callback)
         this.phaserLoader.json('track-data', trackInstructions);
         this.phaserLoader.onLoadComplete.addOnce(function () {
             var data = trackLoader.phaserLoader.game.cache.getJSON('track-data');
+            console.log(JSON.stringify(data));
             callback(trackLoader.adjustTrackData(data));
         });
         this.phaserLoader.start();
