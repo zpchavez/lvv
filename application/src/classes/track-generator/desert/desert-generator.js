@@ -100,6 +100,7 @@ DesertGenerator.prototype.generate = function() {
     var points = this._plotPoints();
     this._generateTrack(points, data);
     this._generateTrackMarkers(points, data);
+    this._addObstacles(points, data);
     this._generateGravel(data);
     this._generatePits(data);
     this._addEdgeTiles(data, this.gravelIndices, GRAVEL);
@@ -120,6 +121,54 @@ DesertGenerator.prototype._getLayer = function(data, name) {
 
     return returnedLayer;
 };
+
+DesertGenerator.prototype._addObstacles = function(points, data) {
+    var obstacleLayer = this._getLayer(data, 'obstacles');
+
+    var lines = [];
+    for (var i = 0; i <= points.length - 1; i += 1) {
+        if (i === points.length - 1) {
+            lines.push([points[i], points[0]]);
+        } else {
+            lines.push([points[i], points[i + 1]]);
+        }
+    }
+
+    var obstacles = [
+        'Comb',
+        'Razor',
+        'AspirinBottle',
+        'Floss',
+        'Toothbrush'
+    ];
+
+    lines.forEach(function (line) {
+        var range = {
+            x: null,
+            y: null
+        };
+        if (line[0][ANGLE] === NORTH || line[0][ANGLE] === SOUTH) {
+            range.y = [
+                Math.min(line[0][Y], line[1][Y]) + 10,
+                Math.max(line[1][Y], line[1][Y]) - 10
+            ];
+            range.x = [line[0][X] - 30, line[0][X] + 30];
+        } else {
+            range.x = [
+                Math.min(line[0][X], line[0][X]) + 10,
+                Math.max(line[1][X], line[1][X]) - 10
+            ];
+            range.y = [line[0][Y] - 30, line[0][Y] + 30];
+        }
+        obstacleLayer.objects.push({
+            rotation: rng.getIntBetween(0, 360),
+            type: rng.pickValueFromArray(obstacles),
+            visible: true,
+            x: rng.getIntBetween(range.x[0], range.x[1]) * this.template.tilewidth,
+            y: rng.getIntBetween(range.y[0], range.y[1]) * this.template.tileheight,
+        });
+    }.bind(this));
+}
 
 DesertGenerator.prototype._fillLayer = function(layerData, value) {
     // Do it in batches to avoid "max call stack exceeded"
