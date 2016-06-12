@@ -125,15 +125,6 @@ DesertGenerator.prototype._getLayer = function(data, name) {
 DesertGenerator.prototype._addObstacles = function(points, data) {
     var obstacleLayer = this._getLayer(data, 'obstacles');
 
-    var lines = [];
-    for (var i = 0; i <= points.length - 1; i += 1) {
-        if (i === points.length - 1) {
-            lines.push([points[i], points[0]]);
-        } else {
-            lines.push([points[i], points[i + 1]]);
-        }
-    }
-
     var obstacles = [
         'Comb',
         'Razor',
@@ -142,32 +133,38 @@ DesertGenerator.prototype._addObstacles = function(points, data) {
         'Toothbrush'
     ];
 
-    lines.forEach(function (line) {
+    var pickedPoints = [];
+    for (var i = 0; i < obstacles.length; i += 1) {
+        var point;
+        do {
+            point = rng.pickValueFromArray(points);
+        } while (
+            // Make sure no two points are too close together
+            pickedPoints.indexOf(point) !== -1 ||
+            pickedPoints.some(function (pickedPoint) {
+                return this._getDistanceBetween(point, pickedPoint) < 30;
+            }.bind(this))
+        );
+        pickedPoints.push(point);
+
         var range = {
-            x: null,
-            y: null
+            x: rng.pickValueFromArray([
+                [point[X] - 20, point[X] - 10],
+                [point[X] + 10, point[X] + 20],
+            ]),
+            y: rng.pickValueFromArray([
+                [point[Y] - 20, point[Y] - 10],
+                [point[Y] + 10, point[Y] + 20],
+            ])
         };
-        if (line[0][ANGLE] === NORTH || line[0][ANGLE] === SOUTH) {
-            range.y = [
-                Math.min(line[0][Y], line[1][Y]) + 10,
-                Math.max(line[1][Y], line[1][Y]) - 10
-            ];
-            range.x = [line[0][X] - 30, line[0][X] + 30];
-        } else {
-            range.x = [
-                Math.min(line[0][X], line[0][X]) + 10,
-                Math.max(line[1][X], line[1][X]) - 10
-            ];
-            range.y = [line[0][Y] - 30, line[0][Y] + 30];
-        }
         obstacleLayer.objects.push({
             rotation: rng.getIntBetween(0, 360),
-            type: rng.pickValueFromArray(obstacles),
+            type: obstacles[i],
             visible: true,
             x: rng.getIntBetween(range.x[0], range.x[1]) * this.template.tilewidth,
             y: rng.getIntBetween(range.y[0], range.y[1]) * this.template.tileheight,
         });
-    }.bind(this));
+    }
 }
 
 DesertGenerator.prototype._fillLayer = function(layerData, value) {
@@ -229,7 +226,7 @@ DesertGenerator.prototype._generateTrack = function(points, data) {
 
     this._fillLayer(background.data, SAND);
 
-    // Draw line between all points, including between the first and last
+    // Draw track between all points, including between the first and last
     var drawPoints = points.slice();
     drawPoints.push(points[0]);
     drawPoints.forEach(function(point, index) {
@@ -771,6 +768,15 @@ DesertGenerator.prototype._drawVerticalLine = function(data, tile, topPos, lengt
 
 DesertGenerator.prototype._convertPointToIndex = function(point) {
     return (point[Y] * this.template.width) + point[X];
+};
+
+DesertGenerator.prototype._getDistanceBetween = function(point1, point2) {
+    return (
+        Math.sqrt(
+            Math.pow(point1[X] - point2[X], 2) +
+            Math.pow(point1[Y] - point2[Y], 2)
+        )
+    );
 };
 
 module.exports = DesertGenerator;
