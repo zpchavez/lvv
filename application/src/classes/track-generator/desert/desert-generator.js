@@ -134,7 +134,7 @@ DesertGenerator.prototype._addObstacles = function(points, data) {
     ];
 
     var pickedPoints = [];
-    for (var i = 0; i < obstacles.length; i += 1) {
+    for (var i = 0; i < Math.min(obstacles.length, points.length); i += 1) {
         var point;
         do {
             point = rng.pickValueFromArray(points);
@@ -142,7 +142,7 @@ DesertGenerator.prototype._addObstacles = function(points, data) {
             // Make sure no two points are too close together
             pickedPoints.indexOf(point) !== -1 ||
             pickedPoints.some(function (pickedPoint) {
-                return this._getDistanceBetween(point, pickedPoint) < 30;
+                return this._getDistanceBetween(point, pickedPoint) < 60;
             }.bind(this))
         );
         pickedPoints.push(point);
@@ -157,15 +157,149 @@ DesertGenerator.prototype._addObstacles = function(points, data) {
                 [point[Y] + 10, point[Y] + 20],
             ])
         };
-        obstacleLayer.objects.push({
-            rotation: rng.getIntBetween(0, 360),
+
+        var object = {
+            rotation: rng.getIntBetween(0, 359),
             type: obstacles[i],
             visible: true,
             x: rng.getIntBetween(range.x[0], range.x[1]) * this.template.tilewidth,
             y: rng.getIntBetween(range.y[0], range.y[1]) * this.template.tileheight,
-        });
+        };
+
+        if (object.type === 'AspirinBottle') {
+            object.rotation = Math.floor(object.rotation / 45);
+            this._addPillObstacles(obstacleLayer, object);
+        }
+        obstacleLayer.objects.push(object);
     }
 }
+
+DesertGenerator.prototype._addPillObstacles = function(layer, bottleObject) {
+    var point = [
+        bottleObject.x / this.template.tilewidth,
+        bottleObject.y / this.template.tileheight
+    ];
+    var topLeft;
+    var bottomRight;
+    // Define the areas where spilled pills may appear.
+    // There's probably a smart, mathy way to do this, but instead...
+    switch (Math.floor(bottleObject.rotation / 45)) {
+        case 0: // Facing N
+            topLeft = [
+                point[X] - 2,
+                point[Y] - 18,
+            ];
+            bottomRight = [
+                point[X] + 2,
+                point[Y] - 10
+            ];
+            break;
+        case 1: // Facing NE
+            topLeft = [
+                point[X] + 6,
+                point[Y] - 11,
+            ];
+            bottomRight = [
+                point[X] + 9,
+                point[Y] - 6
+            ];
+            break;
+        case 2: // Facing E
+            topLeft = [
+                point[X] + 9,
+                point[Y] + 3,
+            ];
+            bottomRight = [
+                point[X] + 16,
+                point[Y] - 3
+            ];
+            break;
+        case 3: // Facing SE
+            topLeft = [
+                point[X] + 7,
+                point[Y] + 6,
+            ];
+            bottomRight = [
+                point[X] + 9,
+                point[Y] + 9
+            ];
+            break;
+        case 4: // Facing S
+            topLeft = [
+                point[X] - 2,
+                point[Y] + 10,
+            ];
+            bottomRight = [
+                point[X] + 2,
+                point[Y] + 18
+            ];
+            break;
+        case 5: // Facing SW
+            topLeft = [
+                point[X] - 10,
+                point[Y] + 9,
+            ];
+            bottomRight = [
+                point[X] - 6,
+                point[Y] + 12
+            ];
+            break;
+        case 6: // Facing W
+            topLeft = [
+                point[X] - 9,
+                point[Y] + 3,
+            ];
+            bottomRight = [
+                point[X] - 16,
+                point[Y] - 3
+            ];
+            break;
+        case 7: // Facing NW
+            topLeft = [
+                point[X] - 6,
+                point[Y] - 11,
+            ];
+            bottomRight = [
+                point[X] - 9,
+                point[Y] - 6
+            ];
+            break;
+    }
+
+    this._scatterObstacles(
+        layer,
+        'AspirinPill',
+        rng.getIntBetween(6, 12),
+        1,
+        topLeft,
+        bottomRight
+    );
+};
+
+DesertGenerator.prototype._scatterObstacles = function(layer, type, number, spacing, topLeft, bottomRight) {
+    var obstacles = [];
+    for (var i = 0; i < number; i += 1) {
+        var point;
+        do {
+            point = [
+                rng.getIntBetween(topLeft[X], bottomRight[X]),
+                rng.getIntBetween(topLeft[Y], bottomRight[Y])
+            ];
+        } while (
+            obstacles.some(function (obstacle) {
+                return this._getDistanceBetween(point, obstacle) < spacing;
+            }.bind(this))
+        )
+
+        layer.objects.push({
+            rotation: rng.getIntBetween(0, 360),
+            type: type,
+            visible: true,
+            x: point[X] * this.template.tilewidth,
+            y: point[Y] * this.template.tileheight,
+        });
+    }
+};
 
 DesertGenerator.prototype._fillLayer = function(layerData, value) {
     // Do it in batches to avoid "max call stack exceeded"
@@ -259,17 +393,6 @@ DesertGenerator.prototype._generateGravel = function(data) {
     var rough = this._getLayer(data, 'rough');
 
     this._fillLayer(rough.data, 0);
-
-    // Debug: Add a single patch right by the starting line
-    // var startPatchPoint = 150 + (MAP_SIZE * (MAP_SIZE - 150)) - 10;
-    // this._generatePatch(
-    //     startPatchPoint,
-    //     background.data,
-    //     GRAVEL,
-    //     rough.data,
-    //     1,
-    //     this.gravelIndices
-    // );
 
     var totalTiles = MAP_SIZE * MAP_SIZE;
     var gravelCount = Math.round(totalTiles * .015);
