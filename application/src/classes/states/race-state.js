@@ -265,6 +265,7 @@ RaceState.prototype.placeObstacles = function()
         obstacle.addToCollisionGroup(state.collisionGroup);
         obstacle.add(state);
     });
+    this.obstacles = obstacles;
 };
 
 RaceState.prototype.postGameObjectPlacement = function()
@@ -476,6 +477,20 @@ RaceState.prototype.handleDrops = function(car)
                 y : Math.floor(car.y / height) * height + (height / 2)
             });
         }
+
+        // Obstacles fall too
+        this.obstacles.forEach(function (obstacle) {
+            if (
+                obstacle.falling === false &&
+                this.map.getTileWorldXY(obstacle.x, obstacle.y, width, height, 'drops')
+            ) {
+                obstacle.fall({
+                    // This determines the center of the pit tile the obstacle is above
+                    x : Math.floor(obstacle.x / width) * width + (width / 2),
+                    y : Math.floor(obstacle.y / height) * height + (height / 2)
+                });
+            }
+        }.bind(this));
     }
 };
 
