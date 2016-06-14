@@ -167,7 +167,7 @@ DesertGenerator.prototype._addObstacles = function(points, data) {
         };
 
         if (object.type === 'AspirinBottle') {
-            object.rotation = Math.floor(object.rotation / 45);
+            object.rotation = Math.floor(object.rotation / 45) * 45;
             this._addPillObstacles(obstacleLayer, object);
         }
         obstacleLayer.objects.push(object);
@@ -278,6 +278,7 @@ DesertGenerator.prototype._addPillObstacles = function(layer, bottleObject) {
 
 DesertGenerator.prototype._scatterObstacles = function(layer, type, number, spacing, topLeft, bottomRight) {
     var obstacles = [];
+    var safetyCounter = 0;
     for (var i = 0; i < number; i += 1) {
         var point;
         do {
@@ -285,11 +286,21 @@ DesertGenerator.prototype._scatterObstacles = function(layer, type, number, spac
                 rng.getIntBetween(topLeft[X], bottomRight[X]),
                 rng.getIntBetween(topLeft[Y], bottomRight[Y])
             ];
+            safetyCounter += 1;
+            if (safetyCounter > 100) {
+                point = null;
+                break;
+            }
         } while (
             obstacles.some(function (obstacle) {
                 return this._getDistanceBetween(point, obstacle) < spacing;
             }.bind(this))
         )
+
+        if (! point) {
+            break;
+        }
+        obstacles.push(point);
 
         layer.objects.push({
             rotation: rng.getIntBetween(0, 360),
