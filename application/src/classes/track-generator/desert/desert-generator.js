@@ -421,6 +421,7 @@ DesertGenerator.prototype._generateGravel = function(data) {
 
 DesertGenerator.prototype._generatePits = function(data) {
     var background = this._getLayer(data, 'background');
+    var obstacles = this._getLayer(data, 'obstacles');
     var drops = this._getLayer(data, 'drops');
 
     this._fillLayer(drops.data, 0);
@@ -428,8 +429,26 @@ DesertGenerator.prototype._generatePits = function(data) {
     var totalTiles = MAP_SIZE * MAP_SIZE;
     var pitCount = Math.round(totalTiles * .005);
     for (i = 0; i < pitCount; i += 1) {
+        // If there's an obstacle nearby, pick a different tile
+        var point;
+        var tileIndex;
+        do {
+            tileIndex = rng.getIntBetween(0, totalTiles);
+            point = this._convertIndexToPoint(tileIndex);
+        } while (
+            obstacles.objects.some(function (object) {
+                return this._getDistanceBetween(
+                    point,
+                    [
+                        object.x / this.template.tilewidth,
+                        object.y / this.template.tileheight
+                    ]
+                ) < 20;
+            }.bind(this))
+        )
+
         this._generatePatch(
-            rng.getIntBetween(0, totalTiles),
+            tileIndex,
             background.data,
             PIT,
             drops.data,
@@ -902,6 +921,13 @@ DesertGenerator.prototype._drawVerticalLine = function(data, tile, topPos, lengt
 
 DesertGenerator.prototype._convertPointToIndex = function(point) {
     return (point[Y] * this.template.width) + point[X];
+};
+
+DesertGenerator.prototype._convertIndexToPoint = function(index) {
+    return [
+        index % this.template.width,
+        Math.floor(index / this.template.width)
+    ];
 };
 
 DesertGenerator.prototype._getDistanceBetween = function(point1, point2) {
