@@ -5,6 +5,7 @@ var AbstractDynamicObstacle = require('./abstract-dynamic-obstacle');
 var AspirinPill = function(state, x, y, key, angle)
 {
     AbstractDynamicObstacle.apply(this, arguments);
+    this.falling = false;
 };
 
 AspirinPill.prototype = Object.create(AbstractDynamicObstacle.prototype);
