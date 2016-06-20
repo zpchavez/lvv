@@ -443,15 +443,16 @@ DesertGenerator.prototype._generateRamps = function(points, data) {
             var jumpingOverTile = rng.pickValueFromArray([PIT, GRAVEL]);
             var jumpingOverLayer = jumpingOverTile === PIT ? pits : gravel;
             var jumpingOverIndices = jumpingOverTile === PIT ? this.pitIndices : this.gravelIndices;
+            var jumpLength = rng.getIntBetween(5, 10);
 
             if (line[0][ANGLE] === NORTH || line[0][ANGLE] === SOUTH) {
                 topLeft = [
                     midPoint[X] - 3,
-                    midPoint[Y] - 5
+                    midPoint[Y] - jumpLength
                 ];
                 bottomRight = [
                     midPoint[X] + 3,
-                    midPoint[Y] + 5
+                    midPoint[Y] + jumpLength
                 ];
                 innerTopLeft = [
                     topLeft[X],
@@ -467,11 +468,11 @@ DesertGenerator.prototype._generateRamps = function(points, data) {
                 this._drawHorizontalLine(ramps.data, 1, rampTopLeft, TRACK_WIDTH);
             } else {
                 topLeft = [
-                    midPoint[X] - 5,
+                    midPoint[X] - jumpLength,
                     midPoint[Y] - 3
                 ];
                 bottomRight = [
-                    midPoint[X] + 5,
+                    midPoint[X] + jumpLength,
                     midPoint[Y] + 4
                 ];
                 innerTopLeft = [
