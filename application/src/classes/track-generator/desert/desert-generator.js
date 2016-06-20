@@ -103,7 +103,7 @@ DesertGenerator.prototype.generate = function() {
     this._generateObstacles(points, data);
     this._generateGravel(data);
     this._generatePits(data);
-    this._generateRamps(points, data);
+    this._generateJumps(points, data);
     this._addEdgeTiles(data, this.gravelIndices, GRAVEL);
     this._addEdgeTiles(data, this.pitIndices, PIT);
     this._addEdgeTiles(data, this.trackIndices, PAVEMENT);
@@ -418,13 +418,7 @@ DesertGenerator.prototype._generateTrack = function(points, data) {
     return data;
 }
 
-DesertGenerator.prototype._generateRamps = function(points, data) {
-    var obstacles = this._getLayer(data, 'obstacles');
-    var ramps = this._getLayer(data, 'ramps');
-    var pits = this._getLayer(data, 'drops');
-    var gravel = this._getLayer(data, 'rough');
-    var background = this._getLayer(data, 'background');
-
+DesertGenerator.prototype._generateJumps = function(points, data) {
     var candidateLines = [];
     for (var i = 0; i < points.length; i += 1) {
         var nextPoint = (i === points.length - 1) ? points[0] : points[i + 1];
@@ -439,83 +433,93 @@ DesertGenerator.prototype._generateRamps = function(points, data) {
     candidateLines.forEach(function (line) {
         var midPoint = this._getMidpoint(line[0], line[1])
         if (rng.happensGivenProbability(1)) {
-            var topLeft, bottomRight, innerTopLeft, innerBottomRight, rampTopLeft;
-            var jumpingOverTile = rng.pickValueFromArray([PIT, GRAVEL]);
-            var jumpingOverLayer = jumpingOverTile === PIT ? pits : gravel;
-            var jumpingOverIndices = jumpingOverTile === PIT ? this.pitIndices : this.gravelIndices;
-            var jumpLength = rng.getIntBetween(5, 10);
-
-            if (line[0][ANGLE] === NORTH || line[0][ANGLE] === SOUTH) {
-                topLeft = [
-                    midPoint[X] - 3,
-                    midPoint[Y] - jumpLength
-                ];
-                bottomRight = [
-                    midPoint[X] + 3,
-                    midPoint[Y] + jumpLength
-                ];
-                innerTopLeft = [
-                    topLeft[X],
-                    topLeft[Y] + 2
-                ];
-                innerBottomRight = [
-                    bottomRight[X],
-                    bottomRight[Y] - 2
-                ];
-                rampTopLeft = line[0][ANGLE] === NORTH ?
-                    [topLeft[X], bottomRight[Y]] :
-                    [topLeft[X], topLeft[Y] - 1];
-                this._drawHorizontalLine(ramps.data, 1, rampTopLeft, TRACK_WIDTH);
-            } else {
-                topLeft = [
-                    midPoint[X] - jumpLength,
-                    midPoint[Y] - 3
-                ];
-                bottomRight = [
-                    midPoint[X] + jumpLength,
-                    midPoint[Y] + 4
-                ];
-                innerTopLeft = [
-                    topLeft[X] + 2,
-                    topLeft[Y]
-                ];
-                innerBottomRight = [
-                    bottomRight[X] - 2,
-                    bottomRight[Y]
-                ];
-                rampTopLeft = line[0][ANGLE] === EAST ?
-                    [topLeft[X] - 1, topLeft[Y]] :
-                    [bottomRight[X] + 1, topLeft[Y]];
-                this._drawVerticalLine(ramps.data, 1, rampTopLeft, TRACK_WIDTH);
-            }
-            var sandIndices = [];
-            // First fill entire area with sand
-            this._fillArea(
-                background.data,
-                SAND,
-                topLeft,
-                bottomRight,
-                sandIndices
-            );
-            // Then fill inner area with gravel or pit
-            this._fillArea(
-                background.data,
-                jumpingOverTile,
-                innerTopLeft,
-                innerBottomRight,
-                jumpingOverIndices
-            );
-            // Fill the gravel or pit layer
-            this._fillArea(
-                jumpingOverLayer.data,
-                1,
-                innerTopLeft,
-                innerBottomRight
-            );
-            // Remove trackIndices that no longer refer to track tiles
-            this.trackIndices = _.difference(this.trackIndices, sandIndices);
+            this._addJump(data, line, midPoint);
         }
     }.bind(this));
+};
+
+DesertGenerator.prototype._addJump = function(data, line, point) {
+    var ramps = this._getLayer(data, 'ramps');
+    var pits = this._getLayer(data, 'drops');
+    var gravel = this._getLayer(data, 'rough');
+    var background = this._getLayer(data, 'background');
+
+    var topLeft, bottomRight, innerTopLeft, innerBottomRight, rampTopLeft;
+
+    var jumpingOverTile = rng.pickValueFromArray([PIT, GRAVEL]);
+    var jumpingOverLayer = jumpingOverTile === PIT ? pits : gravel;
+    var jumpingOverIndices = jumpingOverTile === PIT ? this.pitIndices : this.gravelIndices;
+    var jumpLength = rng.getIntBetween(5, 10);
+
+    if (line[0][ANGLE] === NORTH || line[0][ANGLE] === SOUTH) {
+        topLeft = [
+            point[X] - 3,
+            point[Y] - jumpLength
+        ];
+        bottomRight = [
+            point[X] + 3,
+            point[Y] + jumpLength
+        ];
+        innerTopLeft = [
+            topLeft[X],
+            topLeft[Y] + 2
+        ];
+        innerBottomRight = [
+            bottomRight[X],
+            bottomRight[Y] - 2
+        ];
+        rampTopLeft = line[0][ANGLE] === NORTH ?
+            [topLeft[X], bottomRight[Y]] :
+            [topLeft[X], topLeft[Y] - 1];
+        this._drawHorizontalLine(ramps.data, 1, rampTopLeft, TRACK_WIDTH);
+    } else {
+        topLeft = [
+            point[X] - jumpLength,
+            point[Y] - 3
+        ];
+        bottomRight = [
+            point[X] + jumpLength,
+            point[Y] + 4
+        ];
+        innerTopLeft = [
+            topLeft[X] + 2,
+            topLeft[Y]
+        ];
+        innerBottomRight = [
+            bottomRight[X] - 2,
+            bottomRight[Y]
+        ];
+        rampTopLeft = line[0][ANGLE] === EAST ?
+            [topLeft[X] - 1, topLeft[Y]] :
+            [bottomRight[X] + 1, topLeft[Y]];
+        this._drawVerticalLine(ramps.data, 1, rampTopLeft, TRACK_WIDTH);
+    }
+    var sandIndices = [];
+    // First fill entire area with sand
+    this._fillArea(
+        background.data,
+        SAND,
+        topLeft,
+        bottomRight,
+        sandIndices
+    );
+    // Then fill inner area with gravel or pit
+    this._fillArea(
+        background.data,
+        jumpingOverTile,
+        innerTopLeft,
+        innerBottomRight,
+        jumpingOverIndices
+    );
+    // Fill the gravel or pit layer
+    this._fillArea(
+        jumpingOverLayer.data,
+        1,
+        innerTopLeft,
+        innerBottomRight
+    );
+    // Remove trackIndices that no longer refer to track tiles
+    this.trackIndices = _.difference(this.trackIndices, sandIndices);
 };
 
 DesertGenerator.prototype._generateGravel = function(data) {
