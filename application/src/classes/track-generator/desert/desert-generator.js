@@ -100,9 +100,10 @@ DesertGenerator.prototype.generate = function() {
     var points = this._plotPoints();
     this._generateTrack(points, data);
     this._generateTrackMarkers(points, data);
-    this._addObstacles(points, data);
+    this._generateObstacles(points, data);
     this._generateGravel(data);
     this._generatePits(data);
+    this._generateJumps(points, data);
     this._addEdgeTiles(data, this.gravelIndices, GRAVEL);
     this._addEdgeTiles(data, this.pitIndices, PIT);
     this._addEdgeTiles(data, this.trackIndices, PAVEMENT);
@@ -122,7 +123,7 @@ DesertGenerator.prototype._getLayer = function(data, name) {
     return returnedLayer;
 };
 
-DesertGenerator.prototype._addObstacles = function(points, data) {
+DesertGenerator.prototype._generateObstacles = function(points, data) {
     var obstacleLayer = this._getLayer(data, 'obstacles');
 
     var obstacles = [
@@ -323,6 +324,24 @@ DesertGenerator.prototype._fillLayer = function(layerData, value) {
     }
 };
 
+DesertGenerator.prototype._fillArea = function(layerData, value, topLeft, bottomRight, affectedIndices) {
+    var horizontalSize = bottomRight[X] - topLeft[X];
+    var verticalSize   = bottomRight[Y] - topLeft[Y];
+
+    for (var i = 0; i < verticalSize; i += 1) {
+        this._drawHorizontalLine(
+            layerData,
+            value,
+            [
+                topLeft[X],
+                topLeft[Y] + i
+            ],
+            horizontalSize,
+            affectedIndices || null
+        );
+    }
+};
+
 DesertGenerator.prototype._addEdgeTiles = function(data, tileIndices, tile) {
     tileIndices.forEach(function (index) {
         var adj = this._getAdjacentTileIndex.bind(this);
@@ -380,7 +399,6 @@ DesertGenerator.prototype._generateTrack = function(points, data) {
             if ([NORTH, SOUTH].indexOf(prevPoint[ANGLE]) !== -1) {
                 this._drawVerticalTrack(
                     background.data,
-                    // PAVEMENT,
                     prevPoint[Y] < point[Y] ? prevPoint : point,
                     Math.abs(point[Y] - prevPoint[Y])
                 )
@@ -398,6 +416,115 @@ DesertGenerator.prototype._generateTrack = function(points, data) {
 
     return data;
 }
+
+DesertGenerator.prototype._generateJumps = function(points, data) {
+    var candidateLines = [];
+    for (var i = 0; i < points.length; i += 1) {
+        var nextPoint = (i === points.length - 1) ? points[0] : points[i + 1];
+        var lineLength = this._getDistanceBetween(points[i], nextPoint);
+        if (lineLength > 50) {
+            candidateLines.push({
+                line: [
+                    points[i],
+                    nextPoint
+                ],
+                lineLength: lineLength,
+            });
+        }
+    }
+
+    candidateLines.forEach(function (candidate) {
+        var line = candidate.line;
+        var midPoint = this._getMidpoint(line[0], line[1])
+        if (rng.happensGivenProbability(.50)) {
+            this._addJump(data, line, midPoint);
+        }
+    }.bind(this));
+};
+
+DesertGenerator.prototype._addJump = function(data, line, point) {
+    var ramps = this._getLayer(data, 'ramps');
+    var pits = this._getLayer(data, 'drops');
+    var gravel = this._getLayer(data, 'rough');
+    var background = this._getLayer(data, 'background');
+
+    var topLeft, bottomRight, innerTopLeft, innerBottomRight, rampTopLeft;
+
+    var jumpingOverTile = rng.pickValueFromArray([PIT, GRAVEL]);
+    var jumpingOverLayer = jumpingOverTile === PIT ? pits : gravel;
+    var jumpingOverIndices = jumpingOverTile === PIT ? this.pitIndices : this.gravelIndices;
+    var jumpLength = rng.getIntBetween(5, 10);
+
+    if (line[0][ANGLE] === NORTH || line[0][ANGLE] === SOUTH) {
+        topLeft = [
+            point[X] - (TRACK_WIDTH / 2),
+            point[Y] - jumpLength
+        ];
+        bottomRight = [
+            point[X] + (TRACK_WIDTH / 2),
+            point[Y] + jumpLength
+        ];
+        innerTopLeft = [
+            topLeft[X],
+            topLeft[Y] + 2
+        ];
+        innerBottomRight = [
+            bottomRight[X],
+            bottomRight[Y] - 2
+        ];
+        rampTopLeft = line[0][ANGLE] === NORTH ?
+            [topLeft[X], bottomRight[Y]] :
+            [topLeft[X], topLeft[Y] - 1];
+        this._drawHorizontalLine(ramps.data, 1, rampTopLeft, TRACK_WIDTH);
+    } else {
+        topLeft = [
+            point[X] - jumpLength,
+            point[Y] - (TRACK_WIDTH / 2)
+        ];
+        bottomRight = [
+            point[X] + jumpLength,
+            point[Y] + (TRACK_WIDTH / 2) + 1 // Can't figure out why it needs the +1
+        ];
+        innerTopLeft = [
+            topLeft[X] + 2,
+            topLeft[Y]
+        ];
+        innerBottomRight = [
+            bottomRight[X] - 2,
+            bottomRight[Y]
+        ];
+        rampTopLeft = line[0][ANGLE] === EAST ?
+            [topLeft[X] - 1, topLeft[Y]] :
+            [bottomRight[X] + 1, topLeft[Y]];
+        this._drawVerticalLine(ramps.data, 1, rampTopLeft, TRACK_WIDTH);
+    }
+    var sandIndices = [];
+    // First fill entire area with sand
+    this._fillArea(
+        background.data,
+        SAND,
+        topLeft,
+        bottomRight,
+        sandIndices
+    );
+    // Then fill inner area with gravel or pit
+    this._fillArea(
+        background.data,
+        jumpingOverTile,
+        innerTopLeft,
+        innerBottomRight,
+        jumpingOverIndices
+    );
+    // Fill the gravel or pit layer
+    this._fillArea(
+        jumpingOverLayer.data,
+        1,
+        innerTopLeft,
+        innerBottomRight
+    );
+    // Remove trackIndices that no longer refer to track tiles
+    this.trackIndices = _.difference(this.trackIndices, sandIndices);
+};
 
 DesertGenerator.prototype._generateGravel = function(data) {
     var background = this._getLayer(data, 'background');
@@ -772,10 +899,7 @@ DesertGenerator.prototype._addEmbellishment = function(points, type, orientation
     // Get the midpoint
     var lineStart = points[index];
     var lineEnd   = points.length === index + 1 ? points[0] : points[index + 1];
-    var midpoint = [
-        (lineStart[X] + lineEnd[X]) / 2,
-        (lineStart[Y] + lineEnd[Y]) / 2,
-    ];
+    var midpoint = this._getMidpoint(lineStart, lineEnd);
     var headingDirection = lineStart[ANGLE];
     var inward = orientation === INWARD;
     switch (headingDirection) {
@@ -938,5 +1062,12 @@ DesertGenerator.prototype._getDistanceBetween = function(point1, point2) {
         )
     );
 };
+
+DesertGenerator.prototype._getMidpoint = function(point1, point2) {
+    return [
+        (point1[X] + point2[X]) / 2,
+        (point1[Y] + point2[Y]) / 2,
+    ];
+}
 
 module.exports = DesertGenerator;
