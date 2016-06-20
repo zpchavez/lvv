@@ -399,7 +399,6 @@ DesertGenerator.prototype._generateTrack = function(points, data) {
             if ([NORTH, SOUTH].indexOf(prevPoint[ANGLE]) !== -1) {
                 this._drawVerticalTrack(
                     background.data,
-                    // PAVEMENT,
                     prevPoint[Y] < point[Y] ? prevPoint : point,
                     Math.abs(point[Y] - prevPoint[Y])
                 )
@@ -437,7 +436,7 @@ DesertGenerator.prototype._generateJumps = function(points, data) {
     candidateLines.forEach(function (candidate) {
         var line = candidate.line;
         var midPoint = this._getMidpoint(line[0], line[1])
-        if (rng.happensGivenProbability(1)) {
+        if (rng.happensGivenProbability(.50)) {
             this._addJump(data, line, midPoint);
         }
     }.bind(this));
@@ -458,11 +457,11 @@ DesertGenerator.prototype._addJump = function(data, line, point) {
 
     if (line[0][ANGLE] === NORTH || line[0][ANGLE] === SOUTH) {
         topLeft = [
-            point[X] - 3,
+            point[X] - (TRACK_WIDTH / 2),
             point[Y] - jumpLength
         ];
         bottomRight = [
-            point[X] + 3,
+            point[X] + (TRACK_WIDTH / 2),
             point[Y] + jumpLength
         ];
         innerTopLeft = [
@@ -480,11 +479,11 @@ DesertGenerator.prototype._addJump = function(data, line, point) {
     } else {
         topLeft = [
             point[X] - jumpLength,
-            point[Y] - 3
+            point[Y] - (TRACK_WIDTH / 2)
         ];
         bottomRight = [
             point[X] + jumpLength,
-            point[Y] + 4
+            point[Y] + (TRACK_WIDTH / 2) + 1 // Can't figure out why it needs the +1
         ];
         innerTopLeft = [
             topLeft[X] + 2,
