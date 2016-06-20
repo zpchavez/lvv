@@ -422,15 +422,20 @@ DesertGenerator.prototype._generateJumps = function(points, data) {
     var candidateLines = [];
     for (var i = 0; i < points.length; i += 1) {
         var nextPoint = (i === points.length - 1) ? points[0] : points[i + 1];
-        if (this._getDistanceBetween(points[i], nextPoint) > 50) {
-            candidateLines.push([
-                points[i],
-                nextPoint
-            ]);
+        var lineLength = this._getDistanceBetween(points[i], nextPoint);
+        if (lineLength > 50) {
+            candidateLines.push({
+                line: [
+                    points[i],
+                    nextPoint
+                ],
+                lineLength: lineLength,
+            });
         }
     }
 
-    candidateLines.forEach(function (line) {
+    candidateLines.forEach(function (candidate) {
+        var line = candidate.line;
         var midPoint = this._getMidpoint(line[0], line[1])
         if (rng.happensGivenProbability(1)) {
             this._addJump(data, line, midPoint);
