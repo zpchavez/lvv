@@ -12,7 +12,7 @@ var TEAMS     = 4;
 var MainMenuState = function()
 {
     Phaser.State.apply(this, arguments);
-    this.numberOfPlayersSelection = PLAYERS_1;
+    this.numPlayersSelection = PLAYERS_1;
 };
 
 MainMenuState.prototype = Object.create(Phaser.State.prototype);
@@ -26,7 +26,8 @@ MainMenuState.prototype.create = function()
 {
     this.renderTitle();
 
-    this.renderNumberOfPlayersMenu();
+    this.renderNumPlayersMenu();
+    this.renderNumPlayersCursor();
 
     if (settings.profiler) {
         this.game.add.plugin(Phaser.Plugin.Debug);
@@ -49,7 +50,7 @@ MainMenuState.prototype.renderTitle = function()
     this.titleText.anchor.setTo(0.5, 0.5);
 };
 
-MainMenuState.prototype.renderNumberOfPlayersMenu = function()
+MainMenuState.prototype.renderNumPlayersMenu = function()
 {
     var options = { fill: '#ffffff' };
 
@@ -65,6 +66,18 @@ MainMenuState.prototype.renderNumberOfPlayersMenu = function()
             )
         );
     }.bind(this));
+};
+
+MainMenuState.prototype.renderNumPlayersCursor = function()
+{
+    var selectedText = this.numberOfPlayersTextObjects[this.numPlayersSelection];
+
+    this.cursor = this.game.add.text(
+        selectedText.x - 40,
+        selectedText.y,
+        '=>',
+        { fill: '#ffffff' }
+    );
 };
 
 MainMenuState.prototype.toggleFullscreen = function()
