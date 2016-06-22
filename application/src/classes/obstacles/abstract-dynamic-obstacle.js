@@ -40,4 +40,35 @@ AbstractDynamicObstacle.prototype.update = function()
     );
 };
 
+AbstractDynamicObstacle.prototype.fall = function(fallTargetLocation, easeToTarget)
+{
+    this.falling = true;
+
+    this.body.velocity.x = 0;
+    this.body.velocity.y = 0;
+    this.body.clearCollision();
+
+    if (easeToTarget) {
+        this.game.add.tween(this.body)
+            .to(
+                {x : fallTargetLocation.x, y: fallTargetLocation.y},
+                500,
+                Phaser.Easing.Linear.None,
+                true
+            );
+    } else {
+        this.body.x = fallTargetLocation.x;
+        this.body.y = fallTargetLocation.y;
+    }
+
+    this.game.add.tween(this.scale)
+        .to(
+            {x : 0.1, y: 0.1},
+            500,
+            Phaser.Easing.Linear.None,
+            true
+        )
+        .onComplete.add(this.destroy, this);
+};
+
 module.exports = AbstractDynamicObstacle;

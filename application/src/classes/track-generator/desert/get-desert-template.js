@@ -65,8 +65,25 @@ module.exports = function(options) {
              "width":options.width,
              "x":0,
              "y":0
-            }
+            },
+            {
+                "draworder": "topdown",
+                "height": 50,
+                "name": "obstacles",
+                "objects": [],
+                "opacity": 1,
+                "type": "objectgroup",
+                "visible": true,
+            },
         ],
+        "placedObjectClasses": {
+            "Comb": true,
+            "Razor": true,
+            "AspirinBottle": true,
+            "AspirinPill": true,
+            "Toothbrush": true,
+            "Floss": true
+        },
         "nextobjectid":28,
         "orientation":"orthogonal",
         "properties": {},
@@ -84,7 +101,8 @@ module.exports = function(options) {
              "spacing":1,
              "tileheight":32,
              "tilewidth":32
-            }],
+            }
+        ],
         "tilewidth":32,
         "version":1,
     }
