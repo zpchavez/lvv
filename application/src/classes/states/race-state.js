@@ -21,10 +21,11 @@ var RaceState = function(trackData, options)
 {
     options = options || {};
     _(options).defaults({
-        debug       : settings.debug,
-        players     : settings.players,
-        teams       : settings.teams,
-        laps        : settings.laps
+        debug    : settings.debug,
+        players  : settings.players,
+        teams    : settings.teams,
+        laps     : settings.laps,
+        selector : settings.selector,
     });
 
     if (options.teams && options.players !== 4) {
@@ -49,6 +50,7 @@ var RaceState = function(trackData, options)
     this.playerCount      = options.teams ? 4 : options.players;
     this.suddenDeath      = false;
     this.eliminationStack = [];
+    this.options          = options;
 
     this.track.setDebug(this.debug);
 };
@@ -96,7 +98,9 @@ RaceState.prototype.preload = function()
 
 RaceState.prototype.create = function()
 {
-    this.showTrackSelectorOffCanvas();
+    if (this.options.selector) {
+        this.showTrackSelectorOffCanvas();
+    }
 
     this.game.physics.startSystem(Phaser.Physics.P2JS);
     this.game.physics.restitution = 0.8;
@@ -353,7 +357,7 @@ RaceState.prototype.awardPoints = function()
             window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), NEXT_ROUND_DELAY);
         } else {
             this.showWinnerMessage();
-            window.setTimeout(_.bind(this.regenerate, this), NEXT_GAME_DELAY);
+            window.setTimeout(_.bind(this.nextRace, this), NEXT_GAME_DELAY);
         }
     }
 };
@@ -681,7 +685,7 @@ RaceState.prototype.completeLap = function()
 
     if (this.raceOver) {
         this.showWinnerMessage();
-        window.setTimeout(_.bind(this.regenerate, this), NEXT_GAME_DELAY);
+        window.setTimeout(_.bind(this.nextRace, this), NEXT_GAME_DELAY);
     } else {
         this.lapNumber += 1;
         this.lapDisplay.setText('Lap ' + this.lapNumber);
@@ -760,12 +764,14 @@ RaceState.prototype.reload = function()
     this.shutdown();
 };
 
-RaceState.prototype.regenerate = function()
+RaceState.prototype.nextRace = function()
 {
-    this.selectTrack(
-        this.trackSelector.state.selectedTheme,
-        this.trackSelector.state.selectedTrack
-    );
+    if (this.trackSelector) {
+        this.selectTrack(
+            this.trackSelector.state.selectedTheme,
+            this.trackSelector.state.selectedTrack
+        );
+    }
 };
 
 RaceState.prototype.showTrackSelectorOffCanvas = function()
