@@ -1,6 +1,8 @@
 'use strict';
 
 var Phaser = require('phaser');
+var RaceState = require('../race-state');
+var DesertGenerator = require('../../track-generator/desert/desert-generator');
 var settings = require('../../../settings');
 
 var PLAYERS_1 = 0;
@@ -13,6 +15,13 @@ var MainMenuState = function()
 {
     Phaser.State.apply(this, arguments);
     this.numPlayersSelection = PLAYERS_1;
+    this.playerChoices = [
+        { players: 1 },
+        { players: 2 },
+        { players: 3 },
+        { players: 4 },
+        { players: 4, teams: true }
+    ];
 };
 
 MainMenuState.prototype = Object.create(Phaser.State.prototype);
@@ -32,6 +41,9 @@ MainMenuState.prototype.create = function()
     if (settings.profiler) {
         this.game.add.plugin(Phaser.Plugin.Debug);
     }
+
+    this.initInputs();
+    this.handleInput();
 };
 
 MainMenuState.prototype.renderTitle = function()
@@ -72,12 +84,56 @@ MainMenuState.prototype.renderNumPlayersCursor = function()
 {
     var selectedText = this.numberOfPlayersTextObjects[this.numPlayersSelection];
 
+    if (this.cursor) {
+        this.cursor.destroy();
+    }
+
     this.cursor = this.game.add.text(
         selectedText.x - 40,
         selectedText.y,
         '=>',
         { fill: '#ffffff' }
     );
+};
+
+MainMenuState.prototype.moveCursorUp = function()
+{
+    if (this.numPlayersSelection === 0) {
+        this.numPlayersSelection = TEAMS;
+    } else {
+        this.numPlayersSelection -= 1;
+    }
+    this.renderNumPlayersCursor();
+};
+
+MainMenuState.prototype.moveCursorDown = function()
+{
+    if (this.numPlayersSelection === this.playerChoices.length - 1) {
+        this.numPlayersSelection = PLAYERS_1;
+    } else {
+        this.numPlayersSelection += 1;
+    }
+    this.renderNumPlayersCursor();
+};
+
+MainMenuState.prototype.selectOption = function()
+{
+    var desertGenerator = new DesertGenerator();
+    this.game.state.add(
+        'race',
+        new RaceState(
+            desertGenerator.generate(),
+            this.playerChoices[this.numPlayersSelection]
+        ),
+        true
+    );
+};
+
+MainMenuState.prototype.handleInput = function()
+{
+    this.cursors.up.onDown.add(this.moveCursorUp.bind(this));
+    this.cursors.down.onDown.add(this.moveCursorDown.bind(this));
+    this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(this.selectOption.bind(this));
 };
 
 MainMenuState.prototype.toggleFullscreen = function()
@@ -87,6 +143,19 @@ MainMenuState.prototype.toggleFullscreen = function()
     } else {
         this.game.scale.startFullScreen(false);
     }
+};
+
+MainMenuState.prototype.initInputs = function()
+{
+    this.cursors = this.game.input.keyboard.createCursorKeys();
+
+    this.pads = [];
+
+    for (var i = 0; i < 4; i += 1) {
+        this.pads.push(this.game.input.gamepad['pad' + (i + 1)]);
+    }
+
+    this.game.input.gamepad.start();
 };
 
 module.exports = MainMenuState;
