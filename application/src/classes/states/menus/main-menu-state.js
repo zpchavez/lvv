@@ -42,7 +42,6 @@ MainMenuState.prototype.create = function()
     }
 
     this.initInputs();
-    this.handleInput();
 };
 
 MainMenuState.prototype.renderTitle = function()
@@ -133,11 +132,28 @@ MainMenuState.prototype.selectOption = function()
     this.game.state.add('loading', new LoadingNextRaceState(), true);
 };
 
-MainMenuState.prototype.handleInput = function()
+MainMenuState.prototype.initInputs = function()
 {
+    this.cursors = this.game.input.keyboard.createCursorKeys();
+    this.game.input.gamepad.start();
+
     this.cursors.up.onDown.add(this.moveCursorUp.bind(this));
     this.cursors.down.onDown.add(this.moveCursorDown.bind(this));
     this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(this.selectOption.bind(this));
+
+    this.game.input.gamepad.pad1.onDownCallback = function (button) {
+        switch (button) {
+            case Phaser.Gamepad.XBOX360_A:
+                this.selectOption();
+                break;
+            case Phaser.Gamepad.XBOX360_DPAD_UP:
+                this.moveCursorUp();
+                break;
+            case Phaser.Gamepad.XBOX360_DPAD_DOWN:
+                this.moveCursorDown();
+                break;
+        }
+    }.bind(this);
 };
 
 MainMenuState.prototype.toggleFullscreen = function()
@@ -149,17 +165,9 @@ MainMenuState.prototype.toggleFullscreen = function()
     }
 };
 
-MainMenuState.prototype.initInputs = function()
+MainMenuState.prototype.shutdown = function()
 {
-    this.cursors = this.game.input.keyboard.createCursorKeys();
-
-    this.pads = [];
-
-    for (var i = 0; i < 4; i += 1) {
-        this.pads.push(this.game.input.gamepad['pad' + (i + 1)]);
-    }
-
-    this.game.input.gamepad.start();
+    this.game.input.gamepad.pad1.onDownCallback = null;
 };
 
 module.exports = MainMenuState;
