@@ -1,8 +1,7 @@
 'use strict';
 
 var Phaser = require('phaser');
-var RaceState = require('../race-state');
-var DesertGenerator = require('../../track-generator/desert/desert-generator');
+var LoadingNextRaceState = require('../loading-next-race-state');
 var settings = require('../../../settings');
 
 var PLAYERS_1 = 0;
@@ -118,15 +117,20 @@ MainMenuState.prototype.moveCursorDown = function()
 
 MainMenuState.prototype.selectOption = function()
 {
-    var desertGenerator = new DesertGenerator();
-    this.game.state.add(
-        'race',
-        new RaceState(
-            desertGenerator.generate(),
-            this.playerChoices[this.numPlayersSelection]
-        ),
-        true
-    );
+    this.game.lvvGlobals = this.playerChoices[this.numPlayersSelection];
+
+    var score = {};
+    if (this.game.lvvGlobals.teams) {
+        score.team1 = 0;
+        score.team2 = 0;
+    } else {
+        for (var i = 0; i < 4; i += 1) {
+            score['player' + (i + 1)] = 0;
+        }
+    }
+    this.game.lvvGlobals.score = score;
+
+    this.game.state.add('loading', new LoadingNextRaceState(), true);
 };
 
 MainMenuState.prototype.handleInput = function()

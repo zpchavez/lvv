@@ -13,12 +13,16 @@ var _                = require('underscore');
 var util             = require('../../util');
 var playerColorNames = require('../../player-color-names');
 var settings         = require('../../settings');
+var LoadingNextRaceState = require('./loading-next-race-state');
+var get = require('lodash.get');
 
 var NEXT_GAME_DELAY  = 5000;
 var NEXT_ROUND_DELAY = 2500;
 
 var RaceState = function(trackData, options)
 {
+    Phaser.State.apply(this, arguments);
+
     options = options || {};
     _(options).defaults({
         debug    : settings.debug,
@@ -35,8 +39,6 @@ var RaceState = function(trackData, options)
     this.trackData = trackData;
 
     this.debug = options.debug;
-
-    Phaser.State.apply(this, arguments);
 
     this.victorySpinning  = false;
     this.carFactory       = new CarFactory(this, {teams : options.teams});
