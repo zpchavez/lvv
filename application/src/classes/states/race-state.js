@@ -14,18 +14,22 @@ var _                = require('underscore');
 var util             = require('../../util');
 var playerColorNames = require('../../player-color-names');
 var settings         = require('../../settings');
+var LoadingNextRaceState = require('./loading-next-race-state');
 
 var NEXT_GAME_DELAY  = 5000;
 var NEXT_ROUND_DELAY = 2500;
 
 var RaceState = function(trackData, options)
 {
+    Phaser.State.apply(this, arguments);
+
     options = options || {};
     _(options).defaults({
-        debug       : settings.debug,
-        players     : settings.players,
-        teams       : settings.teams,
-        laps        : settings.laps
+        debug    : settings.debug,
+        players  : settings.players,
+        teams    : settings.teams,
+        laps     : settings.laps,
+        selector : settings.selector,
     });
 
     if (options.teams && options.players !== 4) {
@@ -35,8 +39,6 @@ var RaceState = function(trackData, options)
     this.trackData = trackData;
 
     this.debug = options.debug;
-
-    Phaser.State.apply(this, arguments);
 
     this.victorySpinning  = false;
     this.carFactory       = new CarFactory(this, {teams : options.teams});
@@ -50,6 +52,7 @@ var RaceState = function(trackData, options)
     this.playerCount      = options.teams ? 4 : options.players;
     this.suddenDeath      = false;
     this.eliminationStack = [];
+    this.options          = options;
 
     this.track.setDebug(this.debug);
 };
@@ -60,6 +63,8 @@ RaceState.prototype.preload = function()
 {
     var state = this,
         cacheKey = Tiled.utils.cacheKey;
+
+    this.showMessage('Get Ready!');
 
     this.game.add.plugin(Tiled);
 
@@ -97,7 +102,9 @@ RaceState.prototype.preload = function()
 
 RaceState.prototype.create = function()
 {
-    this.showTrackSelectorOffCanvas();
+    if (this.options.selector) {
+        this.showTrackSelectorOffCanvas();
+    }
 
     this.game.physics.startSystem(Phaser.Physics.P2JS);
     this.game.physics.restitution = 0.8;
@@ -109,6 +116,16 @@ RaceState.prototype.create = function()
     this.initScore();
     this.initInputs();
     this.showLapCounter();
+
+    // Set initial camera position. For some reason, the camera
+    // will still flash a different position (probably 0,0) at
+    // the start of the race, but adding this at least seems to
+    // make the camera jump to the real starting position instead
+    // of panning to it.
+    this.game.camera.setPosition(
+        this.startingPoint[0] - (this.game.width / 2),
+        this.startingPoint[1] - (this.game.height / 2)
+    );
 
     this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
     this.game.input.onDown.add(this.toggleFullscreen, this);
@@ -354,7 +371,7 @@ RaceState.prototype.awardPoints = function()
             window.setTimeout(_.bind(this.resetAllCarsToLastMarker, this), NEXT_ROUND_DELAY);
         } else {
             this.showWinnerMessage();
-            window.setTimeout(_.bind(this.regenerate, this), NEXT_GAME_DELAY);
+            window.setTimeout(_.bind(this.nextRace, this), NEXT_GAME_DELAY);
         }
     }
 };
@@ -682,7 +699,7 @@ RaceState.prototype.completeLap = function()
 
     if (this.raceOver) {
         this.showWinnerMessage();
-        window.setTimeout(_.bind(this.regenerate, this), NEXT_GAME_DELAY);
+        window.setTimeout(_.bind(this.nextRace, this), NEXT_GAME_DELAY);
     } else {
         this.lapNumber += 1;
         this.lapDisplay.setText('Lap ' + this.lapNumber);
@@ -761,12 +778,14 @@ RaceState.prototype.reload = function()
     this.shutdown();
 };
 
-RaceState.prototype.regenerate = function()
+RaceState.prototype.nextRace = function()
 {
-    this.selectTrack(
-        this.trackSelector.state.selectedTheme,
-        this.trackSelector.state.selectedTrack
-    );
+    if (this.trackSelector) {
+        this.selectTrack(
+            this.trackSelector.state.selectedTheme,
+            this.trackSelector.state.selectedTrack
+        );
+    }
 };
 
 RaceState.prototype.showTrackSelectorOffCanvas = function()

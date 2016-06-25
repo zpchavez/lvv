@@ -17,7 +17,8 @@ settings = _(settings).defaults({
     teams    : false,
     laps     : 3,
     debug    : false,
-    profiler : false
+    profiler : false,
+    selector : false
 });
 
 // Convert types for non-strings

@@ -1,7 +1,6 @@
 'use strict';
 
 var Phaser           = require('phaser');
-var RaceState        = require('./classes/states/race-state');
 var DesertGenerator  = require('./classes/track-generator/desert/desert-generator');
 var TrackLoader      = require('./classes/track-loader');
 var MainMenuState    = require('./classes/states/menus/main-menu-state');
@@ -36,6 +35,7 @@ var loadTrack = function() {
 }
 
 if (settings.state === 'random') {
+    var RaceState = require('./classes/states/race-state');
     var desertGenerator = new DesertGenerator();
     game.state.add(
         'race',
