@@ -116,6 +116,16 @@ RaceState.prototype.create = function()
     this.initInputs();
     this.showLapCounter();
 
+    // Set initial camera position. For some reason, the camera
+    // will still flash a different position (probably 0,0) at
+    // the start of the race, but adding this at least seems to
+    // make the camera jump to the real starting position instead
+    // of panning to it.
+    this.game.camera.setPosition(
+        this.startingPoint[0] - (this.game.width / 2),
+        this.startingPoint[1] - (this.game.height / 2)
+    );
+
     this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
     this.game.input.onDown.add(this.toggleFullscreen, this);
 
