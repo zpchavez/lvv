@@ -14,7 +14,6 @@ var util             = require('../../util');
 var playerColorNames = require('../../player-color-names');
 var settings         = require('../../settings');
 var LoadingNextRaceState = require('./loading-next-race-state');
-var get = require('lodash.get');
 
 var NEXT_GAME_DELAY  = 5000;
 var NEXT_ROUND_DELAY = 2500;
@@ -63,6 +62,8 @@ RaceState.prototype.preload = function()
 {
     var state = this,
         cacheKey = Phaser.Plugin.Tiled.utils.cacheKey;
+
+    this.showMessage('Get Ready!');
 
     this.game.add.plugin(Phaser.Plugin.Tiled);
 
