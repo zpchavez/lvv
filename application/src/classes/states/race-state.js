@@ -13,7 +13,8 @@ var _                = require('underscore');
 var util             = require('../../util');
 var playerColorNames = require('../../player-color-names');
 var settings         = require('../../settings');
-var LoadingNextRaceState = require('./loading-next-race-state');
+var global = require('../../global-state');
+var OverallScoreState = require('./overall-score-state');
 
 var NEXT_GAME_DELAY  = 5000;
 var NEXT_ROUND_DELAY = 2500;
@@ -30,6 +31,10 @@ var RaceState = function(trackData, options)
         laps     : settings.laps,
         selector : settings.selector,
     });
+
+    if (! global.state.score) {
+        global.setInitialScore(options.players, options.teams);
+    }
 
     if (options.teams && options.players !== 4) {
         throw new Error('Invalid number of players for team mode');
@@ -783,6 +788,12 @@ RaceState.prototype.nextRace = function()
         this.selectTrack(
             this.trackSelector.state.selectedTheme,
             this.trackSelector.state.selectedTrack
+        );
+    } else {
+        this.game.state.add(
+            'loading',
+            new OverallScoreState(this.score.getWinner()),
+            true
         );
     }
 };
