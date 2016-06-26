@@ -3,6 +3,7 @@
 var Phaser = require('phaser');
 var LoadingNextRaceState = require('../loading-next-race-state');
 var settings = require('../../../settings');
+var global = require('../../../global-state');
 
 var PLAYERS_1 = 0;
 var PLAYERS_2 = 1;
@@ -116,19 +117,8 @@ MainMenuState.prototype.moveCursorDown = function()
 
 MainMenuState.prototype.selectOption = function()
 {
-    this.game.lvvGlobals = this.playerChoices[this.numPlayersSelection];
-
-    var score = {};
-    if (this.game.lvvGlobals.teams) {
-        score.team1 = 0;
-        score.team2 = 0;
-    } else {
-        for (var i = 0; i < 4; i += 1) {
-            score['player' + (i + 1)] = 0;
-        }
-    }
-    this.game.lvvGlobals.score = score;
-
+    global.state.players = this.playerChoices[this.numPlayersSelection].players;
+    global.state.teams = this.playerChoices[this.numPlayersSelection].teams;
     this.game.state.add('loading', new LoadingNextRaceState(), true);
 };
 
