@@ -145,22 +145,19 @@ RaceState.prototype.countDown = function()
     var font = '64px Arial';
     this.showMessage(
         '3',
-        { showFor: 1000, font: font },
-        this.showMessage.bind(
-            this,
-            '2',
-            { showFor: 1000, font: font },
-            this.showMessage.bind(
-                this,
-                '1',
-                { showFor: 1000, font: font },
-                function() {
-                    this.countingDown = false;
-                    this.showMessage('GO!', { showFor: 2000, font: font });
-                }.bind(this)
-            )
-        )
-    );
+        { showFor: 1000, font: font }
+    ).then(this.showMessage.bind(
+        this,
+        '2',
+        { showFor: 1000, font: font }
+    )).then(this.showMessage.bind(
+        this,
+        '1',
+        { showFor: 1000, font: font }
+    )).then(function() {
+        this.countingDown = false;
+        this.showMessage('GO!', { showFor: 2000, font: font });
+    }.bind(this));
 };
 
 RaceState.prototype.initTrack = function()
@@ -672,7 +669,7 @@ RaceState.prototype.showWinnerMessage = function()
     );
 };
 
-RaceState.prototype.showMessage = function(text, options, afterCallback)
+RaceState.prototype.showMessage = function(text, options)
 {
     options = options || {};
 
@@ -699,15 +696,15 @@ RaceState.prototype.showMessage = function(text, options, afterCallback)
     this.message.anchor.setTo(0.5, 0.5);
 
     if (options.showFor) {
-        window.setTimeout(
-            function() {
-                this.message.destroy();
-                if (afterCallback) {
-                    afterCallback();
-                }
-            }.bind(this),
-            options.showFor
-        );
+        return new Promise(function(resolve) {
+            window.setTimeout(
+                function() {
+                    this.message.destroy();
+                    resolve();
+                }.bind(this),
+                options.showFor
+            );
+        }.bind(this));
     }
 };
 
