@@ -575,6 +575,10 @@ RaceState.prototype.moveCarToLastActivatedMarker = function(car)
 {
     var carIndex, offsetVector, lastActivatedMarker;
 
+    if (this.victorySpinning) {
+        return;
+    }
+
     carIndex = _.indexOf(this.cars, car);
     if (carIndex !== -1) {
         offsetVector = this.startingPointVectors[carIndex];
