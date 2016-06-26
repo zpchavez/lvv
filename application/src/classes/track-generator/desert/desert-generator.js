@@ -6,6 +6,11 @@ var SAND = 39;
 var PAVEMENT = 46;
 var GRAVEL = 18;
 var PIT = 21;
+var FINISH = 44;
+var FINISH_E = 55;
+var FINISH_W = 66;
+var FINISH_S = 64;
+var FINISH_N = 65;
 
 var NORTH = 0;
 var EAST = 90;
@@ -107,6 +112,7 @@ DesertGenerator.prototype.generate = function() {
     this._addEdgeTiles(data, this.gravelIndices, GRAVEL);
     this._addEdgeTiles(data, this.pitIndices, PIT);
     this._addEdgeTiles(data, this.trackIndices, PAVEMENT);
+    this._drawFinishLine(data);
 
     return data;
 };
@@ -828,6 +834,45 @@ DesertGenerator.prototype._generateTrackMarkers = function(points, data) {
     }
 
     return data;
+};
+
+DesertGenerator.prototype._drawFinishLine = function(data) {
+    var track = this._getLayer(data, 'track');
+    var decoration = this._getLayer(data, 'decoration');
+
+    var finishMarker;
+    for (var i = 0; i < track.objects.length; i += 1) {
+        if (track.objects[i].name === 'finish-line') {
+            finishMarker = track.objects[i];
+            break;
+        }
+    }
+
+    var point = [
+        finishMarker.x / this.template.tilewidth,
+        finishMarker.y / this.template.tileheight
+    ];
+
+    var startingPos;
+    if ([EAST, WEST].indexOf(finishMarker.rotation) !== -1) {
+        startingPos = [point[X], point[Y] - TRACK_WIDTH / 2 - 1];
+        decoration.data[this._convertPointToIndex(startingPos)] = FINISH_N;
+        this._drawVerticalLine(decoration.data, FINISH, [startingPos[X], startingPos[Y] + 1], TRACK_WIDTH + 1);
+        decoration.data[
+            this._convertPointToIndex(
+                [startingPos[X], startingPos[Y] + TRACK_WIDTH + 2]
+            )
+        ] = FINISH_S;
+    } else {
+        startingPos = [point[X] - TRACK_WIDTH / 2 - 1, point[Y]];
+        decoration.data[this._convertPointToIndex(startingPos)] = FINISH_W;
+        this._drawHorizontalLine(decoration.data, FINISH, [startingPos[X] + 1, startingPos[Y]], TRACK_WIDTH + 1);
+        decoration.data[
+            this._convertPointToIndex(
+                [startingPos[X] + TRACK_WIDTH + 2, startingPos[Y]]
+            )
+        ] = FINISH_E;
+    }
 };
 
 DesertGenerator.prototype._plotPoints = function() {
