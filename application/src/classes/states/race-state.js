@@ -135,6 +135,32 @@ RaceState.prototype.create = function()
     this.game.input.onDown.add(this.toggleFullscreen, this);
 
     this.game.add.graphics();
+
+    setTimeout(this.countDown.bind(this));
+};
+
+RaceState.prototype.countDown = function()
+{
+    this.countingDown = true;
+    var font = '64px Arial';
+    this.showMessage(
+        '3',
+        { showFor: 1000, font: font },
+        this.showMessage.bind(
+            this,
+            '2',
+            { showFor: 1000, font: font },
+            this.showMessage.bind(
+                this,
+                '1',
+                { showFor: 1000, font: font },
+                function() {
+                    this.countingDown = false;
+                    this.showMessage('GO!', { showFor: 2000, font: font });
+                }.bind(this)
+            )
+        )
+    );
 };
 
 RaceState.prototype.initTrack = function()
@@ -382,6 +408,10 @@ RaceState.prototype.awardPoints = function()
 
 RaceState.prototype.handleInput = function()
 {
+    if (this.countingDown) {
+        return;
+    }
+
     if (this.cursors.up.isDown) {
         this.cars[0].accelerate();
     } else if (this.cursors.down.isDown) {
@@ -642,7 +672,7 @@ RaceState.prototype.showWinnerMessage = function()
     );
 };
 
-RaceState.prototype.showMessage = function(text, options)
+RaceState.prototype.showMessage = function(text, options, afterCallback)
 {
     options = options || {};
 
@@ -670,7 +700,12 @@ RaceState.prototype.showMessage = function(text, options)
 
     if (options.showFor) {
         window.setTimeout(
-            this.message.destroy.bind(this.message),
+            function() {
+                this.message.destroy();
+                if (afterCallback) {
+                    afterCallback();
+                }
+            }.bind(this),
             options.showFor
         );
     }
