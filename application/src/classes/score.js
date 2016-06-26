@@ -127,8 +127,8 @@ Score.prototype.awardTwoPlayerPointToPlayer = function(player)
 Score.prototype.awardPointsForFreeForAll = function(playerStack)
 {
     if (playerStack.length === 3) {
-        this.playerScores[playerStack[0]] -= 2; // Last place
-        this.playerScores[playerStack[2]] += 2; // First place
+        this.playerScores[playerStack[0]] -= 1; // Last place
+        this.playerScores[playerStack[2]] += 1; // First place
     } else {
         this.playerScores[playerStack[0]] -= 2; // Last place
         this.playerScores[playerStack[1]] -= 1; // Third place
