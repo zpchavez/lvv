@@ -13,8 +13,8 @@ var _                = require('underscore');
 var util             = require('../../util');
 var playerColorNames = require('../../player-color-names');
 var settings         = require('../../settings');
-var LoadingNextRaceState = require('./loading-next-race-state');
 var global = require('../../global-state');
+var OverallScoreState = require('./overall-score-state');
 
 var NEXT_GAME_DELAY  = 5000;
 var NEXT_ROUND_DELAY = 2500;
@@ -788,6 +788,12 @@ RaceState.prototype.nextRace = function()
         this.selectTrack(
             this.trackSelector.state.selectedTheme,
             this.trackSelector.state.selectedTrack
+        );
+    } else {
+        this.game.state.add(
+            'loading',
+            new OverallScoreState(this.score.getWinner()),
+            true
         );
     }
 };

@@ -1,6 +1,10 @@
 module.exports = {
     state: {},
 
+    reset: function() {
+        this.state = {};
+    },
+
     setInitialScore: function(players, teams) {
         this.state = {
             players: players,
@@ -22,12 +26,9 @@ module.exports = {
 
         var score = {};
         if (this.state.teams) {
-            score[this.state.teamColors[0]] = 0;
-            score[this.state.teamColors[1]] = 0;
+            score = [0, 0];
         } else {
-            for (var i = 0; i < players; i += 1) {
-                score[this.state.playerColors[i]] = 0;
-            }
+            score = new Array(this.state.players).fill(0);
         }
         this.state.score = score;
 
