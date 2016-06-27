@@ -173,6 +173,8 @@ DesertGenerator.prototype._generateObstacles = function(points, data) {
             y: rng.getIntBetween(range.y[0], range.y[1]) * this.template.tileheight,
         };
 
+        // Limit angles for aspirin bottle, since we need to define rectangles
+        // where the pills will be scattered for each one.
         if (object.type === 'AspirinBottle') {
             object.rotation = Math.floor(object.rotation / 45) * 45;
             this._addPillObstacles(obstacleLayer, object);
