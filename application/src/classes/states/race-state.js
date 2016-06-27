@@ -533,7 +533,7 @@ RaceState.prototype.handleDrops = function(car)
         height = this.map.scaledTileHeight;
 
     if (this.map.getTilelayerIndex('drops') !== -1) {
-        if (car.falling || car.airborne || car.onRamp) {
+        if (car.falling || car.airborne || car.onRamp || car.victorySpinning) {
             return;
         }
 
