@@ -90,7 +90,7 @@ MainMenuState.prototype.renderNumPlayersCursor = function()
     this.cursor = this.game.add.text(
         selectedText.x - 40,
         selectedText.y,
-        '=>',
+        '🏁',
         { fill: '#ffffff' }
     );
 };

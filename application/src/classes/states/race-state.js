@@ -135,6 +135,29 @@ RaceState.prototype.create = function()
     this.game.input.onDown.add(this.toggleFullscreen, this);
 
     this.game.add.graphics();
+
+    setTimeout(this.countDown.bind(this));
+};
+
+RaceState.prototype.countDown = function()
+{
+    this.countingDown = true;
+    var font = '64px Arial';
+    this.showMessage(
+        '3',
+        { showFor: 1000, font: font }
+    ).then(this.showMessage.bind(
+        this,
+        '2',
+        { showFor: 1000, font: font }
+    )).then(this.showMessage.bind(
+        this,
+        '1',
+        { showFor: 1000, font: font }
+    )).then(function() {
+        this.countingDown = false;
+        this.showMessage('GO!', { showFor: 2000, font: font });
+    }.bind(this));
 };
 
 RaceState.prototype.initTrack = function()
@@ -152,26 +175,44 @@ RaceState.prototype.initTrack = function()
 
 RaceState.prototype.createStartingPointVectors = function()
 {
-    var xOffset = 20;
-    var yOffset = 30;
+    var offset = 40;
+    var vectorTemplate = [
+        0,
+        // Adjust Y value so cars start *behind* the starting line
+        (this.startingPoint[2] === 180 || this.startingPoint[2] === 90) ? 30 : 60
+    ];
 
-    if (this.playerCount > 1) {
-        if (this.playerCount === 2) {
-            this.startingPointVectors = _.shuffle([
-                [xOffset, 0],
-                [-xOffset, 0]
-            ]);
-        } else {
-            this.startingPointVectors = _.shuffle([
-                [xOffset, yOffset],
-                [-xOffset, yOffset],
-                [-xOffset, -yOffset],
-                [xOffset, -yOffset]
-            ]);
-        }
-    } else {
-        this.startingPointVectors = [[0,0]];
+    var vectors = [];
+    if (this.playerCount === 1) {
+        vectors = [vectorTemplate.slice()];
+    } else if (this.playerCount === 2) {
+        vectors = [
+            vectorTemplate.slice(),
+            vectorTemplate.slice(),
+        ];
+        vectors[0][0] = -(offset / 2);
+        vectors[1][0] = offset / 2;
+    } else if (this.playerCount === 3) {
+        vectors.push(
+            vectorTemplate.slice(),
+            vectorTemplate.slice(),
+            vectorTemplate.slice()
+        );
+        vectors[1][0] = offset;
+        vectors[2][0] = -offset;
+    } else if (this.playerCount === 4) {
+        vectors.push(
+            vectorTemplate.slice(),
+            vectorTemplate.slice(),
+            vectorTemplate.slice(),
+            vectorTemplate.slice()
+        );
+        vectors[0][0] = -offset - (offset / 2);
+        vectors[1][0] = -(offset / 2);
+        vectors[2][0] = offset / 2;
+        vectors[3][0] = offset + (offset / 2);
     }
+    this.startingPointVectors = _.shuffle(vectors);
 };
 
 RaceState.prototype.initPlayers = function()
@@ -382,6 +423,10 @@ RaceState.prototype.awardPoints = function()
 
 RaceState.prototype.handleInput = function()
 {
+    if (this.countingDown) {
+        return;
+    }
+
     if (this.cursors.up.isDown) {
         this.cars[0].accelerate();
     } else if (this.cursors.down.isDown) {
@@ -488,7 +533,7 @@ RaceState.prototype.handleDrops = function(car)
         height = this.map.scaledTileHeight;
 
     if (this.map.getTilelayerIndex('drops') !== -1) {
-        if (car.falling || car.airborne || car.onRamp) {
+        if (car.falling || car.airborne || car.onRamp || car.victorySpinning) {
             return;
         }
 
@@ -574,6 +619,10 @@ RaceState.prototype.easeCamera = function(x, y)
 RaceState.prototype.moveCarToLastActivatedMarker = function(car)
 {
     var carIndex, offsetVector, lastActivatedMarker;
+
+    if (this.victorySpinning) {
+        return;
+    }
 
     carIndex = _.indexOf(this.cars, car);
     if (carIndex !== -1) {
@@ -665,10 +714,15 @@ RaceState.prototype.showMessage = function(text, options)
     this.message.anchor.setTo(0.5, 0.5);
 
     if (options.showFor) {
-        window.setTimeout(
-            this.message.destroy.bind(this.message),
-            options.showFor
-        );
+        return new Promise(function(resolve) {
+            window.setTimeout(
+                function() {
+                    this.message.destroy();
+                    resolve();
+                }.bind(this),
+                options.showFor
+            );
+        }.bind(this));
     }
 };
 
