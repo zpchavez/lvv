@@ -175,26 +175,44 @@ RaceState.prototype.initTrack = function()
 
 RaceState.prototype.createStartingPointVectors = function()
 {
-    var xOffset = 20;
-    var yOffset = 30;
+    var offset = 40;
+    var vectorTemplate = [
+        0,
+        // Adjust Y value so cars start *behind* the starting line
+        (this.startingPoint[2] === 180 || this.startingPoint[2] === 90) ? 30 : 60
+    ];
 
-    if (this.playerCount > 1) {
-        if (this.playerCount === 2) {
-            this.startingPointVectors = _.shuffle([
-                [xOffset, 0],
-                [-xOffset, 0]
-            ]);
-        } else {
-            this.startingPointVectors = _.shuffle([
-                [xOffset, yOffset],
-                [-xOffset, yOffset],
-                [-xOffset, -yOffset],
-                [xOffset, -yOffset]
-            ]);
-        }
-    } else {
-        this.startingPointVectors = [[0,0]];
+    var vectors = [];
+    if (this.playerCount === 1) {
+        vectors = [vectorTemplate.slice()];
+    } else if (this.playerCount === 2) {
+        vectors = [
+            vectorTemplate.slice(),
+            vectorTemplate.slice(),
+        ];
+        vectors[0][0] = offset;
+        vectors[1][0] = -offset;
+    } else if (this.playerCount === 3) {
+        vectors.push(
+            vectorTemplate.slice(),
+            vectorTemplate.slice(),
+            vectorTemplate.slice()
+        );
+        vectors[1][0] = offset;
+        vectors[2][0] = -offset;
+    } else if (this.playerCount === 4) {
+        vectors.push(
+            vectorTemplate.slice(),
+            vectorTemplate.slice(),
+            vectorTemplate.slice(),
+            vectorTemplate.slice()
+        );
+        vectors[0][0] = -offset - (offset / 2);
+        vectors[1][0] = -(offset / 2);
+        vectors[2][0] = offset / 2;
+        vectors[3][0] = offset + (offset / 2);
     }
+    this.startingPointVectors = _.shuffle(vectors);
 };
 
 RaceState.prototype.initPlayers = function()
