@@ -190,8 +190,8 @@ RaceState.prototype.createStartingPointVectors = function()
             vectorTemplate.slice(),
             vectorTemplate.slice(),
         ];
-        vectors[0][0] = offset;
-        vectors[1][0] = -offset;
+        vectors[0][0] = -(offset / 2);
+        vectors[1][0] = offset / 2;
     } else if (this.playerCount === 3) {
         vectors.push(
             vectorTemplate.slice(),
