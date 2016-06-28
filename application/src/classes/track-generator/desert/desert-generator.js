@@ -448,7 +448,12 @@ DesertGenerator.prototype._generateJumps = function(points, data) {
     candidateLines.forEach(function (candidate) {
         var line = candidate.line;
         var midPoint = this._getMidpoint(line[0], line[1])
-        if (rng.happensGivenProbability(.50)) {
+        if (
+            ! this._getObstaclePoints(data).some(function(point) {
+                return this._getDistanceBetween(point, midPoint) < 20;
+            }.bind(this))
+            && rng.happensGivenProbability(.50)
+        ) {
             this._addJump(data, line, midPoint);
         }
     }.bind(this));
