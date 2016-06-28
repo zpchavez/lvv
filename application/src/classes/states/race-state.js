@@ -57,6 +57,8 @@ var RaceState = function(trackData, options)
     this.suddenDeath      = false;
     this.eliminationStack = [];
     this.options          = options;
+    // Set this ahead of time to prevent being able to accelerate early
+    this.countingDown     = true;
 
     this.track.setDebug(this.debug);
 };
