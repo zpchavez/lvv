@@ -150,6 +150,10 @@ DesertGenerator.prototype._generateObstacles = function(points, data) {
             pickedPoints.indexOf(point) !== -1 ||
             pickedPoints.some(function (pickedPoint) {
                 return this._getDistanceBetween(point, pickedPoint) < 60;
+            }.bind(this)) ||
+            // Make sure isn't within 5 tiles of a track marker
+            this._getMarkerPoints(data).some(function (markerPoint) {
+                return this._getDistanceBetween(point, markerPoint) < 6;
             }.bind(this))
         );
         pickedPoints.push(point);
@@ -772,6 +776,39 @@ DesertGenerator.prototype._getSurroundingAreas = function(tileIndex, excludedInd
     });
 
     return surroundingAreas;
+};
+
+// Get marker points as tile coordinates
+DesertGenerator.prototype._getMarkerPoints = function(data)
+{
+    var track = this._getLayer(data, 'track');
+    var points = [];
+
+    track.objects.forEach(function (marker) {
+        points.push([
+            marker.x / this.template.tilewidth,
+            marker.y / this.template.tileheight,
+            marker.rotation
+        ]);
+    }.bind(this));
+
+    return points;
+};
+
+DesertGenerator.prototype._getObstaclePoints = function(data)
+{
+    var obstacles = this._getLayer(data, 'obstacles');
+    var points = [];
+
+    obstacles.objects.forEach(function (obstacle) {
+        points.push([
+            obstacle.x / this.template.tilewidth,
+            obstacle.y / this.template.tileheight,
+            obstacle.rotation
+        ]);
+    }.bind(this));
+
+    return points;
 };
 
 DesertGenerator.prototype._generateTrackMarkers = function(points, data) {
