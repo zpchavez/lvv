@@ -126,6 +126,8 @@ Score.prototype.awardTwoPlayerPointToPlayer = function(player)
  */
 Score.prototype.awardPointsForFreeForAll = function(playerStack)
 {
+    console.log('playerStack', playerStack);
+
     if (playerStack.length === 3) {
         this.playerScores[playerStack[0]] -= 1; // Last place
         this.playerScores[playerStack[2]] += 1; // First place
@@ -140,6 +142,8 @@ Score.prototype.awardPointsForFreeForAll = function(playerStack)
     this.playerScores = this.playerScores.map(function (score) {
         return Math.max(0, score);
     });
+
+    console.log('playerScores', this.playerScores);
 
     // Redraw score
     for (var i = 0; i < this.playerCount; i += 1) {

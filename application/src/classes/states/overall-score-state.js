@@ -64,6 +64,8 @@ OverallScoreState.prototype.renderScore = function()
     )
     winnerText.anchor.set(0.5);
 
+    console.log(global.state);
+
     global.state.score.forEach(function (score, index) {
         var color = global.state.playerColors[index];
         var trophies = '';

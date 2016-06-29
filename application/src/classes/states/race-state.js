@@ -374,6 +374,7 @@ RaceState.prototype.eliminateOffCameraPlayers = function()
             {
                 car.visible = false;
                 if (! this.teams && this.playerCount > 2) {
+                    console.log('eliminated', car.playerNumber);
                     this.eliminationStack.push(car.playerNumber);
                 }
             }
@@ -454,6 +455,33 @@ RaceState.prototype.handleInput = function()
             this.cars[1].turnLeft();
         }
     }
+    if (this.playerCount > 2) {
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.T)) {
+            this.cars[2].accelerate();
+        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.G)) {
+            this.cars[2].brake();
+        }
+
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.H)) {
+            this.cars[2].turnRight();
+        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.F)) {
+            this.cars[2].turnLeft();
+        }
+    }
+    if (this.playerCount > 3) {
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.I)) {
+            this.cars[3].accelerate();
+        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.K)) {
+            this.cars[3].brake();
+        }
+
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.L)) {
+            this.cars[3].turnRight();
+        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.J)) {
+            this.cars[3].turnLeft();
+        }
+    }
+
 
     for (var i = 0; i < this.playerCount; i += 1) {
         if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT) ||
