@@ -22,6 +22,7 @@ var MAP_SIZE     = 600;
 
 var EMBEL_NONE = 'EMBEL_NONE';
 var EMBEL_T = 'EMBEL_T';
+var EMBEL_CORNER_RECT = 'EMBEL_CORNER_RECT';
 var INWARD = 'INWARD';
 var OUTWARD = 'OUTWARD';
 var LEFT = 'LEFT';
@@ -956,6 +957,59 @@ DesertGenerator.prototype._embellishTrack = function(points) {
             addedPoints + index
         );
     }.bind(this));
+
+    var cornerEmbellishmentTypes = [
+        // EMBEL_NONE,
+        EMBEL_CORNER_RECT,
+    ];
+    var cornerEmbellishments = [
+        rng.pickValueFromArray(cornerEmbellishmentTypes),
+        rng.pickValueFromArray(cornerEmbellishmentTypes),
+        rng.pickValueFromArray(cornerEmbellishmentTypes),
+        rng.pickValueFromArray(cornerEmbellishmentTypes),
+    ];
+    cornerEmbellishments.forEach(function (embelType, index) {
+        addedPoints += this._addCornerEmbellishment(
+            points,
+            embelType,
+            addedPoints + index
+        );
+    }.bind(this));
+};
+
+DesertGenerator.prototype._addCornerEmbellishment = function(points, type, index) {
+    if (type === EMBEL_NONE) {
+        return 0;
+    }
+
+    // Get the 3/4 point
+    var lineStart = points[index];
+    var lineEnd   = points.length === index + 1 ? points[0] : points[index + 1];
+    var midpoint = this._getMidpoint(lineStart, lineEnd);
+    var midMidpoint = this._getMidpoint(midpoint, lineEnd);
+    midMidpoint[ANGLE] = lineStart[ANGLE];
+    console.log('midMidpoint', midMidpoint);
+
+    var embellishment = [];
+    switch (type) {
+        case EMBEL_CORNER_RECT:
+            embellishment = this._plotPointsLogoStyle(
+                midMidpoint,
+                [
+                    LEFT,
+                    50,
+                    RIGHT,
+                    50,
+                    RIGHT,
+                    50,
+                    LEFT
+                ]
+            )
+            break;
+    }
+
+    points.splice.apply(points, [index + 1, 1].concat(embellishment));
+    return embellishment.length - 1; // -1 because the corner point was spliced over
 };
 
 // Mutates 'points' and returns the number of points added
