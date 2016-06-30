@@ -948,18 +948,8 @@ DesertGenerator.prototype._embellishTrack = function(points) {
         rng.pickValueFromArray(embellishmentTypes),
     ];
 
-    var addedPoints = 0;
-    centerEmbellishments.forEach(function (embelType, index) {
-        addedPoints += this._addEmbellishment(
-            points,
-            embelType,
-            rng.pickValueFromArray([INWARD, OUTWARD]),
-            addedPoints + index
-        );
-    }.bind(this));
-
     var cornerEmbellishmentTypes = [
-        // EMBEL_NONE,
+        EMBEL_NONE,
         EMBEL_CORNER_RECT,
     ];
     var cornerEmbellishments = [
@@ -968,13 +958,22 @@ DesertGenerator.prototype._embellishTrack = function(points) {
         rng.pickValueFromArray(cornerEmbellishmentTypes),
         rng.pickValueFromArray(cornerEmbellishmentTypes),
     ];
-    cornerEmbellishments.forEach(function (embelType, index) {
+
+    var addedPoints = 0;
+    for (var i = 0; i < 4; i += 1) {
+        addedPoints += this._addEmbellishment(
+            points,
+            centerEmbellishments[i],
+            rng.pickValueFromArray([INWARD, OUTWARD]),
+            addedPoints + i
+        );
+
         addedPoints += this._addCornerEmbellishment(
             points,
-            embelType,
-            addedPoints + index
+            cornerEmbellishments[i],
+            addedPoints + i
         );
-    }.bind(this));
+    }
 };
 
 DesertGenerator.prototype._addCornerEmbellishment = function(points, type, index) {
@@ -985,21 +984,41 @@ DesertGenerator.prototype._addCornerEmbellishment = function(points, type, index
     // Get the 3/4 point
     var lineStart = points[index];
     var lineEnd   = points.length === index + 1 ? points[0] : points[index + 1];
-    var midpoint = this._getMidpoint(lineStart, lineEnd);
-    var midMidpoint = this._getMidpoint(midpoint, lineEnd);
-    midMidpoint[ANGLE] = lineStart[ANGLE];
-    console.log('midMidpoint', midMidpoint);
+    var branchPoint;
+    switch (lineStart[ANGLE]) {
+        case NORTH:
+            branchPoint = lineEnd.slice();
+            branchPoint[Y] += 50;
+            branchPoint[ANGLE] = WEST;
+            break;
+        case EAST:
+            branchPoint = lineEnd.slice();
+            branchPoint[X] -= 50;
+            branchPoint[ANGLE] = NORTH;
+            break;
+        case SOUTH:
+            branchPoint = lineEnd.slice();
+            branchPoint[Y] -= 50;
+            branchPoint[ANGLE] = EAST;
+            break;
+        case WEST:
+            branchPoint = lineEnd.slice();
+            branchPoint[X] += 50;
+            branchPoint[ANGLE] = SOUTH;
+            break;
+    }
 
     var embellishment = [];
     switch (type) {
         case EMBEL_CORNER_RECT:
             embellishment = this._plotPointsLogoStyle(
-                midMidpoint,
+                branchPoint,
                 [
-                    LEFT,
                     50,
                     RIGHT,
-                    50,
+                    100,
+                    RIGHT,
+                    100,
                     RIGHT,
                     50,
                     LEFT
