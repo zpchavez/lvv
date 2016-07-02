@@ -1027,7 +1027,14 @@ DesertGenerator.prototype._addCornerEmbellishment = function(points, type, index
             break;
     }
 
+    // Need to remove bottom left corner point if we're doing the SW corner
+    if (points.length === index + 1) {
+        points.splice(0, 1);
+    }
+
     points.splice.apply(points, [index + 1, 1].concat(embellishment));
+
+
     return embellishment.length - 1; // -1 because the corner point was spliced over
 };
 
