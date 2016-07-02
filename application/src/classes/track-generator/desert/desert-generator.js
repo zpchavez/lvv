@@ -23,6 +23,7 @@ var MAP_SIZE     = 600;
 var EMBEL_NONE = 'EMBEL_NONE';
 var EMBEL_T = 'EMBEL_T';
 var EMBEL_CORNER_RECT = 'EMBEL_CORNER_RECT';
+var EMBEL_CORNER_CUT = 'EMBEL_CORNER_CUT';
 var INWARD = 'INWARD';
 var OUTWARD = 'OUTWARD';
 var LEFT = 'LEFT';
@@ -953,6 +954,7 @@ DesertGenerator.prototype._embellishTrack = function(points) {
     var cornerEmbellishmentTypes = [
         EMBEL_NONE,
         EMBEL_CORNER_RECT,
+        EMBEL_CORNER_CUT,
     ];
     var cornerEmbellishments = [
         rng.pickValueFromArray(cornerEmbellishmentTypes),
@@ -987,27 +989,20 @@ DesertGenerator.prototype._addCornerEmbellishment = function(points, type, index
     // Get the 3/4 point
     var lineStart = points[index];
     var lineEnd   = points.length === index + 1 ? points[0] : points[index + 1];
-    var branchPoint;
+    var branchPoint = lineEnd.slice();
+    branchPoint[ANGLE] = lineStart[ANGLE];
     switch (lineStart[ANGLE]) {
         case NORTH:
-            branchPoint = lineEnd.slice();
             branchPoint[Y] += 50;
-            branchPoint[ANGLE] = WEST;
             break;
         case EAST:
-            branchPoint = lineEnd.slice();
             branchPoint[X] -= 50;
-            branchPoint[ANGLE] = NORTH;
             break;
         case SOUTH:
-            branchPoint = lineEnd.slice();
             branchPoint[Y] -= 50;
-            branchPoint[ANGLE] = EAST;
             break;
         case WEST:
-            branchPoint = lineEnd.slice();
             branchPoint[X] += 50;
-            branchPoint[ANGLE] = SOUTH;
             break;
     }
 
@@ -1017,6 +1012,7 @@ DesertGenerator.prototype._addCornerEmbellishment = function(points, type, index
             embellishment = this._plotPointsLogoStyle(
                 branchPoint,
                 [
+                    LEFT,
                     50,
                     RIGHT,
                     100,
@@ -1028,6 +1024,17 @@ DesertGenerator.prototype._addCornerEmbellishment = function(points, type, index
                 ]
             )
             break;
+        case EMBEL_CORNER_CUT:
+            embellishment = this._plotPointsLogoStyle(
+                branchPoint,
+                [
+                    RIGHT,
+                    50,
+                    LEFT,
+                    50,
+                    RIGHT
+                ]
+            )
     }
 
     // Need to remove bottom left corner point if we're doing the SW corner
