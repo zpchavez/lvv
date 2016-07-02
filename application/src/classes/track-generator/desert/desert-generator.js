@@ -931,6 +931,8 @@ DesertGenerator.prototype._plotPoints = function() {
         [MAP_SIZE - 150, MAP_SIZE - 150, WEST]
     );
 
+    this.starterPoints = points.slice();
+
     this._embellishTrack(points);
 
     return points;
@@ -965,7 +967,8 @@ DesertGenerator.prototype._embellishTrack = function(points) {
             points,
             centerEmbellishments[i],
             rng.pickValueFromArray([INWARD, OUTWARD]),
-            addedPoints + i
+            addedPoints + i,
+            i
         );
 
         addedPoints += this._addCornerEmbellishment(
@@ -1039,20 +1042,20 @@ DesertGenerator.prototype._addCornerEmbellishment = function(points, type, index
 };
 
 // Mutates 'points' and returns the number of points added
-DesertGenerator.prototype._addEmbellishment = function(points, type, orientation, index) {
+DesertGenerator.prototype._addEmbellishment = function(points, type, orientation, index, side) {
     if (type === EMBEL_NONE) {
         return 0;
     }
 
     // Get the midpoint
-    var lineStart = points[index];
-    var lineEnd   = points.length === index + 1 ? points[0] : points[index + 1];
+    var lineStart = this.starterPoints[side];
+    var lineEnd   = side === 3 ? this.starterPoints[0] : this.starterPoints[side + 1];
     var midpoint = this._getMidpoint(lineStart, lineEnd);
     var headingDirection = lineStart[ANGLE];
     var inward = orientation === INWARD;
     switch (headingDirection) {
         case NORTH:
-            midpoint[Y] -= 10;
+            midpoint[Y] += 10;
             midpoint[ANGLE] = inward ? EAST : WEST;
             break;
         case SOUTH:
@@ -1064,7 +1067,7 @@ DesertGenerator.prototype._addEmbellishment = function(points, type, orientation
             midpoint[ANGLE] = inward ? SOUTH : NORTH;
             break;
         case WEST:
-            midpoint[X] -= 10;
+            midpoint[X] += 10;
             midpoint[ANGLE] = inward ? NORTH : SOUTH;
             break;
     }
