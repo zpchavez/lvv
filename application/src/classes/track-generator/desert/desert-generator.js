@@ -1032,9 +1032,10 @@ DesertGenerator.prototype._addCornerEmbellishment = function(points, type, index
                     50,
                     LEFT,
                     50,
-                    RIGHT
+                    RIGHT,
                 ]
             )
+            break;
     }
 
     // Need to remove bottom left corner point if we're doing the SW corner
@@ -1043,7 +1044,6 @@ DesertGenerator.prototype._addCornerEmbellishment = function(points, type, index
     }
 
     points.splice.apply(points, [index + 1, 1].concat(embellishment));
-
 
     return embellishment.length - 1; // -1 because the corner point was spliced over
 };
@@ -1106,7 +1106,7 @@ DesertGenerator.prototype._addCenterEmbellishment = function(points, type, orien
 };
 
 DesertGenerator.prototype._plotPointsLogoStyle = function(startingPoint, instructions) {
-    var points = [startingPoint];
+    var points = [];
 
     var cursor = startingPoint.slice();
     instructions.forEach(function (instruction) {
