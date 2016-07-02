@@ -449,14 +449,14 @@ DesertGenerator.prototype._generateJumps = function(points, data) {
 
     candidateLines.forEach(function (candidate) {
         var line = candidate.line;
-        var midPoint = this._getMidpoint(line[0], line[1])
+        var midpoint = this._getMidpoint(line[0], line[1])
         if (
             ! this._getObstaclePoints(data).some(function(point) {
-                return this._getDistanceBetween(point, midPoint) < 20;
+                return this._getDistanceBetween(point, midpoint) < 20;
             }.bind(this))
             && rng.happensGivenProbability(.50)
         ) {
-            this._addJump(data, line, midPoint);
+            this._addJump(data, line, midpoint);
         }
     }.bind(this));
 };
@@ -965,7 +965,7 @@ DesertGenerator.prototype._embellishTrack = function(points) {
 
     var addedPoints = 0;
     for (var i = 0; i < 4; i += 1) {
-        addedPoints += this._addEmbellishment(
+        addedPoints += this._addCenterEmbellishment(
             points,
             centerEmbellishments[i],
             rng.pickValueFromArray([INWARD, OUTWARD]),
@@ -991,7 +991,7 @@ DesertGenerator.prototype._addCornerEmbellishment = function(points, type, index
     var lineEnd   = points.length === index + 1 ? points[0] : points[index + 1];
     var branchPoint = lineEnd.slice();
     branchPoint[ANGLE] = lineStart[ANGLE];
-    switch (lineStart[ANGLE]) {
+    switch (branchPoint[ANGLE]) {
         case NORTH:
             branchPoint[Y] += 50;
             break;
@@ -1049,7 +1049,7 @@ DesertGenerator.prototype._addCornerEmbellishment = function(points, type, index
 };
 
 // Mutates 'points' and returns the number of points added
-DesertGenerator.prototype._addEmbellishment = function(points, type, orientation, index, side) {
+DesertGenerator.prototype._addCenterEmbellishment = function(points, type, orientation, index, side) {
     if (type === EMBEL_NONE) {
         return 0;
     }
@@ -1058,24 +1058,20 @@ DesertGenerator.prototype._addEmbellishment = function(points, type, orientation
     var lineStart = this.starterPoints[side];
     var lineEnd   = side === 3 ? this.starterPoints[0] : this.starterPoints[side + 1];
     var midpoint = this._getMidpoint(lineStart, lineEnd);
-    var headingDirection = lineStart[ANGLE];
+    midpoint[ANGLE] = lineStart[ANGLE];
     var inward = orientation === INWARD;
-    switch (headingDirection) {
+    switch (midpoint[ANGLE]) {
         case NORTH:
             midpoint[Y] += 10;
-            midpoint[ANGLE] = inward ? EAST : WEST;
             break;
         case SOUTH:
             midpoint[Y] -= 10;
-            midpoint[ANGLE] = inward ? WEST : EAST;
             break;
         case EAST:
             midpoint[X] -= 10;
-            midpoint[ANGLE] = inward ? SOUTH : NORTH;
             break;
         case WEST:
             midpoint[X] += 10;
-            midpoint[ANGLE] = inward ? NORTH : SOUTH;
             break;
     }
     var embellishment = [];
@@ -1085,6 +1081,7 @@ DesertGenerator.prototype._addEmbellishment = function(points, type, orientation
             embellishment = this._plotPointsLogoStyle(
                 midpoint,
                 [
+                    inward ? RIGHT : LEFT,
                     30,
                     inward ? RIGHT : LEFT,
                     30,
