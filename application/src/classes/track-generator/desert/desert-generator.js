@@ -21,8 +21,11 @@ var TRACK_WIDTH  = 6;
 var MAP_SIZE     = 600;
 
 var EMBEL_NONE = 'EMBEL_NONE';
+// Center embellishments
 var EMBEL_T = 'EMBEL_T';
 var EMBEL_PLUS = 'EMBEL_PLUS';
+var EMBEL_I = 'EMBEL_I';
+// Corner embellishments
 var EMBEL_CORNER_RECT = 'EMBEL_CORNER_RECT';
 var EMBEL_CORNER_CUT = 'EMBEL_CORNER_CUT';
 var EMBEL_CORNER_CUT_STAIRS = 'EMBEL_CORNER_CUT_STAIRS';
@@ -946,6 +949,7 @@ DesertGenerator.prototype._embellishTrack = function(points) {
         EMBEL_NONE,
         EMBEL_T,
         EMBEL_PLUS,
+        EMBEL_I,
     ];
     var centerEmbellishments = [
         rng.pickValueFromArray(embellishmentTypes),
@@ -1150,6 +1154,21 @@ DesertGenerator.prototype._addCenterEmbellishment = function(points, type, orien
                     30,
                     flipIfOutward(RIGHT),
                     30,
+                    flipIfOutward(RIGHT),
+                ]
+            )
+            break;
+        case EMBEL_I:
+            var lengthOut = rng.getIntBetween(60, 100);
+            embellishment = this._plotPointsLogoStyle(
+                midpoint,
+                [
+                    flipIfOutward(RIGHT),
+                    lengthOut,
+                    flipIfOutward(LEFT),
+                    30,
+                    flipIfOutward(LEFT),
+                    lengthOut,
                     flipIfOutward(RIGHT),
                 ]
             )
