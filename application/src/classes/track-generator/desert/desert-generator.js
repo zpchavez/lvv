@@ -22,6 +22,7 @@ var MAP_SIZE     = 600;
 
 var EMBEL_NONE = 'EMBEL_NONE';
 var EMBEL_T = 'EMBEL_T';
+var EMBEL_PLUS = 'EMBEL_PLUS';
 var EMBEL_CORNER_RECT = 'EMBEL_CORNER_RECT';
 var EMBEL_CORNER_CUT = 'EMBEL_CORNER_CUT';
 var EMBEL_CORNER_CUT_STAIRS = 'EMBEL_CORNER_CUT_STAIRS';
@@ -944,6 +945,7 @@ DesertGenerator.prototype._embellishTrack = function(points) {
     var embellishmentTypes = [
         EMBEL_NONE,
         EMBEL_T,
+        EMBEL_PLUS,
     ];
     var centerEmbellishments = [
         rng.pickValueFromArray(embellishmentTypes),
@@ -1094,27 +1096,61 @@ DesertGenerator.prototype._addCenterEmbellishment = function(points, type, orien
     }
     var embellishment = [];
 
+    var flipIfOutward = function(direction) {
+        return inward ? direction : (direction === RIGHT ? LEFT : RIGHT);
+    }
+
     switch (type) {
         case EMBEL_T:
             var lengthOut = rng.getIntBetween(30, 60);
             embellishment = this._plotPointsLogoStyle(
                 midpoint,
                 [
-                    inward ? RIGHT : LEFT,
+                    flipIfOutward(RIGHT),
                     lengthOut,
-                    inward ? RIGHT : LEFT,
+                    flipIfOutward(RIGHT),
                     30,
-                    inward ? LEFT : RIGHT,
+                    flipIfOutward(LEFT),
                     30,
-                    inward ? LEFT : RIGHT,
+                    flipIfOutward(LEFT),
                     90,
-                    inward ? LEFT : RIGHT,
+                    flipIfOutward(LEFT),
                     30,
-                    inward ? LEFT : RIGHT,
+                    flipIfOutward(LEFT),
                     30,
-                    inward ? RIGHT : LEFT,
+                    flipIfOutward(RIGHT),
                     lengthOut,
-                    inward ? RIGHT : LEFT,
+                    flipIfOutward(RIGHT),
+                ]
+            )
+            break;
+        case EMBEL_PLUS:
+            embellishment = this._plotPointsLogoStyle(
+                midpoint,
+                [
+                    flipIfOutward(RIGHT),
+                    30,
+                    flipIfOutward(RIGHT),
+                    30,
+                    flipIfOutward(LEFT),
+                    30,
+                    flipIfOutward(LEFT),
+                    30,
+                    flipIfOutward(RIGHT),
+                    30,
+                    flipIfOutward(LEFT),
+                    30,
+                    flipIfOutward(LEFT),
+                    30,
+                    flipIfOutward(RIGHT),
+                    30,
+                    flipIfOutward(LEFT),
+                    30,
+                    flipIfOutward(LEFT),
+                    30,
+                    flipIfOutward(RIGHT),
+                    30,
+                    flipIfOutward(RIGHT),
                 ]
             )
             break;
