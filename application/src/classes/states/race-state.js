@@ -162,6 +162,22 @@ RaceState.prototype.countDown = function()
     }.bind(this));
 };
 
+RaceState.prototype.countDownQuickly = function()
+{
+    this.countingDown = true;
+    var font = '64px Arial';
+    this.showMessage(
+        'Ready',
+        { showFor: 1000, font: font }
+    ).then(function() {
+        this.countingDown = false;
+        this.showMessage(
+            'Go!',
+            { showFor: 1000, font: font }
+        );
+    }.bind(this));
+}
+
 RaceState.prototype.initTrack = function()
 {
     this.map = this.game.add.tiledmap('track');
@@ -659,6 +675,8 @@ RaceState.prototype.resetAllCarsToLastMarker = function()
     }, this);
 
     this.updateCamera();
+
+    this.countDownQuickly();
 };
 
 RaceState.prototype.showLapCounter = function()
