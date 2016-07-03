@@ -30,7 +30,11 @@ var Car = function(state, x, y, key)
     this.airborneHeight  = 0;
     this.onRoughTerrain  = false;
 
-    this.frictionMultipliers = {};
+    this.multipliers = {
+        friction: {},
+        skid: {},
+        brake: {},
+    };
 
     this.transformCallback        = transformCallback;
     this.transformCallbackContext = this;
@@ -81,7 +85,10 @@ Car.prototype.brake = function()
     }
 
     this.body.applyForce(
-        rotateVector(this.body.rotation, [0, this.constants.BRAKE_FORCE]),
+        rotateVector(
+            this.body.rotation,
+            [0, this.constants.BRAKE_FORCE * this.getMultiplierTotal('brake')]
+        ),
         this.body.x,
         this.body.y
     );
@@ -104,6 +111,57 @@ Car.prototype.turnLeft = function()
     }
 
     this.body.rotateLeft(this.constants.TURNING_VELOCITY);
+};
+
+Car.prototype.startHovering = function()
+{
+    var hoverUp, hoverDown;
+
+    if (this.hovering) {
+        return;
+    }
+
+    this.hovering = true;
+    this.addMultiplier('skid', 'hovering', 0.4);
+    this.addMultiplier('brake', 'hovering', 0.5);
+
+    // Do float-up-and-down animation
+    hoverUp = function() {
+        if (! this.hovering) {
+            return;
+        }
+        this.state.game.add.tween(this.scale)
+            .to(
+                {x : 1.2, y: 1.2},
+                500,
+                Phaser.Easing.Quadratic.InOut,
+                true
+            )
+            .onComplete.add(hoverDown);
+    }.bind(this);
+
+    hoverDown = function() {
+        if (! this.hovering) {
+            return;
+        }
+        this.state.game.add.tween(this.scale)
+            .to(
+                {x : 1.1, y: 1.1},
+                500,
+                Phaser.Easing.Quadratic.InOut,
+                true
+            )
+            .onComplete.add(hoverUp);
+    }.bind(this);
+
+    hoverUp();
+};
+
+Car.prototype.stopHovering = function()
+{
+    this.hovering = false;
+    this.removeMultiplier('skid', 'hovering');
+    this.removeMultiplier('brake', 'hovering');
 };
 
 // Straighten out if not turning
@@ -138,15 +196,57 @@ Car.prototype.getCarRefVelocity = function()
     );
 };
 
-Car.prototype.getFrictionMultiplierTotal = function()
+Car.prototype.doMultiplierTypeCheck = function(type)
 {
+    if (['friction', 'brake', 'skid'].indexOf(type) === -1) {
+        throw new Error('Unsupported multiplier type: ' + type);
+    }
+};
+
+Car.prototype.addMultiplier = function(type, key, value)
+{
+    this.doMultiplierTypeCheck(type);
+
+    this.multipliers[type][key] = value;
+
+    return this;
+};
+
+Car.prototype.removeMultiplier = function(type, key, value)
+{
+    this.doMultiplierTypeCheck(type);
+
+    delete this.multipliers[type][key];
+
+    return this;
+};
+
+Car.prototype.getMultiplierTotal = function(type)
+{
+    this.doMultiplierTypeCheck(type);
+
     return _.reduce(
-        this.frictionMultipliers,
+        this.multipliers[type],
         function(total, element) {
             return total * element;
         },
         1
     );
+};
+
+Car.prototype.addFrictionMultiplier = function(key, value)
+{
+    return this.addMultiplier('friction', key, value);
+};
+
+Car.prototype.removeFrictionMultiplier = function(key)
+{
+    return this.removeMultiplier('friction', key);
+};
+
+Car.prototype.getFrictionMultiplierTotal = function()
+{
+    return this.getMultiplierTotal('friction');
 };
 
 Car.prototype.applyRollingFriction = function()
@@ -177,6 +277,7 @@ Car.prototype.applySkidFriction = function()
                 this.getCarRefVelocity()[0] *
                 this.constants.SKID_FRICTION_MULTIPLIER *
                 this.getFrictionMultiplierTotal() *
+                this.getMultiplierTotal('skid') *
                 this.body.mass,
                 0
             ]
@@ -201,16 +302,6 @@ Car.prototype.applyForces = function()
     if (this.victorySpinning) {
         this.body.rotateRight(150);
     }
-};
-
-Car.prototype.addFrictionMultiplier = function(key, value)
-{
-    this.frictionMultipliers[key] = value;
-};
-
-Car.prototype.removeFrictionMultiplier = function(key)
-{
-    delete this.frictionMultipliers[key];
 };
 
 transformCallback = function(worldTransform, parentTransform)

@@ -551,7 +551,7 @@ RaceState.prototype.handleDrops = function(car)
         height = this.map.scaledTileHeight;
 
     if (this.map.getTilelayerIndex('drops') !== -1) {
-        if (car.falling || car.airborne || car.onRamp || car.victorySpinning) {
+        if (car.falling || car.airborne || car.onRamp || car.victorySpinning || car.hovering) {
             return;
         }
 
@@ -599,7 +599,7 @@ RaceState.prototype.handleRamps = function(car)
 RaceState.prototype.handleRoughTerrain = function(car)
 {
     if (this.map.getTilelayerIndex('rough') !== -1) {
-        if (car.airborne) {
+        if (car.airborne || car.hovering) {
             return;
         }
 
