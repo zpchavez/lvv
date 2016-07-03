@@ -1,4 +1,5 @@
 var getTemplate = require('./get-desert-template');
+var desertEmbels = require('./desert-embellishments');
 var rng = require('../../../rng');
 var _ = require('underscore');
 
@@ -21,15 +22,6 @@ var TRACK_WIDTH  = 6;
 var MAP_SIZE     = 600;
 
 var EMBEL_NONE = 'EMBEL_NONE';
-// Center embellishments
-var EMBEL_T = 'EMBEL_T';
-var EMBEL_PLUS = 'EMBEL_PLUS';
-var EMBEL_I = 'EMBEL_I';
-var EMBEL_L = 'EMBEL_L';
-// Corner embellishments
-var EMBEL_CORNER_RECT = 'EMBEL_CORNER_RECT';
-var EMBEL_CORNER_CUT = 'EMBEL_CORNER_CUT';
-var EMBEL_CORNER_CUT_STAIRS = 'EMBEL_CORNER_CUT_STAIRS';
 var INWARD = 'INWARD';
 var OUTWARD = 'OUTWARD';
 var LEFT = 'LEFT';
@@ -946,26 +938,15 @@ DesertGenerator.prototype._plotPoints = function() {
 };
 
 DesertGenerator.prototype._embellishTrack = function(points) {
-    var embellishmentTypes = [
-        EMBEL_NONE,
-        EMBEL_T,
-        EMBEL_PLUS,
-        EMBEL_I,
-        EMBEL_L,
-    ];
+    var centerEmbellishmentTypes = desertEmbels.getCenterEmbellishments();
     var centerEmbellishments = [
-        rng.pickValueFromArray(embellishmentTypes),
-        rng.pickValueFromArray(embellishmentTypes),
-        rng.pickValueFromArray(embellishmentTypes),
-        rng.pickValueFromArray(embellishmentTypes),
+        rng.pickValueFromArray(centerEmbellishmentTypes),
+        rng.pickValueFromArray(centerEmbellishmentTypes),
+        rng.pickValueFromArray(centerEmbellishmentTypes),
+        rng.pickValueFromArray(centerEmbellishmentTypes),
     ];
 
-    var cornerEmbellishmentTypes = [
-        EMBEL_NONE,
-        EMBEL_CORNER_RECT,
-        EMBEL_CORNER_CUT,
-        EMBEL_CORNER_CUT_STAIRS,
-    ];
+    var cornerEmbellishmentTypes = desertEmbels.getCornerEmbellishments();
     var cornerEmbellishments = [
         rng.pickValueFromArray(cornerEmbellishmentTypes),
         rng.pickValueFromArray(cornerEmbellishmentTypes),
@@ -1016,53 +997,10 @@ DesertGenerator.prototype._addCornerEmbellishment = function(points, type, index
             break;
     }
 
-    var embellishment = [];
-    switch (type) {
-        case EMBEL_CORNER_RECT:
-            embellishment = this._plotPointsLogoStyle(
-                branchPoint,
-                [
-                    LEFT,
-                    50,
-                    RIGHT,
-                    100,
-                    RIGHT,
-                    100,
-                    RIGHT,
-                    50,
-                    LEFT
-                ]
-            )
-            break;
-        case EMBEL_CORNER_CUT:
-            embellishment = this._plotPointsLogoStyle(
-                branchPoint,
-                [
-                    RIGHT,
-                    50,
-                    LEFT,
-                    50,
-                    RIGHT,
-                ]
-            )
-            break;
-        case EMBEL_CORNER_CUT_STAIRS:
-            embellishment = this._plotPointsLogoStyle(
-                branchPoint,
-                [
-                    RIGHT,
-                    25,
-                    LEFT,
-                    25,
-                    RIGHT,
-                    25,
-                    LEFT,
-                    25,
-                    RIGHT,
-                ]
-            )
-            break;
-    }
+    var embellishment = this._plotPointsLogoStyle(
+        branchPoint,
+        desertEmbels.getCornerEmbelInstructions(type)
+    );
 
     // Need to remove bottom left corner point if we're doing the SW corner
     if (points.length === index + 1) {
@@ -1085,7 +1023,7 @@ DesertGenerator.prototype._addCenterEmbellishment = function(points, type, orien
     var lineEnd   = side === 3 ? this.starterPoints[0] : this.starterPoints[side + 1];
     var midpoint = this._getMidpoint(lineStart, lineEnd);
     midpoint[ANGLE] = lineStart[ANGLE];
-    var inward = orientation === INWARD;
+
     switch (midpoint[ANGLE]) {
         case NORTH:
             midpoint[Y] += 10;
@@ -1100,100 +1038,11 @@ DesertGenerator.prototype._addCenterEmbellishment = function(points, type, orien
             midpoint[X] += 10;
             break;
     }
-    var embellishment = [];
 
-    var flipIfOutward = function(direction) {
-        return inward ? direction : (direction === RIGHT ? LEFT : RIGHT);
-    }
-
-    switch (type) {
-        case EMBEL_T:
-            var lengthOut = rng.getIntBetween(30, 60);
-            embellishment = this._plotPointsLogoStyle(
-                midpoint,
-                [
-                    flipIfOutward(RIGHT),
-                    lengthOut,
-                    flipIfOutward(RIGHT),
-                    30,
-                    flipIfOutward(LEFT),
-                    30,
-                    flipIfOutward(LEFT),
-                    90,
-                    flipIfOutward(LEFT),
-                    30,
-                    flipIfOutward(LEFT),
-                    30,
-                    flipIfOutward(RIGHT),
-                    lengthOut,
-                    flipIfOutward(RIGHT),
-                ]
-            )
-            break;
-        case EMBEL_PLUS:
-            embellishment = this._plotPointsLogoStyle(
-                midpoint,
-                [
-                    flipIfOutward(RIGHT),
-                    30,
-                    flipIfOutward(RIGHT),
-                    30,
-                    flipIfOutward(LEFT),
-                    30,
-                    flipIfOutward(LEFT),
-                    30,
-                    flipIfOutward(RIGHT),
-                    30,
-                    flipIfOutward(LEFT),
-                    30,
-                    flipIfOutward(LEFT),
-                    30,
-                    flipIfOutward(RIGHT),
-                    30,
-                    flipIfOutward(LEFT),
-                    30,
-                    flipIfOutward(LEFT),
-                    30,
-                    flipIfOutward(RIGHT),
-                    30,
-                    flipIfOutward(RIGHT),
-                ]
-            )
-            break;
-        case EMBEL_I:
-            var lengthOut = rng.getIntBetween(60, 100);
-            embellishment = this._plotPointsLogoStyle(
-                midpoint,
-                [
-                    flipIfOutward(RIGHT),
-                    lengthOut,
-                    flipIfOutward(LEFT),
-                    30,
-                    flipIfOutward(LEFT),
-                    lengthOut,
-                    flipIfOutward(RIGHT),
-                ]
-            )
-            break;
-        case EMBEL_L:
-            embellishment = this._plotPointsLogoStyle(
-                midpoint,
-                [
-                    flipIfOutward(RIGHT),
-                    60,
-                    flipIfOutward(RIGHT),
-                    30,
-                    flipIfOutward(LEFT),
-                    30,
-                    flipIfOutward(LEFT),
-                    60,
-                    flipIfOutward(LEFT),
-                    90,
-                    flipIfOutward(RIGHT),
-                ]
-            )
-            break;
-    }
+    var embellishment = this._plotPointsLogoStyle(
+        midpoint,
+        desertEmbels.getCenterEmbelInstructions(type, orientation)
+    );
 
     points.splice.apply(points, [index + 1, 0].concat(embellishment));
     return embellishment.length;
