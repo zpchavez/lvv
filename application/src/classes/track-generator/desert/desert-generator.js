@@ -25,6 +25,7 @@ var EMBEL_NONE = 'EMBEL_NONE';
 var EMBEL_T = 'EMBEL_T';
 var EMBEL_PLUS = 'EMBEL_PLUS';
 var EMBEL_I = 'EMBEL_I';
+var EMBEL_L = 'EMBEL_L';
 // Corner embellishments
 var EMBEL_CORNER_RECT = 'EMBEL_CORNER_RECT';
 var EMBEL_CORNER_CUT = 'EMBEL_CORNER_CUT';
@@ -950,6 +951,7 @@ DesertGenerator.prototype._embellishTrack = function(points) {
         EMBEL_T,
         EMBEL_PLUS,
         EMBEL_I,
+        EMBEL_L,
     ];
     var centerEmbellishments = [
         rng.pickValueFromArray(embellishmentTypes),
@@ -1169,6 +1171,24 @@ DesertGenerator.prototype._addCenterEmbellishment = function(points, type, orien
                     30,
                     flipIfOutward(LEFT),
                     lengthOut,
+                    flipIfOutward(RIGHT),
+                ]
+            )
+            break;
+        case EMBEL_L:
+            embellishment = this._plotPointsLogoStyle(
+                midpoint,
+                [
+                    flipIfOutward(RIGHT),
+                    60,
+                    flipIfOutward(RIGHT),
+                    30,
+                    flipIfOutward(LEFT),
+                    30,
+                    flipIfOutward(LEFT),
+                    60,
+                    flipIfOutward(LEFT),
+                    90,
                     flipIfOutward(RIGHT),
                 ]
             )
