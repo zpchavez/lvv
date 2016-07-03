@@ -6,6 +6,7 @@ var EMBEL_T = 'EMBEL_T';
 var EMBEL_PLUS = 'EMBEL_PLUS';
 var EMBEL_I = 'EMBEL_I';
 var EMBEL_L = 'EMBEL_L';
+var EMBEL_J = 'EMBEL_J';
 // Corner embellishments
 var EMBEL_CORNER_RECT = 'EMBEL_CORNER_RECT';
 var EMBEL_CORNER_CUT = 'EMBEL_CORNER_CUT';
@@ -24,6 +25,7 @@ module.exports = {
             EMBEL_PLUS,
             EMBEL_I,
             EMBEL_L,
+            EMBEL_J,
         ];
     },
 
@@ -110,6 +112,21 @@ module.exports = {
                     60,
                     LEFT,
                     90,
+                    RIGHT,
+                ]
+                break;
+            case EMBEL_J:
+                instructions = [
+                    RIGHT,
+                    90,
+                    LEFT,
+                    60,
+                    LEFT,
+                    30,
+                    LEFT,
+                    30,
+                    RIGHT,
+                    60,
                     RIGHT,
                 ]
                 break;
