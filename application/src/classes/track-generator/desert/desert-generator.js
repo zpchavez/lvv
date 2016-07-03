@@ -1096,11 +1096,12 @@ DesertGenerator.prototype._addCenterEmbellishment = function(points, type, orien
 
     switch (type) {
         case EMBEL_T:
+            var lengthOut = rng.getIntBetween(30, 60);
             embellishment = this._plotPointsLogoStyle(
                 midpoint,
                 [
                     inward ? RIGHT : LEFT,
-                    30,
+                    lengthOut,
                     inward ? RIGHT : LEFT,
                     30,
                     inward ? LEFT : RIGHT,
@@ -1112,7 +1113,7 @@ DesertGenerator.prototype._addCenterEmbellishment = function(points, type, orien
                     inward ? LEFT : RIGHT,
                     30,
                     inward ? RIGHT : LEFT,
-                    30,
+                    lengthOut,
                     inward ? RIGHT : LEFT,
                 ]
             )
