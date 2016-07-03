@@ -3,6 +3,7 @@
 var Phaser = require('phaser');
 var RaceState = require('./race-state');
 var DesertGenerator = require('../track-generator/desert/desert-generator');
+var global = require('../../global-state');
 
 var LoadingNextRaceState = function()
 {
@@ -56,8 +57,8 @@ LoadingNextRaceState.prototype.loadTrack = function(type)
     this.game.state.add(
         'race',
         new RaceState(trackData, {
-            players: this.game.lvvGlobals.players,
-            teams: this.game.lvvGlobals.teams
+            players: global.state.players,
+            teams: global.state.teams
         }),
         true
     );

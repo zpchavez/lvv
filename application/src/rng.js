@@ -5,6 +5,7 @@ var settings    = require('./settings');
 
 var RNG = function()
 {
+    console.log('The seed is: ' + settings.seed);
     this.rng = randomSeed.create(settings.seed);
 };
 

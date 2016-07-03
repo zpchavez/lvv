@@ -14,12 +14,23 @@ module.exports = function(options) {
              "data":[],
              "height":options.height,
              "name":"background",
-             "opacity":1,
+             "opacity":1.0,
              "type":"tilelayer",
              "visible":true,
              "width":options.width,
              "x":0,
              "y":0
+            },
+            {
+                "data":[],
+                "height":options.height,
+                "name":"decoration",
+                "opacity":0.7,
+                "type":"tilelayer",
+                "visible":true,
+                "width":options.width,
+                "x":0,
+                "y":0
             },
             {
              "draworder":"topdown",

@@ -1,4 +1,5 @@
 var getTemplate = require('./get-desert-template');
+var desertEmbels = require('./desert-embellishments');
 var rng = require('../../../rng');
 var _ = require('underscore');
 
@@ -6,6 +7,11 @@ var SAND = 39;
 var PAVEMENT = 46;
 var GRAVEL = 18;
 var PIT = 21;
+var FINISH = 44;
+var FINISH_E = 55;
+var FINISH_W = 66;
+var FINISH_S = 64;
+var FINISH_N = 65;
 
 var NORTH = 0;
 var EAST = 90;
@@ -16,7 +22,6 @@ var TRACK_WIDTH  = 6;
 var MAP_SIZE     = 600;
 
 var EMBEL_NONE = 'EMBEL_NONE';
-var EMBEL_T = 'EMBEL_T';
 var INWARD = 'INWARD';
 var OUTWARD = 'OUTWARD';
 var LEFT = 'LEFT';
@@ -107,6 +112,7 @@ DesertGenerator.prototype.generate = function() {
     this._addEdgeTiles(data, this.gravelIndices, GRAVEL);
     this._addEdgeTiles(data, this.pitIndices, PIT);
     this._addEdgeTiles(data, this.trackIndices, PAVEMENT);
+    this._drawFinishLine(data);
 
     return data;
 };
@@ -144,6 +150,10 @@ DesertGenerator.prototype._generateObstacles = function(points, data) {
             pickedPoints.indexOf(point) !== -1 ||
             pickedPoints.some(function (pickedPoint) {
                 return this._getDistanceBetween(point, pickedPoint) < 60;
+            }.bind(this)) ||
+            // Make sure isn't within 5 tiles of a track marker
+            this._getMarkerPoints(data).some(function (markerPoint) {
+                return this._getDistanceBetween(point, markerPoint) < 6;
             }.bind(this))
         );
         pickedPoints.push(point);
@@ -167,6 +177,8 @@ DesertGenerator.prototype._generateObstacles = function(points, data) {
             y: rng.getIntBetween(range.y[0], range.y[1]) * this.template.tileheight,
         };
 
+        // Limit angles for aspirin bottle, since we need to define rectangles
+        // where the pills will be scattered for each one.
         if (object.type === 'AspirinBottle') {
             object.rotation = Math.floor(object.rotation / 45) * 45;
             this._addPillObstacles(obstacleLayer, object);
@@ -435,9 +447,14 @@ DesertGenerator.prototype._generateJumps = function(points, data) {
 
     candidateLines.forEach(function (candidate) {
         var line = candidate.line;
-        var midPoint = this._getMidpoint(line[0], line[1])
-        if (rng.happensGivenProbability(.50)) {
-            this._addJump(data, line, midPoint);
+        var midpoint = this._getMidpoint(line[0], line[1])
+        if (
+            ! this._getObstaclePoints(data).some(function(point) {
+                return this._getDistanceBetween(point, midpoint) < 20;
+            }.bind(this))
+            && rng.happensGivenProbability(.50)
+        ) {
+            this._addJump(data, line, midpoint);
         }
     }.bind(this));
 };
@@ -766,89 +783,140 @@ DesertGenerator.prototype._getSurroundingAreas = function(tileIndex, excludedInd
     return surroundingAreas;
 };
 
+// Get marker points as tile coordinates
+DesertGenerator.prototype._getMarkerPoints = function(data)
+{
+    var track = this._getLayer(data, 'track');
+    var points = [];
+
+    track.objects.forEach(function (marker) {
+        points.push([
+            marker.x / this.template.tilewidth,
+            marker.y / this.template.tileheight,
+            marker.rotation
+        ]);
+    }.bind(this));
+
+    return points;
+};
+
+DesertGenerator.prototype._getObstaclePoints = function(data)
+{
+    var obstacles = this._getLayer(data, 'obstacles');
+    var points = [];
+
+    obstacles.objects.forEach(function (obstacle) {
+        points.push([
+            obstacle.x / this.template.tilewidth,
+            obstacle.y / this.template.tileheight,
+            obstacle.rotation
+        ]);
+    }.bind(this));
+
+    return points;
+};
+
 DesertGenerator.prototype._generateTrackMarkers = function(points, data) {
     var track = this._getLayer(data, 'track');
 
-    var getMarker = function (point, index, isFinish) {
-        var id = isFinish ? index : index + 1;
-
-        var markerPoint = [point[X], point[Y]];
+    var getMarker = function (point, index) {
+        var coordinate;
         var coordinateMultiplier;
-        var rotationMultiplier;
-        var pointIdx;
-        var prevPoint = isFinish ? points[points.length - 1] : points[index];
-        var headedFromDirection;
-        if (isFinish) {
-            headedFromDirection = point[ANGLE];
-        }  else {
-            headedFromDirection = prevPoint[ANGLE]
-        }
-        switch (headedFromDirection) {
+
+        switch (point[ANGLE]) {
             case NORTH:
-                pointIdx = 1;
-                coordinateMultiplier = isFinish ? -1 : 1;
-                rotationMultiplier = point[ANGLE] === EAST ? -1 : 1;
+                coordinate = Y;
+                coordinateMultiplier = -1;
                 break;
             case SOUTH:
-                coordinateMultiplier = isFinish ? 1 : -1;
-                pointIdx = 1;
-                rotationMultiplier = point[ANGLE] === EAST ? 1 : -1;
+                coordinateMultiplier = 1;
+                coordinate = Y;
                 break;
             case EAST:
-                coordinateMultiplier = isFinish ? 1 : -1;
-                pointIdx = 0;
-                rotationMultiplier = point[ANGLE] === SOUTH ? -1 : 1;
+                coordinateMultiplier = 1;
+                coordinate = X;
                 break;
             case WEST:
-                coordinateMultiplier = isFinish ? -1 : 1;
-                pointIdx = 0;
-                rotationMultiplier = point[ANGLE] === SOUTH ? 1 : -1;
+                coordinateMultiplier = -1;
+                coordinate = X;
                 break;
         }
-        var adjustment = 5;
-        markerPoint[pointIdx] = point[pointIdx] + (adjustment * coordinateMultiplier);
 
-        // I might be able to do this neater by putting the directions in an array
-        // and mathing the indexes
-        var markerRotation;
-        if (isFinish) {
-            markerRotation = point[ANGLE];
-        } else if (rotationMultiplier === -1 && point[ANGLE] === 0) {
-            markerRotation = 270;
-        } else if (rotationMultiplier === 1 && point[ANGLE] === 270) {
-            markerRotation = 0;
-        } else {
-            markerRotation = point[ANGLE] + (90 * rotationMultiplier)
-        }
+        var adjustment = 10;
+        var markerPoint = [point[X], point[Y]];
+        markerPoint[coordinate] = point[coordinate] + (adjustment * coordinateMultiplier);
 
         var marker = {
-            "id": id,
+            "id": index,
             "height": this.template.tileheight,
-            "width": this.template.tilewidth * TRACK_WIDTH * 4,
+            "width": this.template.tilewidth * TRACK_WIDTH * 5,
             "x": markerPoint[X] * this.template.tilewidth,
             "y": markerPoint[Y] * this.template.tileheight,
-            "rotation": markerRotation,
+            "rotation": point[ANGLE],
             "visible":true,
         };
-
-        if (isFinish) {
-            marker.name = 'finish-line';
-            marker.type = 'finish-line';
-        } else {
-            marker.name = '';
-            marker.properties = { index: index };
-        }
 
         return marker;
     }.bind(this);
 
-    track.objects.push(getMarker(points[0], 0, true));
-
-    points.slice(1).forEach(function (point, index) {
-        track.objects.push(getMarker(point, index));
+    points.forEach(function (point, index) {
+        track.objects.push(getMarker(point, index + 1));
     });
 
+    // Pick a finish line and then number the markers accordingly:
+    var finishIndex = rng.getIntBetween(0, track.objects.length - 1);
+    var markerIncrementer = 0;
+    Object.assign(track.objects[finishIndex], { name: 'finish-line', type: 'finish-line' });
+    for (var i = finishIndex + 1; i < track.objects.length; i += 1) {
+        track.objects[i].properties = { index: markerIncrementer };
+        markerIncrementer += 1;
+    }
+    // Loop back around to the first point
+    for (var i = 0; i < finishIndex; i += 1) {
+        track.objects[i].properties = { index: markerIncrementer };
+        markerIncrementer += 1;
+    }
+
     return data;
+};
+
+DesertGenerator.prototype._drawFinishLine = function(data) {
+    var track = this._getLayer(data, 'track');
+    var decoration = this._getLayer(data, 'decoration');
+
+    var finishMarker;
+    for (var i = 0; i < track.objects.length; i += 1) {
+        if (track.objects[i].name === 'finish-line') {
+            finishMarker = track.objects[i];
+            break;
+        }
+    }
+
+    var point = [
+        finishMarker.x / this.template.tilewidth,
+        finishMarker.y / this.template.tileheight
+    ];
+
+    var startingPos;
+    if ([EAST, WEST].indexOf(finishMarker.rotation) !== -1) {
+        startingPos = [point[X], point[Y] - TRACK_WIDTH / 2 - 1];
+        decoration.data[this._convertPointToIndex(startingPos)] = FINISH_N;
+        this._drawVerticalLine(decoration.data, FINISH, [startingPos[X], startingPos[Y] + 1], TRACK_WIDTH + 1);
+        decoration.data[
+            this._convertPointToIndex(
+                [startingPos[X], startingPos[Y] + TRACK_WIDTH + 2]
+            )
+        ] = FINISH_S;
+    } else {
+        startingPos = [point[X] - TRACK_WIDTH / 2 - 1, point[Y]];
+        decoration.data[this._convertPointToIndex(startingPos)] = FINISH_W;
+        this._drawHorizontalLine(decoration.data, FINISH, [startingPos[X] + 1, startingPos[Y]], TRACK_WIDTH + 1);
+        decoration.data[
+            this._convertPointToIndex(
+                [startingPos[X] + TRACK_WIDTH + 2, startingPos[Y]]
+            )
+        ] = FINISH_E;
+    }
 };
 
 DesertGenerator.prototype._plotPoints = function() {
@@ -862,96 +930,126 @@ DesertGenerator.prototype._plotPoints = function() {
         [MAP_SIZE - 150, MAP_SIZE - 150, WEST]
     );
 
+    this.starterPoints = points.slice();
+
     this._embellishTrack(points);
 
     return points;
 };
 
 DesertGenerator.prototype._embellishTrack = function(points) {
-    var embellishmentTypes = [
-        EMBEL_NONE,
-        EMBEL_T,
-    ];
+    var centerEmbellishmentTypes = desertEmbels.getCenterEmbellishments();
     var centerEmbellishments = [
-        rng.pickValueFromArray(embellishmentTypes),
-        rng.pickValueFromArray(embellishmentTypes),
-        rng.pickValueFromArray(embellishmentTypes),
-        rng.pickValueFromArray(embellishmentTypes),
+        rng.pickValueFromArray(centerEmbellishmentTypes),
+        rng.pickValueFromArray(centerEmbellishmentTypes),
+        rng.pickValueFromArray(centerEmbellishmentTypes),
+        rng.pickValueFromArray(centerEmbellishmentTypes),
+    ];
+
+    var cornerEmbellishmentTypes = desertEmbels.getCornerEmbellishments();
+    var cornerEmbellishments = [
+        rng.pickValueFromArray(cornerEmbellishmentTypes),
+        rng.pickValueFromArray(cornerEmbellishmentTypes),
+        rng.pickValueFromArray(cornerEmbellishmentTypes),
+        rng.pickValueFromArray(cornerEmbellishmentTypes),
     ];
 
     var addedPoints = 0;
-    centerEmbellishments.forEach(function (embelType, index) {
-        addedPoints += this._addEmbellishment(
+    for (var i = 0; i < 4; i += 1) {
+        addedPoints += this._addCenterEmbellishment(
             points,
-            embelType,
+            centerEmbellishments[i],
             rng.pickValueFromArray([INWARD, OUTWARD]),
-            addedPoints + index
+            addedPoints + i,
+            i
         );
-    }.bind(this));
+
+        addedPoints += this._addCornerEmbellishment(
+            points,
+            cornerEmbellishments[i],
+            addedPoints + i
+        );
+    }
+};
+
+DesertGenerator.prototype._addCornerEmbellishment = function(points, type, index) {
+    if (type === EMBEL_NONE) {
+        return 0;
+    }
+
+    // Get the 3/4 point
+    var lineStart = points[index];
+    var lineEnd   = points.length === index + 1 ? points[0] : points[index + 1];
+    var branchPoint = lineEnd.slice();
+    branchPoint[ANGLE] = lineStart[ANGLE];
+    switch (branchPoint[ANGLE]) {
+        case NORTH:
+            branchPoint[Y] += 50;
+            break;
+        case EAST:
+            branchPoint[X] -= 50;
+            break;
+        case SOUTH:
+            branchPoint[Y] -= 50;
+            break;
+        case WEST:
+            branchPoint[X] += 50;
+            break;
+    }
+
+    var embellishment = this._plotPointsLogoStyle(
+        branchPoint,
+        desertEmbels.getCornerEmbelInstructions(type)
+    );
+
+    // Need to remove bottom left corner point if we're doing the SW corner
+    if (points.length === index + 1) {
+        points.splice(0, 1);
+    }
+
+    points.splice.apply(points, [index + 1, 1].concat(embellishment));
+
+    return embellishment.length - 1; // -1 because the corner point was spliced over
 };
 
 // Mutates 'points' and returns the number of points added
-DesertGenerator.prototype._addEmbellishment = function(points, type, orientation, index) {
+DesertGenerator.prototype._addCenterEmbellishment = function(points, type, orientation, index, side) {
     if (type === EMBEL_NONE) {
         return 0;
     }
 
     // Get the midpoint
-    var lineStart = points[index];
-    var lineEnd   = points.length === index + 1 ? points[0] : points[index + 1];
+    var lineStart = this.starterPoints[side];
+    var lineEnd   = side === 3 ? this.starterPoints[0] : this.starterPoints[side + 1];
     var midpoint = this._getMidpoint(lineStart, lineEnd);
-    var headingDirection = lineStart[ANGLE];
-    var inward = orientation === INWARD;
-    switch (headingDirection) {
+    midpoint[ANGLE] = lineStart[ANGLE];
+
+    switch (midpoint[ANGLE]) {
         case NORTH:
-            midpoint[Y] -= 10;
-            midpoint[ANGLE] = inward ? EAST : WEST;
+            midpoint[Y] += 10;
             break;
         case SOUTH:
             midpoint[Y] -= 10;
-            midpoint[ANGLE] = inward ? WEST : EAST;
             break;
         case EAST:
             midpoint[X] -= 10;
-            midpoint[ANGLE] = inward ? SOUTH : NORTH;
             break;
         case WEST:
-            midpoint[X] -= 10;
-            midpoint[ANGLE] = inward ? NORTH : SOUTH;
+            midpoint[X] += 10;
             break;
     }
-    var embellishment = [];
 
-    switch (type) {
-        case EMBEL_T:
-            embellishment = this._plotPointsLogoStyle(
-                midpoint,
-                [
-                    30,
-                    inward ? RIGHT : LEFT,
-                    30,
-                    inward ? LEFT : RIGHT,
-                    30,
-                    inward ? LEFT : RIGHT,
-                    90,
-                    inward ? LEFT : RIGHT,
-                    30,
-                    inward ? LEFT : RIGHT,
-                    30,
-                    inward ? RIGHT : LEFT,
-                    30,
-                    inward ? RIGHT : LEFT,
-                ]
-            )
-            break;
-    }
+    var embellishment = this._plotPointsLogoStyle(
+        midpoint,
+        desertEmbels.getCenterEmbelInstructions(type, orientation)
+    );
 
     points.splice.apply(points, [index + 1, 0].concat(embellishment));
     return embellishment.length;
 };
 
 DesertGenerator.prototype._plotPointsLogoStyle = function(startingPoint, instructions) {
-    var points = [startingPoint];
+    var points = [];
 
     var cursor = startingPoint.slice();
     instructions.forEach(function (instruction) {
