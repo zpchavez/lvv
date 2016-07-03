@@ -1,4 +1,5 @@
 var getTemplate = require('./get-desert-template');
+var desertEmbels = require('./desert-embellishments');
 var rng = require('../../../rng');
 var _ = require('underscore');
 
@@ -21,7 +22,6 @@ var TRACK_WIDTH  = 6;
 var MAP_SIZE     = 600;
 
 var EMBEL_NONE = 'EMBEL_NONE';
-var EMBEL_T = 'EMBEL_T';
 var INWARD = 'INWARD';
 var OUTWARD = 'OUTWARD';
 var LEFT = 'LEFT';
@@ -447,14 +447,14 @@ DesertGenerator.prototype._generateJumps = function(points, data) {
 
     candidateLines.forEach(function (candidate) {
         var line = candidate.line;
-        var midPoint = this._getMidpoint(line[0], line[1])
+        var midpoint = this._getMidpoint(line[0], line[1])
         if (
             ! this._getObstaclePoints(data).some(function(point) {
-                return this._getDistanceBetween(point, midPoint) < 20;
+                return this._getDistanceBetween(point, midpoint) < 20;
             }.bind(this))
             && rng.happensGivenProbability(.50)
         ) {
-            this._addJump(data, line, midPoint);
+            this._addJump(data, line, midpoint);
         }
     }.bind(this));
 };
@@ -930,96 +930,126 @@ DesertGenerator.prototype._plotPoints = function() {
         [MAP_SIZE - 150, MAP_SIZE - 150, WEST]
     );
 
+    this.starterPoints = points.slice();
+
     this._embellishTrack(points);
 
     return points;
 };
 
 DesertGenerator.prototype._embellishTrack = function(points) {
-    var embellishmentTypes = [
-        EMBEL_NONE,
-        EMBEL_T,
-    ];
+    var centerEmbellishmentTypes = desertEmbels.getCenterEmbellishments();
     var centerEmbellishments = [
-        rng.pickValueFromArray(embellishmentTypes),
-        rng.pickValueFromArray(embellishmentTypes),
-        rng.pickValueFromArray(embellishmentTypes),
-        rng.pickValueFromArray(embellishmentTypes),
+        rng.pickValueFromArray(centerEmbellishmentTypes),
+        rng.pickValueFromArray(centerEmbellishmentTypes),
+        rng.pickValueFromArray(centerEmbellishmentTypes),
+        rng.pickValueFromArray(centerEmbellishmentTypes),
+    ];
+
+    var cornerEmbellishmentTypes = desertEmbels.getCornerEmbellishments();
+    var cornerEmbellishments = [
+        rng.pickValueFromArray(cornerEmbellishmentTypes),
+        rng.pickValueFromArray(cornerEmbellishmentTypes),
+        rng.pickValueFromArray(cornerEmbellishmentTypes),
+        rng.pickValueFromArray(cornerEmbellishmentTypes),
     ];
 
     var addedPoints = 0;
-    centerEmbellishments.forEach(function (embelType, index) {
-        addedPoints += this._addEmbellishment(
+    for (var i = 0; i < 4; i += 1) {
+        addedPoints += this._addCenterEmbellishment(
             points,
-            embelType,
+            centerEmbellishments[i],
             rng.pickValueFromArray([INWARD, OUTWARD]),
-            addedPoints + index
+            addedPoints + i,
+            i
         );
-    }.bind(this));
+
+        addedPoints += this._addCornerEmbellishment(
+            points,
+            cornerEmbellishments[i],
+            addedPoints + i
+        );
+    }
+};
+
+DesertGenerator.prototype._addCornerEmbellishment = function(points, type, index) {
+    if (type === EMBEL_NONE) {
+        return 0;
+    }
+
+    // Get the 3/4 point
+    var lineStart = points[index];
+    var lineEnd   = points.length === index + 1 ? points[0] : points[index + 1];
+    var branchPoint = lineEnd.slice();
+    branchPoint[ANGLE] = lineStart[ANGLE];
+    switch (branchPoint[ANGLE]) {
+        case NORTH:
+            branchPoint[Y] += 50;
+            break;
+        case EAST:
+            branchPoint[X] -= 50;
+            break;
+        case SOUTH:
+            branchPoint[Y] -= 50;
+            break;
+        case WEST:
+            branchPoint[X] += 50;
+            break;
+    }
+
+    var embellishment = this._plotPointsLogoStyle(
+        branchPoint,
+        desertEmbels.getCornerEmbelInstructions(type)
+    );
+
+    // Need to remove bottom left corner point if we're doing the SW corner
+    if (points.length === index + 1) {
+        points.splice(0, 1);
+    }
+
+    points.splice.apply(points, [index + 1, 1].concat(embellishment));
+
+    return embellishment.length - 1; // -1 because the corner point was spliced over
 };
 
 // Mutates 'points' and returns the number of points added
-DesertGenerator.prototype._addEmbellishment = function(points, type, orientation, index) {
+DesertGenerator.prototype._addCenterEmbellishment = function(points, type, orientation, index, side) {
     if (type === EMBEL_NONE) {
         return 0;
     }
 
     // Get the midpoint
-    var lineStart = points[index];
-    var lineEnd   = points.length === index + 1 ? points[0] : points[index + 1];
+    var lineStart = this.starterPoints[side];
+    var lineEnd   = side === 3 ? this.starterPoints[0] : this.starterPoints[side + 1];
     var midpoint = this._getMidpoint(lineStart, lineEnd);
-    var headingDirection = lineStart[ANGLE];
-    var inward = orientation === INWARD;
-    switch (headingDirection) {
+    midpoint[ANGLE] = lineStart[ANGLE];
+
+    switch (midpoint[ANGLE]) {
         case NORTH:
-            midpoint[Y] -= 10;
-            midpoint[ANGLE] = inward ? EAST : WEST;
+            midpoint[Y] += 10;
             break;
         case SOUTH:
             midpoint[Y] -= 10;
-            midpoint[ANGLE] = inward ? WEST : EAST;
             break;
         case EAST:
             midpoint[X] -= 10;
-            midpoint[ANGLE] = inward ? SOUTH : NORTH;
             break;
         case WEST:
-            midpoint[X] -= 10;
-            midpoint[ANGLE] = inward ? NORTH : SOUTH;
+            midpoint[X] += 10;
             break;
     }
-    var embellishment = [];
 
-    switch (type) {
-        case EMBEL_T:
-            embellishment = this._plotPointsLogoStyle(
-                midpoint,
-                [
-                    30,
-                    inward ? RIGHT : LEFT,
-                    30,
-                    inward ? LEFT : RIGHT,
-                    30,
-                    inward ? LEFT : RIGHT,
-                    90,
-                    inward ? LEFT : RIGHT,
-                    30,
-                    inward ? LEFT : RIGHT,
-                    30,
-                    inward ? RIGHT : LEFT,
-                    30,
-                    inward ? RIGHT : LEFT,
-                ]
-            )
-            break;
-    }
+    var embellishment = this._plotPointsLogoStyle(
+        midpoint,
+        desertEmbels.getCenterEmbelInstructions(type, orientation)
+    );
 
     points.splice.apply(points, [index + 1, 0].concat(embellishment));
     return embellishment.length;
 };
 
 DesertGenerator.prototype._plotPointsLogoStyle = function(startingPoint, instructions) {
-    var points = [startingPoint];
+    var points = [];
 
     var cursor = startingPoint.slice();
     instructions.forEach(function (instruction) {
