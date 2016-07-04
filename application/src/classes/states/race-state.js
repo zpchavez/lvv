@@ -401,6 +401,14 @@ RaceState.prototype.placePowerups = function()
 
 RaceState.prototype.update = function()
 {
+    // If all cars are invisible, reset to last marker. This fixes
+    // a bug where the game would be stuck if both remaining players
+    // were eliminated at the exact same time. This maybe isn't the
+    // best solution since no points are awarded. Everyone just gets a do-over.
+    if (_.every(this.cars, function(car) {return ! car.visible;})) {
+        this.resetAllCarsToLastMarker();
+    }
+
     this.updateCamera();
 
     this.eliminateOffCameraPlayers();
