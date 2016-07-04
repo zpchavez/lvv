@@ -716,6 +716,7 @@ RaceState.prototype.resetAllCarsToLastMarker = function()
     _.each(this.cars, function(car, i) {
         car.visible = true;
         car.setVictorySpinning(false);
+        car.removePowerups();
         this.moveCarToLastActivatedMarker(car);
     }, this);
 

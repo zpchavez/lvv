@@ -113,6 +113,11 @@ Car.prototype.turnLeft = function()
     this.body.rotateLeft(this.constants.TURNING_VELOCITY);
 };
 
+Car.prototype.removePowerups = function()
+{
+    this.stopHovering();
+};
+
 Car.prototype.startHovering = function()
 {
     var hoverUp, hoverDown;
@@ -127,31 +132,25 @@ Car.prototype.startHovering = function()
 
     // Do float-up-and-down animation
     hoverUp = function() {
-        if (! this.hovering) {
-            return;
-        }
-        this.state.game.add.tween(this.scale)
+        this.hoverTween = this.state.game.add.tween(this.scale)
             .to(
                 {x : 1.2, y: 1.2},
                 500,
                 Phaser.Easing.Quadratic.InOut,
                 true
-            )
-            .onComplete.add(hoverDown);
+            );
+        this.hoverTween.onComplete.add(hoverDown);
     }.bind(this);
 
     hoverDown = function() {
-        if (! this.hovering) {
-            return;
-        }
-        this.state.game.add.tween(this.scale)
+        this.hoverTween = this.state.game.add.tween(this.scale)
             .to(
                 {x : 1.1, y: 1.1},
                 500,
                 Phaser.Easing.Quadratic.InOut,
                 true
-            )
-            .onComplete.add(hoverUp);
+            );
+        this.hoverTween.onComplete.add(hoverUp);
     }.bind(this);
 
     hoverUp();
@@ -159,7 +158,14 @@ Car.prototype.startHovering = function()
 
 Car.prototype.stopHovering = function()
 {
+    if (! this.hovering) {
+        return;
+    }
+
     this.hovering = false;
+    this.hoverTween.stop();
+    this.scale.x = 1;
+    this.scale.y = 1;
     this.removeMultiplier('skid', 'hovering');
     this.removeMultiplier('brake', 'hovering');
 };
