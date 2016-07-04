@@ -113,6 +113,7 @@ DesertGenerator.prototype.generate = function() {
     this._addEdgeTiles(data, this.pitIndices, PIT);
     this._addEdgeTiles(data, this.trackIndices, PAVEMENT);
     this._drawFinishLine(data);
+    this._generatePossiblePowerupPoints(data);
 
     return data;
 };
@@ -1139,6 +1140,16 @@ DesertGenerator.prototype._drawVerticalLine = function(data, tile, topPos, lengt
         }
     }
     return indexes;
+};
+
+DesertGenerator.prototype._generatePossiblePowerupPoints = function(data) {
+    data.possiblePowerupPoints = [];
+    this.trackIndices.forEach(function (trackIndex) {
+        var point = this._convertIndexToPoint(trackIndex);
+        point[X] = point[X] * this.template.tilewidth;
+        point[Y] = point[Y] * this.template.tileheight;
+        data.possiblePowerupPoints.push([point[X], point[Y]]);
+    }.bind(this));
 };
 
 DesertGenerator.prototype._convertPointToIndex = function(point) {

@@ -15,6 +15,8 @@ var playerColorNames = require('../../player-color-names');
 var settings         = require('../../settings');
 var global = require('../../global-state');
 var OverallScoreState = require('./overall-score-state');
+var PowerupFactory = require('../powerups/powerup-factory');
+var rng = require('../../rng');
 
 var NEXT_GAME_DELAY  = 5000;
 var NEXT_ROUND_DELAY = 2500;
@@ -47,6 +49,7 @@ var RaceState = function(trackData, options)
     this.victorySpinning  = false;
     this.carFactory       = new CarFactory(this, {teams : options.teams});
     this.obstacleFactory  = new ObstacleFactory(this);
+    this.powerupFactory   = new PowerupFactory(this);
     this.track            = new Track(this);
     this.teams            = options.teams;
     this.score            = new Score(this, options.teams ? 2 : options.players);
@@ -75,8 +78,10 @@ RaceState.prototype.preload = function()
     this.game.add.plugin(Phaser.Plugin.Tiled);
 
     this.carFactory.loadAssets();
+    this.powerupFactory.loadAssets();
     this.track.loadAssets();
     this.score.loadAssets();
+
 
     this.load.tiledmap(
         cacheKey('track', 'tiledmap'),
@@ -118,6 +123,7 @@ RaceState.prototype.create = function()
     this.initTrack();
     this.createStartingPointVectors();
     this.postGameObjectPlacement();
+    this.placePowerups();
     this.initPlayers();
     this.initScore();
     this.initInputs();
@@ -352,6 +358,45 @@ RaceState.prototype.placeObstacles = function()
 RaceState.prototype.postGameObjectPlacement = function()
 {
     this.game.world.callAll('postGameObjectPlacement', null);
+};
+
+RaceState.prototype.placePowerups = function()
+{
+    var targetPowerupCount = this.playerCount * 5;
+
+    if (! this.powerups) {
+        this.powerups = {}
+    }
+
+    // Remove collected powerups
+    var omitted = [];
+    Object.keys(this.powerups).forEach(function (index) {
+        if (this.powerups[index].game === null) {
+            omitted.push(index);
+        }
+    }.bind(this));
+    this.powerups = _.omit(this.powerups, omitted);
+
+    var currentPowerupCount = Object.keys(this.powerups).length;
+
+    for (var i = currentPowerupCount; i < targetPowerupCount; i += 1) {
+        var pointIndex, point;
+        do {
+            pointIndex = rng.getIntBetween(0, this.trackData.possiblePowerupPoints.length - 1);
+        } while(Object.keys(this.powerups).indexOf(pointIndex) !== -1)
+
+        point = this.trackData.possiblePowerupPoints[pointIndex];
+        this.powerups[pointIndex] = (
+            this.game.world.addChild(
+                this.powerupFactory.getNew(
+                    'hover',
+                    point[0],
+                    point[1]
+                )
+            )
+        )
+        this.powerups[pointIndex].addToCollisionGroup(this.collisionGroup);
+    }
 };
 
 RaceState.prototype.update = function()
@@ -781,6 +826,7 @@ RaceState.prototype.completeLap = function()
     } else {
         this.lapNumber += 1;
         this.lapDisplay.setText('Lap ' + this.lapNumber);
+        this.placePowerups();
     }
 };
 
