@@ -4,6 +4,7 @@ var _                  = require('underscore');
 var Phaser             = require('phaser');
 var rotateVector       = require('../util').rotateVector;
 var getVectorMagnitude = require('../util').getVectorMagnitude;
+var settings = require('../settings');
 var transformCallback;
 
 var Car = function(state, x, y, key, weaponFactory)
@@ -30,7 +31,7 @@ var Car = function(state, x, y, key, weaponFactory)
     this.airborne        = false;
     this.airborneHeight  = 0;
     this.onRoughTerrain  = false;
-    this.armedWithCannon = false;
+    this.armedWithCannon = settings.startWithCannons;
     this.weaponFactory = weaponFactory;
 
     this.multipliers = {
@@ -121,7 +122,7 @@ Car.prototype.turnLeft = function()
 
 Car.prototype.removePowerups = function()
 {
-    this.armedWithCannon = false;
+    this.armedWithCannon = settings.startWithCannons;
     this.stopHovering();
 };
 
