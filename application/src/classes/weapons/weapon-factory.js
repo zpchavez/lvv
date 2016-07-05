@@ -1,20 +1,18 @@
 'use strict';
 
 var _ = require('underscore');
-var Cannon = require('./cannon');
-var Hover = require('./hover');
+var CannonBall = require('./cannon-ball');
 
-var PowerupFactory = function(state) {
+var WeaponFactory = function(state) {
     this.state       = state;
     this.loadedTypes = {};
 };
 
-PowerupFactory.prototype.types = {
-    'cannon': Cannon,
-    'hover': Hover,
+WeaponFactory.prototype.types = {
+    'cannon-ball': CannonBall,
 };
 
-PowerupFactory.prototype.loadAssets = function(types)
+WeaponFactory.prototype.loadAssets = function(types)
 {
     types = types || Object.keys(this.types);
 
@@ -28,11 +26,11 @@ PowerupFactory.prototype.loadAssets = function(types)
     }, this);
 };
 
-PowerupFactory.prototype.getNew = function(type, x, y)
+WeaponFactory.prototype.getNew = function(type, x, y, angle)
 {
     if (this.types[type]) {
         if (this.loadedTypes[type]) {
-            return new this.types[type](this.state, x, y, type);
+            return new this.types[type](this.state, x, y, type, angle);
         } else {
             throw new Error('Attempted to create unloaded type. Add a call to load assets for ' + type + '.');
         }
@@ -41,4 +39,4 @@ PowerupFactory.prototype.getNew = function(type, x, y)
     }
 };
 
-module.exports = PowerupFactory;
+module.exports = WeaponFactory;

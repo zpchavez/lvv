@@ -6,7 +6,7 @@ var rotateVector       = require('../util').rotateVector;
 var getVectorMagnitude = require('../util').getVectorMagnitude;
 var transformCallback;
 
-var Car = function(state, x, y, key)
+var Car = function(state, x, y, key, weaponFactory)
 {
     var centerOfMassParticle;
 
@@ -26,9 +26,12 @@ var Car = function(state, x, y, key)
 
     this.victorySpinning = false;
     this.falling         = false;
+    this.disabled        = false;
     this.airborne        = false;
     this.airborneHeight  = 0;
     this.onRoughTerrain  = false;
+    this.armedWithCannon = false;
+    this.weaponFactory = weaponFactory;
 
     this.multipliers = {
         friction: {},
@@ -53,7 +56,9 @@ Car.prototype.getConstants = function()
         BRAKE_FORCE                 : -500,
         TURNING_VELOCITY            : 80,
         JUMP_HEIGHT_MULTIPLIER      : 0.002,
-        ROTATION_SNAP               : 10
+        ROTATION_SNAP               : 10,
+        CANNON_BALL_VELOCITY        : 1200,
+        KICK_BACK_FORCE             : 8000,
     };
 };
 
@@ -61,7 +66,8 @@ Car.prototype.controlsLocked = function()
 {
     return (
         this.falling ||
-        this.victorySpinning
+        this.victorySpinning ||
+        this.disabled
     );
 };
 
@@ -115,6 +121,7 @@ Car.prototype.turnLeft = function()
 
 Car.prototype.removePowerups = function()
 {
+    this.armedWithCannon = false;
     this.stopHovering();
 };
 
@@ -168,6 +175,11 @@ Car.prototype.stopHovering = function()
     this.scale.y = 1;
     this.removeMultiplier('skid', 'hovering');
     this.removeMultiplier('brake', 'hovering');
+};
+
+Car.prototype.armWithCannon = function()
+{
+    this.armedWithCannon = true;
 };
 
 // Straighten out if not turning
@@ -395,6 +407,46 @@ Car.prototype.jump = function(jumpScale)
 Car.prototype.land = function()
 {
     this.airborne = false;
+};
+
+Car.prototype.fire = function()
+{
+    if (! this.armedWithCannon) {
+        return;
+    }
+
+    // Adjust spawn point 90 degrees, otherwise projectile appears to the right of the car
+    var xRotation = Math.cos(this.body.rotation - (90 * Math.PI / 180));
+    var yRotation = Math.sin(this.body.rotation - (90 * Math.PI / 180));
+    var spawnPoint = [
+        this.x + (30 * xRotation),
+        this.y + (30 * yRotation),
+    ];
+
+    var cannonBall = this.weaponFactory.getNew('cannon-ball', spawnPoint[0], spawnPoint[1]);
+    cannonBall.addToCollisionGroup(this.state.collisionGroup);
+    this.game.world.addChild(cannonBall);
+
+    var velocity = rotateVector(this.body.rotation, [0, this.constants.CANNON_BALL_VELOCITY * -1]);
+    cannonBall.body.velocity.x = velocity[0];
+    cannonBall.body.velocity.y = velocity[1];
+    cannonBall.shotBy = this.playerNumber;
+
+    // Kick-back
+    this.body.applyForce(
+        rotateVector(
+            this.body.rotation,
+            [0, this.constants.KICK_BACK_FORCE * -1]
+        ),
+        this.body.x,
+        this.body.y
+    );
+};
+
+Car.prototype.addToCollisionGroup = function(collisionGroup)
+{
+    this.body.setCollisionGroup(collisionGroup);
+    this.body.collides(collisionGroup);
 };
 
 module.exports = Car;

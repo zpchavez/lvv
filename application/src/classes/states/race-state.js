@@ -266,8 +266,7 @@ RaceState.prototype.initPlayers = function()
         this.game.world.addChild(car);
         car.bringToTop();
 
-        car.body.setCollisionGroup(this.collisionGroup);
-        car.body.collides(this.collisionGroup);
+        car.addToCollisionGroup(this.collisionGroup);
     }, this);
 };
 
@@ -280,11 +279,30 @@ RaceState.prototype.initInputs = function()
 {
     this.cursors = this.game.input.keyboard.createCursorKeys();
 
-    this.pads = [];
+    var gamepadOnDownCallback = function(i) {
+        return function(button) {
+            if (button === Phaser.Gamepad.XBOX360_RIGHT_BUMPER ||
+                button === Phaser.Gamepad.XBOX360_RIGHT_TRIGGER
+            ) {
+                this.cars[i].fire();
+            }
+        }.bind(this);
+    }.bind(this);
 
+    this.pads = [];
     for (var i = 0; i < 4; i += 1) {
         this.pads.push(this.game.input.gamepad['pad' + (i + 1)]);
+        this.game.input.gamepad['pad' + (i + 1)].onDownCallback = gamepadOnDownCallback(i);
     }
+
+    // Map fire button on keyboard for 2 players
+    this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(function() {
+        this.cars[0].fire();
+    }.bind(this));
+
+    this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR).onDown.add(function() {
+        this.cars[1].fire();
+    }.bind(this));
 
     this.game.input.gamepad.start();
 };
@@ -389,7 +407,7 @@ RaceState.prototype.placePowerups = function()
         this.powerups[pointIndex] = (
             this.game.world.addChild(
                 this.powerupFactory.getNew(
-                    'hover',
+                    rng.pickValueFromArray(['hover', 'cannon']),
                     point[0],
                     point[1]
                 )
