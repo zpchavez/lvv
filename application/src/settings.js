@@ -18,7 +18,8 @@ settings = _(settings).defaults({
     laps     : 3,
     debug    : false,
     profiler : false,
-    selector : false
+    selector : false,
+    startWithCannons : false,
 });
 
 // Convert types for non-strings
@@ -27,5 +28,6 @@ settings.laps     = settings.laps === 'Infinity' ? Infinity : parseInt(settings.
 settings.teams    = settings.teams === 'false' ? false : !! settings.teams;
 settings.debug    = settings.debug === 'false' ? false : !! settings.debug;
 settings.profiler = settings.profiler === 'false' ? false : !! settings.profiler;
+settings.startWithCannons = !! settings.startWithCannons;
 
 module.exports = settings;
