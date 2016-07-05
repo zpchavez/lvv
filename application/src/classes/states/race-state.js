@@ -15,6 +15,8 @@ var playerColorNames = require('../../player-color-names');
 var settings         = require('../../settings');
 var global = require('../../global-state');
 var OverallScoreState = require('./overall-score-state');
+var PowerupFactory = require('../powerups/powerup-factory');
+var rng = require('../../rng');
 
 var NEXT_GAME_DELAY  = 5000;
 var NEXT_ROUND_DELAY = 2500;
@@ -47,6 +49,7 @@ var RaceState = function(trackData, options)
     this.victorySpinning  = false;
     this.carFactory       = new CarFactory(this, {teams : options.teams});
     this.obstacleFactory  = new ObstacleFactory(this);
+    this.powerupFactory   = new PowerupFactory(this);
     this.track            = new Track(this);
     this.teams            = options.teams;
     this.score            = new Score(this, options.teams ? 2 : options.players);
@@ -75,8 +78,10 @@ RaceState.prototype.preload = function()
     this.game.add.plugin(Phaser.Plugin.Tiled);
 
     this.carFactory.loadAssets();
+    this.powerupFactory.loadAssets();
     this.track.loadAssets();
     this.score.loadAssets();
+
 
     this.load.tiledmap(
         cacheKey('track', 'tiledmap'),
@@ -118,6 +123,7 @@ RaceState.prototype.create = function()
     this.initTrack();
     this.createStartingPointVectors();
     this.postGameObjectPlacement();
+    this.placePowerups();
     this.initPlayers();
     this.initScore();
     this.initInputs();
@@ -161,6 +167,22 @@ RaceState.prototype.countDown = function()
         this.showMessage('GO!', { showFor: 2000, font: font });
     }.bind(this));
 };
+
+RaceState.prototype.countDownQuickly = function()
+{
+    this.countingDown = true;
+    var font = '64px Arial';
+    this.showMessage(
+        'Ready',
+        { showFor: 1000, font: font }
+    ).then(function() {
+        this.countingDown = false;
+        this.showMessage(
+            'Go!',
+            { showFor: 1000, font: font }
+        );
+    }.bind(this));
+}
 
 RaceState.prototype.initTrack = function()
 {
@@ -244,8 +266,7 @@ RaceState.prototype.initPlayers = function()
         this.game.world.addChild(car);
         car.bringToTop();
 
-        car.body.setCollisionGroup(this.collisionGroup);
-        car.body.collides(this.collisionGroup);
+        car.addToCollisionGroup(this.collisionGroup);
     }, this);
 };
 
@@ -258,11 +279,30 @@ RaceState.prototype.initInputs = function()
 {
     this.cursors = this.game.input.keyboard.createCursorKeys();
 
-    this.pads = [];
+    var gamepadOnDownCallback = function(i) {
+        return function(button) {
+            if (button === Phaser.Gamepad.XBOX360_RIGHT_BUMPER ||
+                button === Phaser.Gamepad.XBOX360_RIGHT_TRIGGER
+            ) {
+                this.cars[i].fire();
+            }
+        }.bind(this);
+    }.bind(this);
 
+    this.pads = [];
     for (var i = 0; i < 4; i += 1) {
         this.pads.push(this.game.input.gamepad['pad' + (i + 1)]);
+        this.game.input.gamepad['pad' + (i + 1)].onDownCallback = gamepadOnDownCallback(i);
     }
+
+    // Map fire button on keyboard for 2 players
+    this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(function() {
+        this.cars[0].fire();
+    }.bind(this));
+
+    this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR).onDown.add(function() {
+        this.cars[1].fire();
+    }.bind(this));
 
     this.game.input.gamepad.start();
 };
@@ -338,8 +378,55 @@ RaceState.prototype.postGameObjectPlacement = function()
     this.game.world.callAll('postGameObjectPlacement', null);
 };
 
+RaceState.prototype.placePowerups = function()
+{
+    var targetPowerupCount = this.playerCount * 5;
+
+    if (! this.powerups) {
+        this.powerups = {}
+    }
+
+    // Remove collected powerups
+    var omitted = [];
+    Object.keys(this.powerups).forEach(function (index) {
+        if (this.powerups[index].game === null) {
+            omitted.push(index);
+        }
+    }.bind(this));
+    this.powerups = _.omit(this.powerups, omitted);
+
+    var currentPowerupCount = Object.keys(this.powerups).length;
+
+    for (var i = currentPowerupCount; i < targetPowerupCount; i += 1) {
+        var pointIndex, point;
+        do {
+            pointIndex = rng.getIntBetween(0, this.trackData.possiblePowerupPoints.length - 1);
+        } while(Object.keys(this.powerups).indexOf(pointIndex) !== -1)
+
+        point = this.trackData.possiblePowerupPoints[pointIndex];
+        this.powerups[pointIndex] = (
+            this.game.world.addChild(
+                this.powerupFactory.getNew(
+                    rng.pickValueFromArray(['hover', 'cannon']),
+                    point[0],
+                    point[1]
+                )
+            )
+        )
+        this.powerups[pointIndex].addToCollisionGroup(this.collisionGroup);
+    }
+};
+
 RaceState.prototype.update = function()
 {
+    // If all cars are invisible, reset to last marker. This fixes
+    // a bug where the game would be stuck if both remaining players
+    // were eliminated at the exact same time. This maybe isn't the
+    // best solution since no points are awarded. Everyone just gets a do-over.
+    if (_.every(this.cars, function(car) {return ! car.visible;})) {
+        this.resetAllCarsToLastMarker();
+    }
+
     this.updateCamera();
 
     this.eliminateOffCameraPlayers();
@@ -563,7 +650,7 @@ RaceState.prototype.handleDrops = function(car)
         height = this.map.scaledTileHeight;
 
     if (this.map.getTilelayerIndex('drops') !== -1) {
-        if (car.falling || car.airborne || car.onRamp || car.victorySpinning) {
+        if (car.falling || car.airborne || car.onRamp || car.victorySpinning || car.hovering) {
             return;
         }
 
@@ -611,7 +698,7 @@ RaceState.prototype.handleRamps = function(car)
 RaceState.prototype.handleRoughTerrain = function(car)
 {
     if (this.map.getTilelayerIndex('rough') !== -1) {
-        if (car.airborne) {
+        if (car.airborne || car.hovering) {
             return;
         }
 
@@ -683,10 +770,13 @@ RaceState.prototype.resetAllCarsToLastMarker = function()
     _.each(this.cars, function(car, i) {
         car.visible = true;
         car.setVictorySpinning(false);
+        car.removePowerups();
         this.moveCarToLastActivatedMarker(car);
     }, this);
 
     this.updateCamera();
+
+    this.countDownQuickly();
 };
 
 RaceState.prototype.showLapCounter = function()
@@ -791,6 +881,7 @@ RaceState.prototype.completeLap = function()
     } else {
         this.lapNumber += 1;
         this.lapDisplay.setText('Lap ' + this.lapNumber);
+        this.placePowerups();
     }
 };
 

@@ -112,9 +112,29 @@ Score.prototype.awardTwoPlayerPointToPlayer = function(player)
         spriteIndexToChange = this.playerScores[0];
     }
 
-    this.twoPlayerSprites[spriteIndexToChange].frame = player;
+    this.flashBetweenFrames(this.twoPlayerSprites[spriteIndexToChange], player);
 };
 
+Score.prototype.flashBetweenFrames = function(sprite, frame)
+{
+    var originalFrame = sprite.frame;
+
+    sprite.frame = frame;
+    this.changeFrameIn(sprite, originalFrame, 500)
+        .then(this.changeFrameIn.bind(this, sprite, frame, 500))
+        .then(this.changeFrameIn.bind(this, sprite, originalFrame, 500))
+        .then(this.changeFrameIn.bind(this, sprite, frame, 500));
+};
+
+Score.prototype.changeFrameIn = function(sprite, frame, delay)
+{
+    return new Promise(function (resolve, reject) {
+        setTimeout(function() {
+            sprite.frame = frame;
+            resolve();
+        }.bind(this), delay);
+    }.bind(this));
+};
 
 /**
  *  playerStack is an array specifying the order in which players were eliminated,
@@ -148,7 +168,10 @@ Score.prototype.awardPointsForFreeForAll = function(playerStack)
     // Redraw score
     for (var i = 0; i < this.playerCount; i += 1) {
         for (var p = 7; p >= 0; p -= 1) {
-            this.freeForAllSprites[i][p].frame = (this.playerScores[i] > p) ? i : UNAWARDED_POINT_FRAME;
+            this.flashBetweenFrames(
+                this.freeForAllSprites[i][p],
+                (this.playerScores[i] > p) ? i : UNAWARDED_POINT_FRAME
+            )
         }
     }
 };
