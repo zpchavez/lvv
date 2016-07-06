@@ -56,6 +56,7 @@ Car.prototype.getConstants = function()
         ACCELERATION_FORCE          : 1600,
         BRAKE_FORCE                 : -500,
         TURNING_VELOCITY            : 80,
+        SPINOUT_VELOCITY            : 250,
         JUMP_HEIGHT_MULTIPLIER      : 0.002,
         ROTATION_SNAP               : 10,
         CANNON_BALL_VELOCITY        : 1200,
@@ -68,7 +69,7 @@ Car.prototype.controlsLocked = function()
     return (
         this.falling ||
         this.victorySpinning ||
-        this.disabled
+        this.spinningOut
     );
 };
 
@@ -321,6 +322,10 @@ Car.prototype.applyForces = function()
     if (this.victorySpinning) {
         this.body.rotateRight(150);
     }
+
+    if (this.spinningOut) {
+        this.body.rotateLeft(this.constants.SPINOUT_VELOCITY);
+    }
 };
 
 transformCallback = function(worldTransform, parentTransform)
@@ -408,6 +413,14 @@ Car.prototype.jump = function(jumpScale)
 Car.prototype.land = function()
 {
     this.airborne = false;
+};
+
+Car.prototype.spinOut = function()
+{
+    this.spinningOut = true;
+    setTimeout(function() {
+        this.spinningOut = false;
+    }.bind(this), 1000);
 };
 
 Car.prototype.fire = function()

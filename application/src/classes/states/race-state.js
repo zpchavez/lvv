@@ -440,6 +440,13 @@ RaceState.prototype.update = function()
     this.handleInput();
 };
 
+RaceState.prototype.shutdown = function()
+{
+    for (var i = 1; i < 5; i += 1) {
+        this.game.input.gamepad['pad' + i].onDownCallback = null;
+    }
+};
+
 RaceState.prototype.eliminateOffCameraPlayers = function()
 {
     _.each(this.cars, function(car) {
