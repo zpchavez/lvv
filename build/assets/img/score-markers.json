@@ -1,0 +1,53 @@
+{"frames": [
+
+{
+	"filename": "point-blue.png",
+	"frame": {"x":2,"y":2,"w":14,"h":14},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":1,"w":14,"h":14},
+	"sourceSize": {"w":16,"h":16}
+},
+{
+	"filename": "point-red.png",
+	"frame": {"x":34,"y":2,"w":14,"h":14},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":1,"w":14,"h":14},
+	"sourceSize": {"w":16,"h":16}
+},
+{
+	"filename": "point-yellow.png",
+	"frame": {"x":66,"y":2,"w":14,"h":14},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":1,"w":14,"h":14},
+	"sourceSize": {"w":16,"h":16}
+},
+{
+	"filename": "point-green.png",
+	"frame": {"x":18,"y":2,"w":14,"h":14},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":1,"w":14,"h":14},
+	"sourceSize": {"w":16,"h":16}
+},
+{
+	"filename": "point-unawarded.png",
+	"frame": {"x":50,"y":2,"w":14,"h":14},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":1,"w":14,"h":14},
+	"sourceSize": {"w":16,"h":16}
+}
+],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "score-markers.png",
+	"format": "RGBA8888",
+	"size": {"w":82,"h":18},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:cf9f0118c09d157645a5c03c1c23fee0:59580ab7bfcd38066bff6286430f8291:4fddf9baf5165c10db2606d4fbd3e785$"
+}
+}

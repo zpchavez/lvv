@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" nextobjectid="9">
+ <tileset firstgid="1" source="../../../tilesets/desert-with-pit.tsx"/>
+ <tileset firstgid="67" source="../../../tilesets/meta-tile.tsx"/>
+ <tileset firstgid="68" source="../../../tilesets/bathroom-obstacles.tsx"/>
+ <layer name="background" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztmbkOgzAMQDP1YuoBUy/aoVKlXgNVq/b/v6tGSiQaiSMKNg54eAsikR+JQ+LESqlYYMcZ2AeM8UiAU8CIBy/EgxdD8zgAR8Y09bgAV8aIBy/Egxe+HnfgzQBfj1vhnSkw00Q1/WH9P7JCDDaR9rC//UN7mPifJf1RODU5myTaI495BIyBSeHZqqa9ccL0cfWYAwtg6eBBsfeh8sjPm2kPPLDzhXJeYc4vag+s+UXtgZXr1B4mT9rOkS7yA2NcxEM8MNYsSg9TQw593eW0v1oDG2Dr4IE5DrZH1b1BqmP+qP+a0Vd77CraYsdve7RxHuwSXw97jKSeKHUf8eDH0DxeqvuaYRv1RO6IBy/Egxd988hU+b1BCLjWB7jyAz8YWm8=
+  </data>
+ </layer>
+ <objectgroup name="obstacles">
+  <object id="1" gid="70" x="881" y="292"/>
+ </objectgroup>
+ <objectgroup name="track">
+  <object id="6" type="marker" x="1181" y="1560" width="662" height="47" rotation="270">
+   <properties>
+    <property name="finish-line-candidate" value="1"/>
+    <property name="index" value="0"/>
+   </properties>
+  </object>
+  <object id="7" type="marker" x="269" y="790" width="319" height="45">
+   <properties>
+    <property name="finish-line-candidate" value="0"/>
+    <property name="index" value="1"/>
+   </properties>
+  </object>
+  <object id="8" type="marker" x="1234" y="69" width="698" height="53" rotation="90">
+   <properties>
+    <property name="finish-line-candidate" value="1"/>
+    <property name="index" value="2"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer name="rough" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztzwEJADAMwLB5u39PNzF44YmCdgYAAAD+cl4HLPHR4qPFR4uPFh8tPgAAAGDXBe2rA2g=
+  </data>
+ </layer>
+ <layer name="drops" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt18ENACEMxEB6o/+eroVDYheDbCnfoOGXOcaYDm5uTwcrHax0sNLBSgcrHax0sNrtOPUvu26T07dNw9HwtBzpdKzvSZrajlQ61ve85Eh5dKzvec2RqOlIpuP/nkbNt5LpYKWDlQ5WOljpYKWDlQ5Wrzlunw/cpoHR
+  </data>
+ </layer>
+ <layer name="ramps" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztwQENAAAAwqD3T20ON6AAAAAAAAAAAADg3wAnEAAB
+  </data>
+ </layer>
+</map>
