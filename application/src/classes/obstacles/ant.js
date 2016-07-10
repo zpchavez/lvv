@@ -30,7 +30,7 @@ Ant.prototype.getConstants = function()
 {
     return {
         ANGULAR_DAMPING     : 0.9,
-        MASS                : 0.5,
+        MASS                : 1.5,
         FRICTION_MULTIPLIER : 2.0,
         TURNING_VELOCITY    : 40,
     };
