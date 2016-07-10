@@ -8,8 +8,8 @@ var Ant = function(state, x, y, key, angle)
 {
     AbstractDynamicObstacle.apply(this, arguments);
     this.falling = false;
-    this.rotatingTo = null;
-    this.rotatingDirection = null;
+    this.rotatingAwayFromTile = null;
+    this.rotatingAwayFromBody = null;
 
     this.animations.add('walking', [0, 1, 0, 2], 6, true);
     this.animations.play('walking');
@@ -32,7 +32,7 @@ Ant.prototype.getConstants = function()
         ANGULAR_DAMPING     : 0.9,
         MASS                : 0.5,
         FRICTION_MULTIPLIER : 2.0,
-        TURNING_VELOCITY    : 80,
+        TURNING_VELOCITY    : 40,
     };
 };
 
@@ -47,6 +47,15 @@ Ant.prototype.createPhysicsBody = function(state, angle)
     if (angle) {
         this.body.angle = angle;
     }
+
+    // If colliding with another physical body, turn 90 degrees
+    this.body.onBeginContact.add(function (contactingBody) {
+        this.rotatingAwayFromBody = rng.pickValueFromArray(['Right', 'Left']);
+    }.bind(this));
+
+    this.body.onEndContact.add(function (contactingBody) {
+        this.rotatingAwayFromBody = null;
+    }.bind(this));
 };
 
 Ant.prototype.update = function()
@@ -69,19 +78,15 @@ Ant.prototype.update = function()
         this.state.map.scaledTileHeight,
         'drops'
     )) {
-        if (this.rotatingDirection) {
-            this.body['rotate' + this.rotatingDirection](this.constants.TURNING_VELOCITY);
+        if (this.rotatingAwayFromTile) {
+            this.body['rotate' + this.rotatingAwayFromTile](this.constants.TURNING_VELOCITY);
         } else {
-            this.rotatingDirection = rng.pickValueFromArray(['Right', 'Left']);
+            this.rotatingAwayFromTile = rng.pickValueFromArray(['Right', 'Left']);
         }
-    } else if (this.rotatingDirection) {
-        if (this.rotatingTo && this.rotatingTo !== this.body.angle) {
-            this.body['rotate' + this.rotatingDirection](this.constants.TURNING_VELOCITY);
-        } else {
-            this.rotatingDirection = null;
-        }
+    } else if (this.rotatingAwayFromBody) {
+        this.body['rotate' + this.rotatingAwayFromBody](this.constants.TURNING_VELOCITY);
     } else {
-        this.rotatingDirection = null;
+        this.rotatingAwayFromTile = null;
     }
 
     this.body.moveForward(50);
