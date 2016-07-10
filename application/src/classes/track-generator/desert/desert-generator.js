@@ -113,6 +113,7 @@ DesertGenerator.prototype.generate = function() {
     this._addEdgeTiles(data, this.pitIndices, PIT);
     this._addEdgeTiles(data, this.trackIndices, PAVEMENT);
     this._drawFinishLine(data);
+    this._generateAnts(data);
     this._generatePossiblePowerupPoints(data);
 
     return data;
@@ -128,6 +129,22 @@ DesertGenerator.prototype._getLayer = function(data, name) {
     });
 
     return returnedLayer;
+};
+
+DesertGenerator.prototype._generateAnts = function(data) {
+    var obstacleLayer = this._getLayer(data, 'obstacles');
+    var totalTiles = MAP_SIZE * MAP_SIZE;
+
+    for (var i = 0; i < 100; i += 1) {
+        var point = this._convertIndexToPoint(rng.getIntBetween(0, totalTiles));
+        obstacleLayer.objects.push({
+            rotation: rng.getIntBetween(0, 359),
+            type: 'Ant',
+            visible: true,
+            x: point[X] * this.template.tilewidth,
+            y: point[Y] * this.template.tileheight,
+        });
+    }
 };
 
 DesertGenerator.prototype._generateObstacles = function(points, data) {
@@ -892,6 +909,8 @@ DesertGenerator.prototype._drawFinishLine = function(data) {
             break;
         }
     }
+
+    this.finishPoint = finishMarker;
 
     var point = [
         finishMarker.x / this.template.tilewidth,
