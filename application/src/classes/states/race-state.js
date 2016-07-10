@@ -629,16 +629,14 @@ RaceState.prototype.handleDrops = function(car)
         height = this.map.scaledTileHeight;
 
     if (this.map.getTilelayerIndex('drops') !== -1) {
-        if (car.falling || car.airborne || car.onRamp || car.victorySpinning || car.hovering) {
-            return;
-        }
-
-        if (this.map.getTileWorldXY(car.x, car.y, width, height, 'drops')) {
-            car.fall({
-                // This determines the center of the pit tile the car is above
-                x : Math.floor(car.x / width) * width + (width / 2),
-                y : Math.floor(car.y / height) * height + (height / 2)
-            });
+        if (! (car.falling || car.airborne || car.onRamp || car.victorySpinning || car.hovering)) {
+            if (this.map.getTileWorldXY(car.x, car.y, width, height, 'drops')) {
+                car.fall({
+                    // This determines the center of the pit tile the car is above
+                    x : Math.floor(car.x / width) * width + (width / 2),
+                    y : Math.floor(car.y / height) * height + (height / 2)
+                });
+            }
         }
 
         // Obstacles fall too
