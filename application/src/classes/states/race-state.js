@@ -460,12 +460,24 @@ RaceState.prototype.eliminateOffCameraPlayers = function()
             this.handleRoughTerrain(car);
 
             // If playing multiplayer, eliminate cars that go off-screen
-            if (this.playerCount > 1 && (
-                car.x < this.game.camera.x ||
-                car.x > (this.game.camera.x + this.game.camera.width) ||
-                car.y < this.game.camera.y ||
-                car.y > (this.game.camera.y + this.game.camera.height)))
-            {
+            if (this.playerCount > 1 &&
+                (
+                    // car.inWorld is false at unexpected times, so doing this:
+                    (
+                        car.x < 0 ||
+                        car.x > this.game.world.width ||
+                        car.y < 0 ||
+                        car.y > this.game.world.height
+                    ) ||
+                    // car.inCamera is false at unexpected times, so doing this:
+                    (
+                        car.x < this.game.camera.x ||
+                        car.x > (this.game.camera.x + this.game.camera.width) ||
+                        car.y < this.game.camera.y ||
+                        car.y > (this.game.camera.y + this.game.camera.height)
+                    )
+                )
+            ) {
                 car.visible = false;
                 if (! this.teams && this.playerCount > 2) {
                     this.eliminationStack.push(car.playerNumber);
