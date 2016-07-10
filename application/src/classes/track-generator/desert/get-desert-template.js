@@ -88,6 +88,7 @@ module.exports = function(options) {
             },
         ],
         "placedObjectClasses": {
+            "Ant": true,
             "Comb": true,
             "Razor": true,
             "AspirinBottle": true,
