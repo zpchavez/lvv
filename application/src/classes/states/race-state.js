@@ -279,6 +279,7 @@ RaceState.prototype.initInputs = function()
 {
     this.cursors = this.game.input.keyboard.createCursorKeys();
 
+    // Map fire buttons on gamepads
     var gamepadOnDownCallback = function(i) {
         return function(button) {
             if (button === Phaser.Gamepad.XBOX360_RIGHT_BUMPER ||
@@ -295,13 +296,18 @@ RaceState.prototype.initInputs = function()
         this.game.input.gamepad['pad' + (i + 1)].onDownCallback = gamepadOnDownCallback(i);
     }
 
-    // Map fire button on keyboard for 2 players
+    // Map fire buttons on keyboard
     this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(function() {
         this.cars[0].fire();
     }.bind(this));
-
     this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR).onDown.add(function() {
         this.cars[1].fire();
+    }.bind(this));
+    this.game.input.keyboard.addKey(Phaser.Keyboard.Y).onDown.add(function() {
+        this.cars[2].fire();
+    }.bind(this));
+    this.game.input.keyboard.addKey(Phaser.Keyboard.O).onDown.add(function() {
+        this.cars[3].fire();
     }.bind(this));
 
     this.game.input.gamepad.start();
@@ -558,6 +564,32 @@ RaceState.prototype.handleInput = function()
             this.cars[1].turnRight();
         } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.A)) {
             this.cars[1].turnLeft();
+        }
+    }
+    if (this.playerCount > 2) {
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.T)) {
+            this.cars[2].accelerate();
+        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.G)) {
+            this.cars[2].brake();
+        }
+
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.H)) {
+            this.cars[2].turnRight();
+        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.F)) {
+            this.cars[2].turnLeft();
+        }
+    }
+    if (this.playerCount > 3) {
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.I)) {
+            this.cars[3].accelerate();
+        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.K)) {
+            this.cars[3].brake();
+        }
+
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.L)) {
+            this.cars[3].turnRight();
+        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.J)) {
+            this.cars[3].turnLeft();
         }
     }
 
