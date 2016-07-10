@@ -1,6 +1,7 @@
 'use strict';
 
 var AbstractDynamicObstacle = require('./abstract-dynamic-obstacle');
+var rotateVector = require('../../util').rotateVector;
 
 var Ant = function(state, x, y, key, angle)
 {
@@ -24,9 +25,9 @@ Ant.prototype.loadAssets = function(state, key)
 Ant.prototype.getConstants = function()
 {
     return {
-        ANGULAR_DAMPING     : 0.8,
+        ANGULAR_DAMPING     : 1.0,
         MASS                : 0.5,
-        FRICTION_MULTIPLIER : 0.2
+        FRICTION_MULTIPLIER : 2.0
     };
 };
 
@@ -42,5 +43,11 @@ Ant.prototype.createPhysicsBody = function(state, angle)
         this.body.angle = angle;
     }
 };
+
+Ant.prototype.update = function()
+{
+    AbstractDynamicObstacle.prototype.update.apply(this, arguments);
+    this.body.moveForward(50);
+}
 
 module.exports = Ant;
