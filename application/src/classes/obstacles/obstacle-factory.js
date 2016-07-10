@@ -1,6 +1,7 @@
 'use strict';
 
 var _              = require('underscore');
+var Ant = require('./ant');
 var AspirinBottle  = require('./aspirin-bottle');
 var AspirinPill    = require('./aspirin-pill');
 var BathroomSink   = require('./bathroom-sink');
@@ -26,6 +27,7 @@ var ObstacleFactory = function(state) {
 };
 
 ObstacleFactory.prototype.types = {
+    'Ant': Ant,
     'AspirinBottle'  : AspirinBottle,
     'AspirinPill'    : AspirinPill,
     'BathroomSink'   : BathroomSink,

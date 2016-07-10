@@ -6,8 +6,6 @@ var AbstractDynamicObstacle = function(state, x, y, key, angle)
 {
     AbstractObstacle.apply(this, arguments);
 
-    this.createPhysicsBody(state, angle);
-
     this.constants = this.getConstants();
     Object.freeze(this.constants);
 
