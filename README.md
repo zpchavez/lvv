@@ -1,21 +1,26 @@
-### Installing the application
-```
-npm install
-```
+### L'il Vroom Vrooms
 
-### Build and run the application
-```
-gulp
-```
-Application will be at localhost:9000
+#### Q. What is this?
 
-### Clone phaser examples repository
-```
-git clone https://github.com/photonstorm/phaser-examples.git examples
-```
+L'il Vroom Vrooms is a game inspired by Micro Machines for SNES.
+It is a work in progress, but is reasonably fun even in its current state!
 
-### Browse Examples
-```
-gulp connect:examples
-```
-Examples directory will be at localhost:8000
+#### Q. How do I play it?
+
+1. Have four Xbox360 controllers and four people to wield them
+2. Be using Google Chrome
+3. Go [here](https://zpchavez.github.io/lvv)
+4. Click the game area for the optimal full screen experience
+
+#### Q. What if I don't have Xbox360 controllers?
+
+You can play two players on one keyboard using:
+
+- Player1: ← ↑ → ↓ ENTER
+- Player2: WASD SPACEBAR
+
+It's better with 4 players though!
+
+#### Q. Isn't this game kinda ugly-looking?
+
+Yes.

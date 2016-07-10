@@ -441,6 +441,13 @@ RaceState.prototype.update = function()
     this.handleInput();
 };
 
+RaceState.prototype.shutdown = function()
+{
+    for (var i = 1; i < 5; i += 1) {
+        this.game.input.gamepad['pad' + i].onDownCallback = null;
+    }
+};
+
 RaceState.prototype.eliminateOffCameraPlayers = function()
 {
     _.each(this.cars, function(car) {
@@ -454,12 +461,24 @@ RaceState.prototype.eliminateOffCameraPlayers = function()
             this.handleRoughTerrain(car);
 
             // If playing multiplayer, eliminate cars that go off-screen
-            if (this.playerCount > 1 && (
-                car.x < this.game.camera.x ||
-                car.x > (this.game.camera.x + this.game.camera.width) ||
-                car.y < this.game.camera.y ||
-                car.y > (this.game.camera.y + this.game.camera.height)))
-            {
+            if (this.playerCount > 1 &&
+                (
+                    // car.inWorld is false at unexpected times, so doing this:
+                    (
+                        car.x < 0 ||
+                        car.x > this.game.world.width ||
+                        car.y < 0 ||
+                        car.y > this.game.world.height
+                    ) ||
+                    // car.inCamera is false at unexpected times, so doing this:
+                    (
+                        car.x < this.game.camera.x ||
+                        car.x > (this.game.camera.x + this.game.camera.width) ||
+                        car.y < this.game.camera.y ||
+                        car.y > (this.game.camera.y + this.game.camera.height)
+                    )
+                )
+            ) {
                 car.visible = false;
                 if (! this.teams && this.playerCount > 2) {
                     this.eliminationStack.push(car.playerNumber);
@@ -623,16 +642,14 @@ RaceState.prototype.handleDrops = function(car)
         height = this.map.scaledTileHeight;
 
     if (this.map.getTilelayerIndex('drops') !== -1) {
-        if (car.falling || car.airborne || car.onRamp || car.victorySpinning || car.hovering) {
-            return;
-        }
-
-        if (this.map.getTileWorldXY(car.x, car.y, width, height, 'drops')) {
-            car.fall({
-                // This determines the center of the pit tile the car is above
-                x : Math.floor(car.x / width) * width + (width / 2),
-                y : Math.floor(car.y / height) * height + (height / 2)
-            });
+        if (! (car.falling || car.airborne || car.onRamp || car.victorySpinning || car.hovering)) {
+            if (this.map.getTileWorldXY(car.x, car.y, width, height, 'drops')) {
+                car.fall({
+                    // This determines the center of the pit tile the car is above
+                    x : Math.floor(car.x / width) * width + (width / 2),
+                    y : Math.floor(car.y / height) * height + (height / 2)
+                });
+            }
         }
 
         // Obstacles fall too

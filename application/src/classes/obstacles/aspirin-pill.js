@@ -19,7 +19,7 @@ AspirinPill.prototype.getConstants = function()
 {
     return {
         ANGULAR_DAMPING     : 0.8,
-        MASS                : 0.5,
+        MASS                : 1.0,
         FRICTION_MULTIPLIER : 0.2
     };
 };
