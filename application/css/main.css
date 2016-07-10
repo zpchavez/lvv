@@ -29,6 +29,17 @@ h1,h2,h3 {
     margin : 10px;
 }
 
+#instructions {
+    color: white;
+    text-align: center;
+}
+
+#instructions table {
+    display: block;
+    margin: auto;
+    width: 500px;
+}
+
 button {
     font-size  : 16px;
 }
