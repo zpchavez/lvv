@@ -71,13 +71,7 @@ Ant.prototype.update = function()
     ];
 
     // Turn if heading for an unpassable tile
-    if (this.state.map.getTileWorldXY(
-        facingPoint[0],
-        facingPoint[1],
-        this.state.map.scaledTileWidth,
-        this.state.map.scaledTileHeight,
-        'drops'
-    )) {
+    if (this.isUnpassableTile(facingPoint) || this.isOutsideOfWorldBounds(facingPoint)) {
         if (this.rotatingAwayFromTile) {
             this.body['rotate' + this.rotatingAwayFromTile](this.constants.TURNING_VELOCITY);
         } else {
@@ -91,5 +85,24 @@ Ant.prototype.update = function()
 
     this.body.moveForward(50);
 }
+
+Ant.prototype.isUnpassableTile = function(point) {
+    return !! this.state.map.getTileWorldXY(
+        point[0],
+        point[1],
+        this.state.map.scaledTileWidth,
+        this.state.map.scaledTileHeight,
+        'drops'
+    );
+};
+
+Ant.prototype.isOutsideOfWorldBounds = function(point) {
+    return (
+        point[0] < 0 ||
+        point[0] > this.game.world.width ||
+        point[1] < 0 ||
+        point[1] > this.game.world.height
+    );
+};
 
 module.exports = Ant;
