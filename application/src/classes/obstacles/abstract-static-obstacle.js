@@ -6,8 +6,6 @@ var AbstractStaticObstacle = function(state, x, y, key, angle)
 {
     AbstractObstacle.apply(this, arguments);
 
-    this.createPhysicsBody(state, angle);
-
     this.body.dynamic = false;
 };
 

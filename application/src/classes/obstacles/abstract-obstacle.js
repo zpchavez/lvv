@@ -7,6 +7,7 @@ var AbstractObstacle = function(state, x, y, key, angle)
     Phaser.Sprite.apply(this, [state.game, x, y, key]);
 
     this.createPhysicsBody(state, angle);
+    this.state = state;
 };
 
 AbstractObstacle.prototype = Object.create(Phaser.Sprite.prototype);
