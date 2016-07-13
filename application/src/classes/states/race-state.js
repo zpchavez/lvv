@@ -485,7 +485,11 @@ RaceState.prototype.eliminateOffCameraPlayers = function()
                 )
             ) {
                 car.visible = false;
-                if (! this.teams && this.playerCount > 2) {
+                if (
+                    ! this.teams &&
+                    this.playerCount > 2 &&
+                    this.eliminationStack.indexOf(car.playerNumber) === -1
+                ) {
                     this.eliminationStack.push(car.playerNumber);
                 }
             }
@@ -520,7 +524,9 @@ RaceState.prototype.awardPoints = function()
         } else if (this.teams) {
             this.score.awardTwoPlayerPointToPlayer(winningCar.teamNumber);
         } else {
-            this.eliminationStack.push(winningCar.playerNumber);
+            if (this.eliminationStack.indexOf(winningCar.playerNumber) === -1) {
+                this.eliminationStack.push(winningCar.playerNumber);
+            }
             this.score.awardPointsForFreeForAll(this.eliminationStack);
         }
 
