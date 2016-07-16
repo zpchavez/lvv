@@ -155,7 +155,8 @@ DesertGenerator.prototype._generateObstacles = function(points, data) {
         'Razor',
         'AspirinBottle',
         'Floss',
-        'Toothbrush'
+        'Toothbrush',
+        'Lollipop',
     ];
 
     var pickedPoints = [];
