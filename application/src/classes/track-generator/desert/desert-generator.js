@@ -113,7 +113,6 @@ DesertGenerator.prototype.generate = function() {
     this._addEdgeTiles(data, this.pitIndices, PIT);
     this._addEdgeTiles(data, this.trackIndices, PAVEMENT);
     this._drawFinishLine(data);
-    this._generateAnts(data);
     this._generatePossiblePowerupPoints(data);
 
     return data;
@@ -131,20 +130,25 @@ DesertGenerator.prototype._getLayer = function(data, name) {
     return returnedLayer;
 };
 
-DesertGenerator.prototype._generateAnts = function(data) {
-    var obstacleLayer = this._getLayer(data, 'obstacles');
-    var totalTiles = MAP_SIZE * MAP_SIZE;
-
-    for (var i = 0; i < 100; i += 1) {
-        var point = this._convertIndexToPoint(rng.getIntBetween(0, totalTiles));
-        obstacleLayer.objects.push({
-            rotation: rng.getIntBetween(0, 359),
-            type: 'Ant',
-            visible: true,
-            x: point[X] * this.template.tilewidth,
-            y: point[Y] * this.template.tileheight,
-        });
-    }
+DesertGenerator.prototype._addAnts = function(obstacleLayer, candyObstacle) {
+    var candyPoint = [
+        candyObstacle.x / this.template.tilewidth,
+        candyObstacle.y / this.template.tileheight,
+    ];
+    this._scatterObstacles(
+        obstacleLayer,
+        'Ant',
+        rng.getIntBetween(10, 25),
+        10,
+        [
+            candyPoint[X] - 30,
+            candyPoint[Y] - 30,
+        ],
+        [
+            candyPoint[X] + 30,
+            candyPoint[Y] + 30,
+        ]
+    );
 };
 
 DesertGenerator.prototype._generateObstacles = function(points, data) {
@@ -201,6 +205,10 @@ DesertGenerator.prototype._generateObstacles = function(points, data) {
         if (object.type === 'AspirinBottle') {
             object.rotation = Math.floor(object.rotation / 45) * 45;
             this._addPillObstacles(obstacleLayer, object);
+        }
+        // Candy attracts ants.
+        if (object.type === 'Lollipop') {
+            this._addAnts(obstacleLayer, object);
         }
         obstacleLayer.objects.push(object);
     }
