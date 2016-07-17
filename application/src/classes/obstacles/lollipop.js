@@ -9,10 +9,9 @@ var Lollipop = function(state, x, y, key, angle)
 
 Lollipop.prototype = Object.create(AbstractStaticObstacle.prototype);
 
-Lollipop.prototype.loadAssets = function(state, key)
+Lollipop.prototype.getSpritePath = function()
 {
-    state.load.image(key, 'assets/img/obstacles/lollipop.png');
-    state.load.physics('Lollipop', 'assets/physics/lollipop.json')
+    return ('assets/img/obstacles/lollipop.png');
 };
 
 Lollipop.prototype.createPhysicsBody = function(state, angle)
@@ -21,7 +20,7 @@ Lollipop.prototype.createPhysicsBody = function(state, angle)
 
     this.body.clearShapes();
 
-    this.body.loadPolygon('Lollipop', 'lollipop');
+    this.body.loadPolygon('Obstacles', 'lollipop');
 
     if (angle) {
         this.body.angle = angle;
