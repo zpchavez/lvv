@@ -141,12 +141,12 @@ DesertGenerator.prototype._addAnts = function(obstacleLayer, candyObstacle) {
         rng.getIntBetween(10, 25),
         10,
         [
-            candyPoint[X] - 30,
-            candyPoint[Y] - 30,
+            candyPoint[X] - 60,
+            candyPoint[Y] - 60,
         ],
         [
-            candyPoint[X] + 30,
-            candyPoint[Y] + 30,
+            candyPoint[X] + 60,
+            candyPoint[Y] + 60,
         ]
     );
 };
