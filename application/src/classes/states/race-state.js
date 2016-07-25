@@ -386,7 +386,7 @@ RaceState.prototype.postGameObjectPlacement = function()
 
 RaceState.prototype.placePowerups = function()
 {
-    var targetPowerupCount = this.playerCount * 5;
+    var targetPowerupCount = 100;//this.playerCount * 5;
 
     if (! this.powerups) {
         this.powerups = {}
@@ -413,7 +413,7 @@ RaceState.prototype.placePowerups = function()
         this.powerups[pointIndex] = (
             this.game.world.addChild(
                 this.powerupFactory.getNew(
-                    rng.pickValueFromArray(['hover', 'cannon']),
+                    rng.pickValueFromArray(['hover', 'cannon', 'malletPowerup']),
                     point[0],
                     point[1]
                 )

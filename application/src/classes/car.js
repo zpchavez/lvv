@@ -124,7 +124,18 @@ Car.prototype.turnLeft = function()
 Car.prototype.removePowerups = function()
 {
     this.armedWithCannon = settings.startWithCannons;
+    this.removeMallet();
     this.stopHovering();
+};
+
+Car.prototype.removeMallet = function()
+{
+    if (this.mallet) {
+        this.state.game.physics.p2.removeConstraint(this.malletConstraint);
+        this.malletConstraint = null;
+        this.mallet.destroy();
+        this.mallet = null;
+    }
 };
 
 Car.prototype.startHovering = function()
@@ -182,6 +193,36 @@ Car.prototype.stopHovering = function()
 Car.prototype.armWithCannon = function()
 {
     this.armedWithCannon = true;
+};
+
+Car.prototype.getPointInFrontOfCar = function(distance)
+{
+    // Adjust point 90 degrees, otherwise point will be to the right of the car
+    var xRotation = Math.cos(this.body.rotation - (90 * Math.PI / 180));
+    var yRotation = Math.sin(this.body.rotation - (90 * Math.PI / 180));
+    return [
+        this.x + (distance * xRotation),
+        this.y + (distance * yRotation),
+    ];
+};
+
+Car.prototype.armWithMallet = function()
+{
+    if (this.mallet) {
+        return;
+    }
+
+    var point = this.getPointInFrontOfCar(30);
+
+    this.mallet = this.weaponFactory.getNew('mallet', point[0], point[1], this.body.angle);
+    this.mallet.addToCollisionGroup(this.state.collisionGroup);
+    this.mallet.add(this.state);
+    this.malletConstraint = this.state.game.physics.p2.createLockConstraint(
+        this,
+        this.mallet,
+        [0, 30],
+        0
+    );
 };
 
 // Straighten out if not turning
@@ -429,13 +470,7 @@ Car.prototype.fire = function()
         return;
     }
 
-    // Adjust spawn point 90 degrees, otherwise projectile appears to the right of the car
-    var xRotation = Math.cos(this.body.rotation - (90 * Math.PI / 180));
-    var yRotation = Math.sin(this.body.rotation - (90 * Math.PI / 180));
-    var spawnPoint = [
-        this.x + (30 * xRotation),
-        this.y + (30 * yRotation),
-    ];
+    var spawnPoint = this.getPointInFrontOfCar(30);
 
     var cannonBall = this.weaponFactory.getNew('cannon-ball', spawnPoint[0], spawnPoint[1]);
     cannonBall.addToCollisionGroup(this.state.collisionGroup);

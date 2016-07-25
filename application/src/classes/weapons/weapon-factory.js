@@ -2,6 +2,7 @@
 
 var _ = require('underscore');
 var CannonBall = require('./cannon-ball');
+var Mallet = require('./mallet');
 
 var WeaponFactory = function(state) {
     this.state       = state;
@@ -10,6 +11,7 @@ var WeaponFactory = function(state) {
 
 WeaponFactory.prototype.types = {
     'cannon-ball': CannonBall,
+    'mallet': Mallet,
 };
 
 WeaponFactory.prototype.loadAssets = function(types)
