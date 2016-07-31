@@ -2940,41 +2940,5 @@
                 212
             ]
         }
-    ],
-    "mallet": [
-        {
-            "density": 2,
-            "friction": 0,
-            "bounce": 0,
-            "filter": {
-                "categoryBits": 1,
-                "maskBits": 65535
-            },
-            "shape": [
-                3,
-                21,
-                3,
-                2,
-                37,
-                2
-            ]
-        },
-        {
-            "density": 2,
-            "friction": 0,
-            "bounce": 0,
-            "filter": {
-                "categoryBits": 1,
-                "maskBits": 65535
-            },
-            "shape": [
-                3,
-                21,
-                37,
-                2,
-                37,
-                21
-            ]
-        }
     ]
 }

@@ -17,22 +17,30 @@ Mallet.prototype.getSpritePath = function()
 Mallet.prototype.getConstants = function()
 {
     return {
-        ANGULAR_DAMPING     : 0.8,
-        MASS                : 1.0,
-        FRICTION_MULTIPLIER : 0.2
+        ANGULAR_DAMPING     : 0,
+        MASS                : 0.5,
+        FRICTION_MULTIPLIER : 0
     };
 };
 
 Mallet.prototype.createPhysicsBody = function(state, angle)
 {
     state.game.physics.p2.enable(this);
-
     this.body.clearShapes();
-    this.body.loadPolygon('Obstacles', 'mallet');
+    this.body.setRectangle(34, 19, 0, -47);
+
+    this.pivot.y = 30;
 
     if (angle) {
         this.body.angle = angle;
     }
+};
+
+Mallet.prototype.swingRight = function() {
+    console.log('swinging right');
+};
+
+Mallet.prototype.update = function() {
 };
 
 Mallet.prototype.fall = function() {

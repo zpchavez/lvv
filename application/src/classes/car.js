@@ -131,8 +131,10 @@ Car.prototype.removePowerups = function()
 Car.prototype.removeMallet = function()
 {
     if (this.mallet) {
-        this.state.game.physics.p2.removeConstraint(this.malletConstraint);
-        this.malletConstraint = null;
+        this.state.game.physics.p2.removeConstraint(this.malletLockConstraint);
+        this.state.game.physics.p2.removeConstraint(this.malletGearConstraint);
+        this.malletLockConstraint = null;
+        this.malletGearConstraint = null;
         this.mallet.destroy();
         this.mallet = null;
     }
@@ -212,16 +214,21 @@ Car.prototype.armWithMallet = function()
         return;
     }
 
-    var point = this.getPointInFrontOfCar(30);
+    var point = this.getPointInFrontOfCar(0);
 
     this.mallet = this.weaponFactory.getNew('mallet', point[0], point[1], this.body.angle);
     this.mallet.addToCollisionGroup(this.state.collisionGroup);
+    this.mallet.car = this;
     this.mallet.add(this.state);
-    this.malletConstraint = this.state.game.physics.p2.createLockConstraint(
+    this.malletLockConstraint = this.state.game.physics.p2.createLockConstraint(
+        this,
+        this.mallet
+    );
+    this.malletGearConstraint = this.state.game.physics.p2.createGearConstraint(
         this,
         this.mallet,
-        [0, 30],
-        0
+        0,
+        1
     );
 };
 
@@ -466,6 +473,10 @@ Car.prototype.spinOut = function()
 
 Car.prototype.fire = function()
 {
+    if (this.mallet) {
+        this.mallet.swingRight();
+    }
+
     if (! this.armedWithCannon) {
         return;
     }
