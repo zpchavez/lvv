@@ -3,6 +3,7 @@
 var _ = require('underscore');
 var Cannon = require('./cannon');
 var Hover = require('./hover');
+var Mallet = require('./mallet');
 
 var PowerupFactory = function(state) {
     this.state       = state;
@@ -12,6 +13,7 @@ var PowerupFactory = function(state) {
 PowerupFactory.prototype.types = {
     'cannon': Cannon,
     'hover': Hover,
+    'malletPowerup': Mallet,
 };
 
 PowerupFactory.prototype.loadAssets = function(types)
