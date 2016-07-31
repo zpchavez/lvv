@@ -224,6 +224,11 @@ Car.prototype.armWithMallet = function()
         this,
         this.mallet
     );
+    this.addMalletGearConstraint();
+};
+
+Car.prototype.addMalletGearConstraint = function()
+{
     this.malletGearConstraint = this.state.game.physics.p2.createGearConstraint(
         this,
         this.mallet,
