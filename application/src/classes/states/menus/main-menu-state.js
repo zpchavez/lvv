@@ -1,7 +1,7 @@
 'use strict';
 
 var Phaser = require('phaser');
-var LoadingNextRaceState = require('../loading-next-race-state');
+var SelectColorState = require('./select-color-state');
 var settings = require('../../../settings');
 var global = require('../../../global-state');
 
@@ -119,7 +119,7 @@ MainMenuState.prototype.selectOption = function()
 {
     global.state.players = this.playerChoices[this.numPlayersSelection].players;
     global.state.teams = this.playerChoices[this.numPlayersSelection].teams;
-    this.game.state.add('loading', new LoadingNextRaceState(), true);
+    this.game.state.add('select-color', new SelectColorState(), true);
 };
 
 MainMenuState.prototype.initInputs = function()
