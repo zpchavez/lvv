@@ -43,6 +43,8 @@ SelectColorState.prototype.renderText = function()
 
 SelectColorState.prototype.renderCars = function()
 {
+    this.game.physics.startSystem(Phaser.Physics.P2JS);
+
     var positions;
 
     if (global.state.players === 1) {
@@ -75,9 +77,14 @@ SelectColorState.prototype.renderCars = function()
     var playerSprites = [];
     for (var p = 0; p < positions.length; p += 1) {
         playerSprites.push(
-            this.game.add.sprite(positions[p][0], positions[p][1], 'player' + (p + 1))
+            this.carFactory.getNew(
+                positions[p][0],
+                positions[p][1],
+                'player' + (p + 1)
+            )
         );
         playerSprites[p].tint = colors[this.colorKeys[p]].hex;
+        this.game.world.addChild(playerSprites[p]);
     }
     this.playerSprites = playerSprites;
     this.colorCursors = [0, 1, 2, 3];
@@ -86,9 +93,16 @@ SelectColorState.prototype.renderCars = function()
 
 SelectColorState.prototype.changeColor = function(player, direction)
 {
+    // Player who isn't playing can't change color
     if (! this.playerSprites[player]) {
         return;
     }
+
+    // Can't change color if player already selected a color
+    if (this.selectedColors[player] !== null) {
+        return;
+    }
+
 
     var colorIndex;
     if (direction === 'LEFT') {
@@ -106,7 +120,7 @@ SelectColorState.prototype.changeColor = function(player, direction)
     }
 
     // If color selected by another player, select the next available color
-    if (this.selectedColors.indexOf(this.colorCursors[player]) !== -1) {
+    if (this.selectedColors.indexOf(colorIndex) !== -1) {
         colorIndex = this.getNextAvailableColorIndex(colorIndex, direction);
     }
 
@@ -123,7 +137,7 @@ SelectColorState.prototype.getNextAvailableColorIndex = function(index, directio
     var multiplier = (direction === 'LEFT' ? -1 : 1);
 
     var nextAvailable;
-    var candidate;
+    var candidate = index;
 
     do {
         candidate = candidate + (1 * multiplier);
@@ -135,9 +149,22 @@ SelectColorState.prototype.getNextAvailableColorIndex = function(index, directio
     return nextAvailable;
 };
 
-SelectColorState.prototype.selectColor = function()
+SelectColorState.prototype.selectColor = function(player)
 {
+    // Select if not already selected
+    if (this.selectedColors.indexOf(this.colorCursors[player]) === -1) {
+        this.selectedColors[player] = this.colorCursors[player];
+    }
+};
 
+SelectColorState.prototype.update = function()
+{
+    // Cars that have selected their color spin around
+    this.selectedColors.forEach(function(color, player) {
+        if (color !== null) {
+            this.playerSprites[player].body.rotateRight(150);
+        }
+    }.bind(this));
 };
 
 SelectColorState.prototype.initInputs = function()
