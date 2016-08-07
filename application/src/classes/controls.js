@@ -8,6 +8,7 @@ var gamepadButtonMappings = {
     'LEFT': Phaser.Gamepad.XBOX360_DPAD_LEFT,
     'RIGHT': Phaser.Gamepad.XBOX360_DPAD_RIGHT,
     'SELECT': Phaser.Gamepad.XBOX360_A,
+    'CANCEL': Phaser.Gamepad.XBOX360_B,
     'SPECIAL1': [
         Phaser.Gamepad.XBOX360_RIGHT_BUMPER,
         Phaser.Gamepad.XBOX360_RIGHT_TRIGGER,
@@ -22,6 +23,7 @@ var keyboardButtonMappings = [
         'LEFT': Phaser.Keyboard.LEFT,
         'RIGHT': Phaser.Keyboard.RIGHT,
         'SELECT': Phaser.Keyboard.ENTER,
+        'CANCEL': Phaser.Keyboard.QUOTES,
         'SPECIAL1': Phaser.Keyboard.ENTER,
     },
     {
@@ -32,6 +34,7 @@ var keyboardButtonMappings = [
         'LEFT': Phaser.Keyboard.A,
         'RIGHT': Phaser.Keyboard.D,
         'SELECT': Phaser.Keyboard.SPACEBAR,
+        'CANCEL': Phaser.Keyboard.Q,
         'SPECIAL1': Phaser.Keyboard.SPACEBAR,
     },
     {
@@ -42,6 +45,7 @@ var keyboardButtonMappings = [
         'LEFT': Phaser.Keyboard.F,
         'RIGHT': Phaser.Keyboard.H,
         'SELECT': Phaser.Keyboard.Y,
+        'CANCEL': Phaser.Keyboard.R,
         'SPECIAL1': Phaser.Keyboard.Y,
     },
     {
@@ -52,6 +56,7 @@ var keyboardButtonMappings = [
         'LEFT': Phaser.Keyboard.J,
         'RIGHT': Phaser.Keyboard.L,
         'SELECT': Phaser.Keyboard.O,
+        'CANCEL': Phaser.Keyboard.U,
         'SPECIAL1': Phaser.Keyboard.O,
     }
 ];

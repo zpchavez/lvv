@@ -169,6 +169,18 @@ SelectColorState.prototype.allSelected = function()
     );
 };
 
+SelectColorState.prototype.unselectColor = function(player)
+{
+    if (this.allSelectedMessage) {
+        this.allSelectedMessage.destroy();
+        this.allSelectedMessage = null;
+    }
+
+    this.selectedColors[player] = null;
+    this.playerSprites[player].body.setZeroRotation();
+    this.playerSprites[player].body.angle = 0;
+};
+
 SelectColorState.prototype.update = function()
 {
     // Cars that have selected their color spin around
@@ -181,7 +193,6 @@ SelectColorState.prototype.update = function()
 
 SelectColorState.prototype.showAllSelectedMessage = function()
 {
-    console.log('showing the msg');
     this.allSelectedMessage = this.game.add.text(
         this.game.width / 2,
         (this.game.height / 2) + 200,
@@ -203,6 +214,7 @@ SelectColorState.prototype.initInputs = function()
         this.controls.onDown(player, 'LEFT', this.changeColor.bind(this, player, 'LEFT'));
         this.controls.onDown(player, 'RIGHT', this.changeColor.bind(this, player, 'RIGHT'));
         this.controls.onDown(player, 'SELECT', this.selectColor.bind(this, player));
+        this.controls.onDown(player, 'CANCEL', this.unselectColor.bind(this, player));
     }
 };
 
