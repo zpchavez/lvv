@@ -149,6 +149,11 @@ SelectColorState.prototype.getNextAvailableColorIndex = function(index, directio
 
 SelectColorState.prototype.selectColor = function(player)
 {
+    if (this.allSelected()) {
+        this.startGame();
+        return;
+    }
+
     // Select if not already selected
     if (this.selectedColors.indexOf(this.colorCursors[player]) === -1) {
         this.selectedColors[player] = this.colorCursors[player];
@@ -205,6 +210,13 @@ SelectColorState.prototype.showAllSelectedMessage = function()
         }
     );
     this.allSelectedMessage.anchor.setTo(0.5, 0.5);
+};
+
+SelectColorState.prototype.startGame = function()
+{
+    this.controls.reset();
+    global.state.colors = this.selectedColors;
+    this.game.state.add('loading', new LoadingNextRaceState(), true);
 };
 
 SelectColorState.prototype.initInputs = function()

@@ -142,6 +142,7 @@ Controls.prototype.reset = function() {
     for (var player = 0; player < 4; player += 1) {
         this.game.input.gamepad['pad' + (player + 1)].onDownCallback = null;
     }
+    this.game.input.onDown.removeAll()
 };
 
 module.exports = Controls;
