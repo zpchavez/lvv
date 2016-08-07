@@ -79,7 +79,7 @@ var getKeyboardConstant = function(player, button) {
 }
 
 var Controls = function(game) {
-    this.onDownMappings = [{}, {}, {}, {}];
+    this.onDownMappings = {1: {}, 2: {}, 3: {}, 4: {}};
 
     for (var player = 1; player < 5; player += 1) {
         game.input.gamepad['pad' + player].onDownCallback = (
