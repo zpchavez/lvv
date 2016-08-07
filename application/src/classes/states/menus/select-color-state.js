@@ -86,22 +86,22 @@ SelectColorState.prototype.renderCars = function()
 
 SelectColorState.prototype.changeColor = function(player, direction)
 {
-    if (! this.playerSprites[player - 1]) {
+    if (! this.playerSprites[player]) {
         return;
     }
 
     var colorIndex;
     if (direction === 'LEFT') {
         colorIndex = (
-            this.colorCursors[player] === 0,
-            this.colorKeys.length - 1,
-            this.colorCursors[player] - 1
+            this.colorCursors[player] === 0
+            ? this.colorKeys.length - 1
+            : this.colorCursors[player] - 1
         );
     } else {
         colorIndex = (
-            this.colorCursors[player] === this.colorKeys.length - 1,
-            0,
-            this.colorCursors[player] + 1
+            this.colorCursors[player] === this.colorKeys.length - 1
+            ? 0
+            : this.colorCursors[player] + 1
         );
     }
 
@@ -110,8 +110,8 @@ SelectColorState.prototype.changeColor = function(player, direction)
         colorIndex = this.getNextAvailableColorIndex(colorIndex, direction);
     }
 
-    this.playerSprites[player - 1].tint = colors[this.colorKeys[colorIndex]].hex;
-    this.colorCursors[player - 1] = colorIndex;
+    this.playerSprites[player].tint = colors[this.colorKeys[colorIndex]].hex;
+    this.colorCursors[player] = colorIndex;
 };
 
 SelectColorState.prototype.getNextAvailableColorIndex = function(index, direction)
@@ -143,7 +143,7 @@ SelectColorState.prototype.selectColor = function()
 SelectColorState.prototype.initInputs = function()
 {
     this.controls = new Controls(this.game);
-    for (var player = 1; player < 5; player += 1) {
+    for (var player = 0; player < 4; player += 1) {
         this.controls.onDown(player, 'LEFT', this.changeColor.bind(this, player, 'LEFT'));
         this.controls.onDown(player, 'RIGHT', this.changeColor.bind(this, player, 'RIGHT'));
         this.controls.onDown(player, 'SELECT', this.selectColor.bind(this, player));

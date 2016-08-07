@@ -15,9 +15,9 @@ module.exports = {
         name: 'yellow',
         hex: 0xffff00
     },
-    silver: {
-        name: 'silver',
-        hex: 0xc0c0c0,
+    grey: {
+        name: 'grey',
+        hex: 0x808080,
     },
     purple: {
         name: 'purple',

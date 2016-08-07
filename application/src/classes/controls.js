@@ -13,8 +13,8 @@ var gamepadButtonMappings = {
         Phaser.Gamepad.XBOX360_RIGHT_TRIGGER,
     ],
 };
-var keyboardButtonMappings = {
-    1: {
+var keyboardButtonMappings = [
+    {
         'ACCEL': Phaser.Keyboard.UP,
         'BREAK': Phaser.Keyboard.DOWN,
         'UP': Phaser.Keyboard.UP,
@@ -24,7 +24,7 @@ var keyboardButtonMappings = {
         'SELECT': Phaser.Keyboard.ENTER,
         'SPECIAL1': Phaser.Keyboard.ENTER,
     },
-    2: {
+    {
         'ACCEL': Phaser.Keyboard.W,
         'BREAK': Phaser.Keyboard.S,
         'UP': Phaser.Keyboard.W,
@@ -34,7 +34,7 @@ var keyboardButtonMappings = {
         'SELECT': Phaser.Keyboard.SPACEBAR,
         'SPECIAL1': Phaser.Keyboard.SPACEBAR,
     },
-    3: {
+    {
         'ACCEL': Phaser.Keyboard.T,
         'BREAK': Phaser.Keyboard.G,
         'UP': Phaser.Keyboard.T,
@@ -44,7 +44,7 @@ var keyboardButtonMappings = {
         'SELECT': Phaser.Keyboard.Y,
         'SPECIAL1': Phaser.Keyboard.Y,
     },
-    4: {
+    {
         'ACCEL': Phaser.Keyboard.I,
         'BREAK': Phaser.Keyboard.K,
         'UP': Phaser.Keyboard.I,
@@ -54,7 +54,7 @@ var keyboardButtonMappings = {
         'SELECT': Phaser.Keyboard.O,
         'SPECIAL1': Phaser.Keyboard.O,
     }
-}
+];
 
 var getGamepadConstants = function(button) {
     if (typeof gamepadButtonMappings[button] === 'undefined') {
@@ -79,10 +79,10 @@ var getKeyboardConstant = function(player, button) {
 }
 
 var Controls = function(game) {
-    this.onDownMappings = {1: {}, 2: {}, 3: {}, 4: {}};
+    this.onDownMappings = [{}, {}, {}, {}];
 
-    for (var player = 1; player < 5; player += 1) {
-        game.input.gamepad['pad' + player].onDownCallback = (
+    for (var player = 0; player < 4; player += 1) {
+        game.input.gamepad['pad' + (player + 1)].onDownCallback = (
             this.getGamepadDownCallback(player)
         );
     }
@@ -122,7 +122,7 @@ Controls.prototype.isDown = function(player, button) {
 
     // Gamepad
     getGamepadConstants(button).forEach(function (buttonConstant) {
-        isDown = isDown || this.game.input.gamepad['pad' + player].isDown(buttonConstant);
+        isDown = isDown || this.game.input.gamepad['pad' + (player + 1)].isDown(buttonConstant);
     }.bind(this));
 
     if (isDown) {
@@ -134,8 +134,8 @@ Controls.prototype.isDown = function(player, button) {
 };
 
 Controls.prototype.reset = function() {
-    for (var player = 1; player < 5; player += 1) {
-        this.game.input.gamepad['pad' + player].onDownCallback = null;
+    for (var player = 0; player < 4; player += 1) {
+        this.game.input.gamepad['pad' + (player + 1)].onDownCallback = null;
     }
 };
 

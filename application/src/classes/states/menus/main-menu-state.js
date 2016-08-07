@@ -126,9 +126,9 @@ MainMenuState.prototype.selectOption = function()
 MainMenuState.prototype.initInputs = function()
 {
     this.controls = new Controls(this.game);
-    this.controls.onDown(1, 'UP', this.moveCursorUp.bind(this));
-    this.controls.onDown(1, 'DOWN', this.moveCursorDown.bind(this));
-    this.controls.onDown(1, 'SELECT', this.selectOption.bind(this));
+    this.controls.onDown(0, 'UP', this.moveCursorUp.bind(this));
+    this.controls.onDown(0, 'DOWN', this.moveCursorDown.bind(this));
+    this.controls.onDown(0, 'SELECT', this.selectOption.bind(this));
 };
 
 MainMenuState.prototype.toggleFullscreen = function()
