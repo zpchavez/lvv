@@ -64,16 +64,15 @@ SelectColorState.prototype.renderCars = function()
         ];
     } else if (global.state.players === 4) {
         positions = [
-            [(this.game.width / 2) - 75, this.game.height / 2],
-            [(this.game.width / 2) - 25, this.game.height / 2],
-            [(this.game.width / 2) + 25, this.game.height / 2],
-            [(this.game.width / 2) + 75, this.game.height / 2],
+            [(this.game.width / 2) - 150, this.game.height / 2],
+            [(this.game.width / 2) - 50, this.game.height / 2],
+            [(this.game.width / 2) + 50, this.game.height / 2],
+            [(this.game.width / 2) + 150, this.game.height / 2],
         ];
     } else {
         throw new Error('Invalid number of players: ' + global.state.players);
     }
 
-    this.colorKeys = Object.keys(colors);
     var playerSprites = [];
     for (var p = 0; p < positions.length; p += 1) {
         playerSprites.push(
@@ -83,7 +82,7 @@ SelectColorState.prototype.renderCars = function()
                 'player' + (p + 1)
             )
         );
-        playerSprites[p].tint = colors[this.colorKeys[p]].hex;
+        playerSprites[p].tint = colors[p].hex;
         this.game.world.addChild(playerSprites[p]);
     }
     this.playerSprites = playerSprites;
@@ -103,17 +102,16 @@ SelectColorState.prototype.changeColor = function(player, direction)
         return;
     }
 
-
     var colorIndex;
     if (direction === 'LEFT') {
         colorIndex = (
             this.colorCursors[player] === 0
-            ? this.colorKeys.length - 1
+            ? colors.length - 1
             : this.colorCursors[player] - 1
         );
     } else {
         colorIndex = (
-            this.colorCursors[player] === this.colorKeys.length - 1
+            this.colorCursors[player] === colors.length - 1
             ? 0
             : this.colorCursors[player] + 1
         );
@@ -124,7 +122,7 @@ SelectColorState.prototype.changeColor = function(player, direction)
         colorIndex = this.getNextAvailableColorIndex(colorIndex, direction);
     }
 
-    this.playerSprites[player].tint = colors[this.colorKeys[colorIndex]].hex;
+    this.playerSprites[player].tint = colors[colorIndex].hex;
     this.colorCursors[player] = colorIndex;
 };
 
@@ -155,6 +153,20 @@ SelectColorState.prototype.selectColor = function(player)
     if (this.selectedColors.indexOf(this.colorCursors[player]) === -1) {
         this.selectedColors[player] = this.colorCursors[player];
     }
+
+    var selections = this.selectedColors.filter(function(index) {return index !== null});
+    if (this.allSelected()) {
+        this.showAllSelectedMessage();
+    }
+};
+
+SelectColorState.prototype.allSelected = function()
+{
+    var selections = this.selectedColors.filter(function(index) {return index !== null});
+    return (
+        selections.length === global.state.players ||
+        selections.length === 2 && global.state.teams
+    );
 };
 
 SelectColorState.prototype.update = function()
@@ -165,6 +177,23 @@ SelectColorState.prototype.update = function()
             this.playerSprites[player].body.rotateRight(150);
         }
     }.bind(this));
+};
+
+SelectColorState.prototype.showAllSelectedMessage = function()
+{
+    console.log('showing the msg');
+    this.allSelectedMessage = this.game.add.text(
+        this.game.width / 2,
+        (this.game.height / 2) + 200,
+        "Press button to start!",
+        {
+            font: '24px Arial',
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 5,
+        }
+    );
+    this.allSelectedMessage.anchor.setTo(0.5, 0.5);
 };
 
 SelectColorState.prototype.initInputs = function()
