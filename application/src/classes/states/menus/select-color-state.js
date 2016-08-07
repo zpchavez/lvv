@@ -4,6 +4,7 @@ var LoadingNextRaceState = require('../loading-next-race-state');
 var CarFactory = require('../../car-factory');
 var global = require('../../../global-state');
 var colors = require('../../../colors');
+var _ = require('underscore');
 
 var SelectColorState = function()
 {
@@ -29,7 +30,7 @@ SelectColorState.prototype.renderText = function()
 {
     this.titleText = this.game.add.text(
         this.game.width / 2,
-        (this.game.height / 2) - 100,
+        (this.game.height / 2) - 150,
         "Choose Color",
         {
             font: '42px Arial',
@@ -45,13 +46,23 @@ SelectColorState.prototype.renderCars = function()
 {
     this.game.physics.startSystem(Phaser.Physics.P2JS);
 
-    var positions;
+    if (global.state.teams) {
+        this.renderTeamSelection();
+        return;
+    } else {
+        this.renderFreeForAllSelection();
+        return;
+    }
+};
 
+SelectColorState.prototype.renderFreeForAllSelection = function()
+{
+    var positions;
     if (global.state.players === 1) {
         positions = [
             [this.game.width / 2, this.game.height / 2]
         ];
-    } else if (global.state.players === 2 || global.state.teams) {
+    } else if (global.state.players === 2) {
         positions = [
             [(this.game.width / 2) - 50, this.game.height / 2],
             [(this.game.width / 2) + 50, this.game.height / 2],
@@ -90,6 +101,56 @@ SelectColorState.prototype.renderCars = function()
     this.selectedColors = [null, null, null, null];
 };
 
+SelectColorState.prototype.renderTeamSelection = function()
+{
+    this.blueTeamMessage = this.game.add.text(
+        this.game.width / 2 - 100,
+        (this.game.height / 2) - 70,
+        "BLUE TEAM",
+        {
+            font: '24px Arial',
+            fill: '#0000FF',
+            stroke: '#000000',
+            strokeThickness: 5,
+        }
+    );
+    this.blueTeamMessage.anchor.setTo(0.5, 0.5);
+
+    this.blueTeamMessage = this.game.add.text(
+        this.game.width / 2 + 100,
+        (this.game.height / 2) - 70,
+        "RED TEAM",
+        {
+            font: '24px Arial',
+            fill: '#FF0000',
+            stroke: '#000000',
+            strokeThickness: 5,
+        }
+    );
+    this.blueTeamMessage.anchor.setTo(0.5, 0.5);
+
+    positions = [
+        [this.game.width / 2, (this.game.height / 2) - 20],
+        [this.game.width / 2, (this.game.height / 2) + 50],
+        [this.game.width / 2, (this.game.height / 2) + 120],
+        [this.game.width / 2, (this.game.height / 2) + 190],
+    ];
+    var playerSprites = [];
+    for (var p = 0; p < positions.length; p += 1) {
+        playerSprites.push(
+            this.carFactory.getNew(
+                positions[p][0],
+                positions[p][1],
+                'player' + (p + 1)
+            )
+        );
+        this.game.world.addChild(playerSprites[p]);
+    }
+    this.playerSprites = playerSprites;
+    this.selectedColors = [null, null, null, null];
+    this.teamPlayers = {blue: [], red: []};
+};
+
 SelectColorState.prototype.changeColor = function(player, direction)
 {
     // Player who isn't playing can't change color
@@ -97,11 +158,20 @@ SelectColorState.prototype.changeColor = function(player, direction)
         return;
     }
 
-    // Can't change color if player already selected a color
-    if (this.selectedColors[player] !== null) {
+    // Can't change color if player already selected a color (except on teams)
+    if (!global.state.teams && this.selectedColors[player] !== null) {
         return;
     }
 
+    if (global.state.teams) {
+        this.changeTeamColor(player, direction);
+    } else {
+        this.changeFreeForFallColor(player, direction);
+    }
+};
+
+SelectColorState.prototype.changeFreeForFallColor = function(player, direction)
+{
     var colorIndex;
     if (direction === 'LEFT') {
         colorIndex = (
@@ -124,6 +194,61 @@ SelectColorState.prototype.changeColor = function(player, direction)
 
     this.playerSprites[player].tint = colors[colorIndex].hex;
     this.colorCursors[player] = colorIndex;
+};
+
+SelectColorState.prototype.changeTeamColor = function(player, direction)
+{
+    var BLUE = 0;
+    var CYAN = 6;
+    var RED = 1;
+    var PINK = 8;
+    if (direction === 'LEFT') {
+        if (this.selectedColors[player] === null) {
+            // If both blues already selected, do nothing
+            if (this.selectedColors.indexOf(BLUE) !== -1 && this.selectedColors.indexOf(CYAN) !== -1) {
+                return;
+            }
+
+            if (this.selectedColors.indexOf(BLUE) !== -1) {
+                this.selectedColors[player] = CYAN;
+            } else {
+                this.selectedColors[player] = BLUE;
+            }
+            this.playerSprites[player].tint = colors[this.selectedColors[player]].hex;
+            this.playerSprites[player].body.x = (this.game.width / 2) - 100;
+            this.teamPlayers.blue.push(player);
+        } else if ([BLUE, CYAN].indexOf(this.selectedColors[player]) === -1) {
+            this.playerSprites[player].tint = 0xffffff;
+            this.unselectColor(player);
+            this.playerSprites[player].body.x = (this.game.width / 2);
+            this.teamPlayers.blue = _.without(this.teamPlayers.blue, player);
+        }
+    } else {
+        if (this.selectedColors[player] === null) {
+            // If both reds already selected, do nothing
+            if (this.selectedColors.indexOf(RED) !== -1 && this.selectedColors.indexOf(PINK) !== -1) {
+                return;
+            }
+
+            if (this.selectedColors.indexOf(RED) !== -1) {
+                this.selectedColors[player] = PINK;
+            } else {
+                this.selectedColors[player] = RED;
+            }
+            this.playerSprites[player].body.x = (this.game.width / 2) + 100;
+            this.playerSprites[player].tint = colors[this.selectedColors[player]].hex;
+            this.teamPlayers.red.push(player);
+        } else if ([RED, PINK].indexOf(this.selectedColors[player]) === -1) {
+            this.playerSprites[player].tint = 0xffffff;
+            this.unselectColor(player);
+            this.playerSprites[player].body.x = (this.game.width / 2);
+            this.teamPlayers.red = _.without(this.teamPlayers.red, player);
+        }
+    }
+
+    if (this.allSelected()) {
+        this.showAllSelectedMessage();
+    }
 };
 
 SelectColorState.prototype.getNextAvailableColorIndex = function(index, direction)
@@ -168,10 +293,7 @@ SelectColorState.prototype.selectColor = function(player)
 SelectColorState.prototype.allSelected = function()
 {
     var selections = this.selectedColors.filter(function(index) {return index !== null});
-    return (
-        selections.length === global.state.players ||
-        selections.length === 2 && global.state.teams
-    );
+    return selections.length === global.state.players;
 };
 
 SelectColorState.prototype.unselectColor = function(player)
@@ -200,7 +322,7 @@ SelectColorState.prototype.showAllSelectedMessage = function()
 {
     this.allSelectedMessage = this.game.add.text(
         this.game.width / 2,
-        (this.game.height / 2) + 200,
+        (this.game.height / 2) + 250,
         "Press button to start!",
         {
             font: '24px Arial',
@@ -216,6 +338,7 @@ SelectColorState.prototype.startGame = function()
 {
     this.controls.reset();
     global.state.colors = this.selectedColors;
+    global.state.teamPlayers = this.teamPlayers;
     this.game.state.add('loading', new LoadingNextRaceState(), true);
 };
 
