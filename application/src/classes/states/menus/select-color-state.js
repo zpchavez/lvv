@@ -203,48 +203,40 @@ SelectColorState.prototype.changeTeamColor = function(player, direction)
     var CYAN = 6;
     var RED = 1;
     var PINK = 8;
+
+    var selectTeamColor = function(teamShades, teamColorKey, directionMultiplier) {
+        if (this.selectedColors[player] === null) {
+            // If both team colors already selected, do nothing
+            if (
+                this.selectedColors.indexOf(teamShades[0]) !== -1 &&
+                this.selectedColors.indexOf(teamShades[1]) !== -1
+            ) {
+                return;
+            }
+
+            if (this.selectedColors.indexOf(teamShades[0]) !== -1) {
+                this.selectedColors[player] = teamShades[1];
+            } else {
+                this.selectedColors[player] = teamShades[0];
+            }
+            this.playerSprites[player].tint = colors[this.selectedColors[player]].hex;
+            this.playerSprites[player].body.x = (
+                (this.game.width / 2) +
+                (directionMultiplier * 100)
+            );
+            this.teamPlayers[teamColorKey].push(player);
+        } else if (teamShades.indexOf(this.selectedColors[player]) === -1) {
+            this.playerSprites[player].tint = 0xffffff;
+            this.unselectColor(player);
+            this.playerSprites[player].body.x = (this.game.width / 2);
+            this.teamPlayers[teamColorKey] = _.without(this.teamPlayers[teamColorKey], player);
+        }
+    }.bind(this);
+
     if (direction === 'LEFT') {
-        if (this.selectedColors[player] === null) {
-            // If both blues already selected, do nothing
-            if (this.selectedColors.indexOf(BLUE) !== -1 && this.selectedColors.indexOf(CYAN) !== -1) {
-                return;
-            }
-
-            if (this.selectedColors.indexOf(BLUE) !== -1) {
-                this.selectedColors[player] = CYAN;
-            } else {
-                this.selectedColors[player] = BLUE;
-            }
-            this.playerSprites[player].tint = colors[this.selectedColors[player]].hex;
-            this.playerSprites[player].body.x = (this.game.width / 2) - 100;
-            this.teamPlayers.blue.push(player);
-        } else if ([BLUE, CYAN].indexOf(this.selectedColors[player]) === -1) {
-            this.playerSprites[player].tint = 0xffffff;
-            this.unselectColor(player);
-            this.playerSprites[player].body.x = (this.game.width / 2);
-            this.teamPlayers.blue = _.without(this.teamPlayers.blue, player);
-        }
+        selectTeamColor([BLUE, CYAN], 'blue', -1);
     } else {
-        if (this.selectedColors[player] === null) {
-            // If both reds already selected, do nothing
-            if (this.selectedColors.indexOf(RED) !== -1 && this.selectedColors.indexOf(PINK) !== -1) {
-                return;
-            }
-
-            if (this.selectedColors.indexOf(RED) !== -1) {
-                this.selectedColors[player] = PINK;
-            } else {
-                this.selectedColors[player] = RED;
-            }
-            this.playerSprites[player].body.x = (this.game.width / 2) + 100;
-            this.playerSprites[player].tint = colors[this.selectedColors[player]].hex;
-            this.teamPlayers.red.push(player);
-        } else if ([RED, PINK].indexOf(this.selectedColors[player]) === -1) {
-            this.playerSprites[player].tint = 0xffffff;
-            this.unselectColor(player);
-            this.playerSprites[player].body.x = (this.game.width / 2);
-            this.teamPlayers.red = _.without(this.teamPlayers.red, player);
-        }
+        selectTeamColor([RED, PINK], 'red', 1);
     }
 
     if (this.allSelected()) {
