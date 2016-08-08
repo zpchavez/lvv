@@ -12,8 +12,7 @@ var Score            = require('../score');
 var _                = require('underscore');
 var util             = require('../../util');
 var playerColorNames = require('../../player-color-names');
-var settings         = require('../../settings');
-var global = require('../../global-state');
+var globalState = require('../../global-state');
 var OverallScoreState = require('./overall-score-state');
 var PowerupFactory = require('../powerups/powerup-factory');
 var rng = require('../../rng');
@@ -27,15 +26,15 @@ var RaceState = function(trackData, options)
 
     options = options || {};
     _(options).defaults({
-        debug    : settings.debug,
-        players  : settings.players,
-        teams    : settings.teams,
-        laps     : settings.laps,
-        selector : settings.selector,
+        debug    : globalState.get('debug'),
+        players  : globalState.get('players'),
+        teams    : globalState.get('teams'),
+        laps     : globalState.get('laps'),
+        selector : globalState.get('selector'),
     });
 
-    if (! global.state.score) {
-        global.setInitialScore(options.players, options.teams);
+    if (! globalState.get('score')) {
+        globalState.setInitialScore(options.players, options.teams);
     }
 
     if (options.teams && options.players !== 4) {
@@ -251,7 +250,7 @@ RaceState.prototype.initPlayers = function()
         this.cars.push(this.carFactory.getNew(
             this.startingPoint[0] + offsetVector[0],
             this.startingPoint[1] + offsetVector[1],
-            'player' + (i + 1)
+            i
         ));
     }
 

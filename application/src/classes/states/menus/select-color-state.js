@@ -2,7 +2,7 @@ var Phaser = require('phaser');
 var Controls = require('../../controls');
 var LoadingNextRaceState = require('../loading-next-race-state');
 var CarFactory = require('../../car-factory');
-var global = require('../../../global-state');
+var globalState = require('../../../global-state');
 var colors = require('../../../colors');
 var _ = require('underscore');
 
@@ -46,7 +46,7 @@ SelectColorState.prototype.renderCars = function()
 {
     this.game.physics.startSystem(Phaser.Physics.P2JS);
 
-    if (global.state.teams) {
+    if (globalState.get('teams')) {
         this.renderTeamSelection();
         return;
     } else {
@@ -58,22 +58,22 @@ SelectColorState.prototype.renderCars = function()
 SelectColorState.prototype.renderFreeForAllSelection = function()
 {
     var positions;
-    if (global.state.players === 1) {
+    if (globalState.get('players') === 1) {
         positions = [
             [this.game.width / 2, this.game.height / 2]
         ];
-    } else if (global.state.players === 2) {
+    } else if (globalState.get('players') === 2) {
         positions = [
             [(this.game.width / 2) - 50, this.game.height / 2],
             [(this.game.width / 2) + 50, this.game.height / 2],
         ];
-    } else if (global.state.players === 3) {
+    } else if (globalState.get('players') === 3) {
         positions = [
             [this.game.width / 2, this.game.height / 2],
             [(this.game.width / 2) - 100, this.game.height / 2],
             [(this.game.width / 2) + 100, this.game.height / 2],
         ];
-    } else if (global.state.players === 4) {
+    } else if (globalState.get('players') === 4) {
         positions = [
             [(this.game.width / 2) - 150, this.game.height / 2],
             [(this.game.width / 2) - 50, this.game.height / 2],
@@ -81,20 +81,20 @@ SelectColorState.prototype.renderFreeForAllSelection = function()
             [(this.game.width / 2) + 150, this.game.height / 2],
         ];
     } else {
-        throw new Error('Invalid number of players: ' + global.state.players);
+        throw new Error('Invalid number of players: ' + globalState.get('players'));
     }
 
     var playerSprites = [];
-    for (var p = 0; p < positions.length; p += 1) {
+    for (var player = 0; player < positions.length; player += 1) {
         playerSprites.push(
             this.carFactory.getNew(
-                positions[p][0],
-                positions[p][1],
-                'player' + (p + 1)
+                positions[player][0],
+                positions[player][1],
+                player
             )
         );
-        playerSprites[p].tint = colors[p].hex;
-        this.game.world.addChild(playerSprites[p]);
+        playerSprites[player].tint = colors[player].hex;
+        this.game.world.addChild(playerSprites[player]);
     }
     this.playerSprites = playerSprites;
     this.colorCursors = [0, 1, 2, 3];
@@ -136,15 +136,16 @@ SelectColorState.prototype.renderTeamSelection = function()
         [this.game.width / 2, (this.game.height / 2) + 190],
     ];
     var playerSprites = [];
-    for (var p = 0; p < positions.length; p += 1) {
+    for (var player = 0; player < positions.length; player += 1) {
         playerSprites.push(
             this.carFactory.getNew(
-                positions[p][0],
-                positions[p][1],
-                'player' + (p + 1)
+                positions[player][0],
+                positions[player][1],
+                player
             )
         );
-        this.game.world.addChild(playerSprites[p]);
+        playerSprites[player].tint = 0xffffff;
+        this.game.world.addChild(playerSprites[player]);
     }
     this.playerSprites = playerSprites;
     this.selectedColors = [null, null, null, null];
@@ -159,11 +160,11 @@ SelectColorState.prototype.changeColor = function(player, direction)
     }
 
     // Can't change color if player already selected a color (except on teams)
-    if (!global.state.teams && this.selectedColors[player] !== null) {
+    if (!globalState.get('teams') && this.selectedColors[player] !== null) {
         return;
     }
 
-    if (global.state.teams) {
+    if (globalState.get('teams')) {
         this.changeTeamColor(player, direction);
     } else {
         this.changeFreeForFallColor(player, direction);
@@ -293,7 +294,7 @@ SelectColorState.prototype.selectColor = function(player)
 SelectColorState.prototype.allSelected = function()
 {
     var selections = this.selectedColors.filter(function(index) {return index !== null});
-    return selections.length === global.state.players;
+    return selections.length === globalState.get('players');
 };
 
 SelectColorState.prototype.unselectColor = function(player)
@@ -337,8 +338,8 @@ SelectColorState.prototype.showAllSelectedMessage = function()
 SelectColorState.prototype.startGame = function()
 {
     this.controls.reset();
-    global.state.colors = this.selectedColors;
-    global.state.teamPlayers = this.teamPlayers;
+    globalState.set('colors', this.selectedColors);
+    globalState.set('teamPlayers', this.teamPlayers || null);
     this.game.state.add('loading', new LoadingNextRaceState(), true);
 };
 

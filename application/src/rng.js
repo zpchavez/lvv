@@ -1,12 +1,11 @@
 'use strict';
 
-var randomSeed  = require('random-seed');
-var settings    = require('./settings');
+var randomSeed = require('random-seed');
+var globalState = require('./global-state');
 
 var RNG = function()
 {
-    console.log('The seed is: ' + settings.seed);
-    this.rng = randomSeed.create(settings.seed);
+    this.rng = randomSeed.create(globalState.get('seed'));
 };
 
 RNG.prototype.getIntBetween = function(min, max)

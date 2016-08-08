@@ -1,27 +1,42 @@
+var settingsFromQuery = require('./settings-from-query');
+
+var initialState = Object.assign(
+    {
+        colors: [0, 1, 2, 3],
+        teamPlayers: {blue: [0, 1], red: [2, 3]},
+    },
+    settingsFromQuery
+);
+
 module.exports = {
-    state: {},
+    state: Object.assign({}, initialState),
 
     reset: function() {
-        this.state = {};
+        this.state = Object.assign({}, initialState);
+    },
+
+    set: function(key, value) {
+        this.state[key] = value;
+    },
+
+    setFromObj: function(stateValues) {
+        this.state = Object.assign(this.state, stateValues);
+    },
+
+    get: function(key) {
+        return this.state[key];
     },
 
     setInitialScore: function(players, teams) {
-        this.state = {
-            players: players,
-            teams: teams,
-        };
+        if (players) {
+            this.set('players', players);
+        }
+        if (typeof teams !== 'undefined') {
+            this.set('teams', teams);
+        }
 
-        if (! this.state.playerColors) {
-            this.state.playerColors = [
-                'blue',
-                'red',
-                'yellow',
-                'green'
-            ];
-            this.state.teamColors = [
-                'blue',
-                'red'
-            ];
+        if (! this.get('players')) {
+            throw new Error('Must set "players" before initializing score');
         }
 
         var score = {};

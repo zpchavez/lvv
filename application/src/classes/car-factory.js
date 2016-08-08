@@ -1,9 +1,9 @@
 'use strict';
 
-var CarSprite            = require('./car');
-var playerColorNames     = require('../player-color-names');
-var teamPlayerColorNames = require('../team-player-color-names');
-var _                    = require('underscore');
+var CarSprite = require('./car');
+var colors = require('../colors');
+var global = require('../global-state');
+var _ = require('underscore');
 var WeaponFactory = require('./weapons/weapon-factory');
 
 var CarFactory = function(state, options)
@@ -20,10 +20,10 @@ CarFactory.prototype.vehicleName = 'car';
 
 CarFactory.prototype.loadAssets = function()
 {
+    this.state.load.image('player0', this.getSpritePath());
     this.state.load.image('player1', this.getSpritePath());
     this.state.load.image('player2', this.getSpritePath());
     this.state.load.image('player3', this.getSpritePath());
-    this.state.load.image('player4', this.getSpritePath());
 
     this.weaponFactory.loadAssets();
 };
@@ -35,9 +35,20 @@ CarFactory.prototype.getSpritePath = function(player)
 
 CarFactory.prototype.spritePrototype = CarSprite;
 
-CarFactory.prototype.getNew = function(x, y, key)
+CarFactory.prototype.getNew = function(x, y, playerNumber)
 {
-    return new this.spritePrototype(this.state, x, y, key, this.weaponFactory);
+    var car = new this.spritePrototype(
+        this.state,
+        x,
+        y,
+        'player' + playerNumber,
+        this.weaponFactory
+    );
+
+    if (global.state.colors) {
+        car.tint = colors[global.state.colors[playerNumber]].hex;
+    }
+    return car;
 };
 
 module.exports = CarFactory;

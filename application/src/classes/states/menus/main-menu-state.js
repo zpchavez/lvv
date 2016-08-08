@@ -3,8 +3,7 @@
 var Phaser = require('phaser');
 var Controls = require('../../controls');
 var SelectColorState = require('./select-color-state');
-var settings = require('../../../settings');
-var global = require('../../../global-state');
+var globalState = require('../../../global-state');
 
 var PLAYERS_1 = 0;
 var PLAYERS_2 = 1;
@@ -39,7 +38,7 @@ MainMenuState.prototype.create = function()
     this.renderNumPlayersMenu();
     this.renderNumPlayersCursor();
 
-    if (settings.profiler) {
+    if (globalState.get('profiler')) {
         this.game.add.plugin(Phaser.Plugin.Debug);
     }
 
@@ -118,8 +117,8 @@ MainMenuState.prototype.moveCursorDown = function()
 
 MainMenuState.prototype.selectOption = function()
 {
-    global.state.players = this.playerChoices[this.numPlayersSelection].players;
-    global.state.teams = this.playerChoices[this.numPlayersSelection].teams;
+    globalState.set('players', this.playerChoices[this.numPlayersSelection].players);
+    globalState.set('teams', !! this.playerChoices[this.numPlayersSelection].teams);
     this.game.state.add('select-color', new SelectColorState(), true);
 };
 
