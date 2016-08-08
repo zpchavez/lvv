@@ -81,7 +81,6 @@ RaceState.prototype.preload = function()
     this.track.loadAssets();
     this.score.loadAssets();
 
-
     this.load.tiledmap(
         cacheKey('track', 'tiledmap'),
         null,
@@ -521,7 +520,7 @@ RaceState.prototype.awardPoints = function()
         if (this.playerCount === 2) {
             this.score.awardTwoPlayerPointToPlayer(winningCar.playerNumber);
         } else if (this.teams) {
-            this.score.awardTwoPlayerPointToPlayer(winningCar.teamNumber);
+            this.score.awardPointToTeam(winningCar.playerNumber);
         } else {
             if (this.eliminationStack.indexOf(winningCar.playerNumber) === -1) {
                 this.eliminationStack.push(winningCar.playerNumber);
