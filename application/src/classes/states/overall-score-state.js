@@ -1,18 +1,19 @@
 var Phaser = require('phaser');
-var global = require('../../global-state');
+var globalState = require('../../global-state');
+var colors = require('../../colors');
 
 var OverallScoreState = function(winner)
 {
     Phaser.State.apply(this, arguments);
     this.winner = winner;
-    global.state.score[winner] += 1;
+    globalState.get('score')[winner] += 1;
 };
 
 OverallScoreState.prototype = Object.create(Phaser.State.prototype);
 
 OverallScoreState.prototype.create = function()
 {
-    if (global.state.score[this.winner] === 4) {
+    if (globalState.get('score')[this.winner] === 4) {
         this.renderWinnerMessage();
         setTimeout(this.returnToMainMenu.bind(this), 5000);
     } else {
@@ -35,13 +36,28 @@ OverallScoreState.prototype.returnToMainMenu = function()
     this.game.state.add('main-menu', new MainMenuState, true);
 };
 
+OverallScoreState.prototype.getWinnerColor = function()
+{
+    var winnerColor;
+    if (globalState.get('teams')) {
+        winnerColor = (
+            this.winner === 0
+                ? colors[0]
+                : colors[1]
+        );
+    } else {
+        winnerColor = globalState.get('colors')[this.winner];
+    }
+    return winnerColor;
+};
+
 OverallScoreState.prototype.renderWinnerMessage = function()
 {
-    var winnerColor = global.state.playerColors[this.winner];
+    var winnerColor = this.getWinnerColor();
     var winnerText = this.game.add.text(
         this.game.width / 2,
         this.game.height / 2 - 100,
-        winnerColor.toUpperCase() + ' WINS!',
+        winnerColor.name.toUpperCase() + ' WINS!',
         {
             font: '42px Arial',
             fill: '#ffffff',
@@ -52,11 +68,11 @@ OverallScoreState.prototype.renderWinnerMessage = function()
 
 OverallScoreState.prototype.renderScore = function()
 {
-    var winnerColor = global.state.playerColors[this.winner];
+    var winnerColor = this.getWinnerColor();
     var winnerText = this.game.add.text(
         this.game.width / 2,
         this.game.height / 2 - 100,
-        winnerColor.charAt(0).toUpperCase() + winnerColor.substr(1) + ' gets a point!',
+        winnerColor.name.charAt(0).toUpperCase() + winnerColor.name.substr(1) + ' gets a point!',
         {
             font: '42px Arial',
             fill: '#ffffff',
@@ -64,8 +80,8 @@ OverallScoreState.prototype.renderScore = function()
     )
     winnerText.anchor.set(0.5);
 
-    global.state.score.forEach(function (score, index) {
-        var color = global.state.playerColors[index];
+    globalState.get('score').forEach(function (score, index) {
+        var color = colors[globalState.get('colors')[index]];
         var trophies = '';
         for (var i = 0; i < score; i += 1) {
             trophies += '🏆';
@@ -73,10 +89,10 @@ OverallScoreState.prototype.renderScore = function()
         this.game.add.text(
             this.game.width / 2 - 200,
             this.game.height / 2 + (index * 50),
-            color.charAt(0).toUpperCase() + color.substr(1),
+            color.name.charAt(0).toUpperCase() + color.name.substr(1),
             {
                 font: '32px Arial',
-                fill: color,
+                fill: color.hex,
                 stroke: '#ffffff',
                 strokeThickness: 2,
             }

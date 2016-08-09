@@ -16,6 +16,7 @@ var globalState = require('../../global-state');
 var OverallScoreState = require('./overall-score-state');
 var PowerupFactory = require('../powerups/powerup-factory');
 var rng = require('../../rng');
+var colors = require('../../colors');
 
 var NEXT_GAME_DELAY  = 5000;
 var NEXT_ROUND_DELAY = 2500;
@@ -824,10 +825,15 @@ RaceState.prototype.showWinnerMessage = function()
 {
     var winningPlayerOrTeamNumber = this.score.getWinner() || this.score.getLeaders()[0];
 
+    var color;
+    if (this.teams) {
+        color = winningPlayerOrTeamNumber === 0 ? 'BLUE' : 'RED';
+    } else {
+        color = colors[globalState.get('colors')[winningPlayerOrTeamNumber]].name.toUpperCase();
+    }
+
     this.showMessage(
-        playerColorNames[winningPlayerOrTeamNumber]
-            .toUpperCase()
-            .concat(' WINS!'),
+        color + ' WINS!',
         {showFor : NEXT_GAME_DELAY}
     );
 };
