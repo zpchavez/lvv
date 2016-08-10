@@ -2,6 +2,17 @@ var Phaser = require('phaser');
 var globalState = require('../../global-state');
 var colors = require('../../colors');
 
+var leftpad = function(str, len, ch) {
+  str = String(str);
+  var i = -1;
+  if (!ch && ch !== 0) ch = ' ';
+  len = len - str.length;
+  while (++i < len) {
+    str = ch + str;
+  }
+  return str;
+}
+
 var OverallScoreState = function(winner)
 {
     Phaser.State.apply(this, arguments);
@@ -46,7 +57,7 @@ OverallScoreState.prototype.getWinnerColor = function()
                 : colors[1]
         );
     } else {
-        winnerColor = globalState.get('colors')[this.winner];
+        winnerColor = colors[globalState.get('colors')[this.winner]];
     }
     return winnerColor;
 };
@@ -81,7 +92,12 @@ OverallScoreState.prototype.renderScore = function()
     winnerText.anchor.set(0.5);
 
     globalState.get('score').forEach(function (score, index) {
-        var color = colors[globalState.get('colors')[index]];
+        var color;
+        if (globalState.get('teams')) {
+            color = colors[index];
+        } else {
+            color = colors[globalState.get('colors')[index]];
+        }
         var trophies = '';
         for (var i = 0; i < score; i += 1) {
             trophies += '🏆';
@@ -92,13 +108,13 @@ OverallScoreState.prototype.renderScore = function()
             color.name.charAt(0).toUpperCase() + color.name.substr(1),
             {
                 font: '32px Arial',
-                fill: color.hex,
+                fill: '#' + leftpad(color.hex.toString(16), 6, 0),
                 stroke: '#ffffff',
                 strokeThickness: 2,
             }
         );
         this.game.add.text(
-            this.game.width / 2 - 100,
+            this.game.width / 2 - 80,
             this.game.height / 2 + 5 + (index * 50),
             trophies,
             {
