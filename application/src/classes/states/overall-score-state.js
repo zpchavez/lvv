@@ -24,7 +24,7 @@ OverallScoreState.prototype = Object.create(Phaser.State.prototype);
 
 OverallScoreState.prototype.create = function()
 {
-    if (globalState.get('score')[this.winner] === 4) {
+    if (globalState.get('score')[this.winner] === 3) {
         this.renderWinnerMessage();
         setTimeout(this.returnToMainMenu.bind(this), 5000);
     } else {
