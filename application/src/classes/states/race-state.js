@@ -12,11 +12,11 @@ var Score            = require('../score');
 var _                = require('underscore');
 var util             = require('../../util');
 var playerColorNames = require('../../player-color-names');
-var settings         = require('../../settings');
-var global = require('../../global-state');
+var globalState = require('../../global-state');
 var OverallScoreState = require('./overall-score-state');
 var PowerupFactory = require('../powerups/powerup-factory');
 var rng = require('../../rng');
+var colors = require('../../colors');
 
 var NEXT_GAME_DELAY  = 5000;
 var NEXT_ROUND_DELAY = 2500;
@@ -27,15 +27,15 @@ var RaceState = function(trackData, options)
 
     options = options || {};
     _(options).defaults({
-        debug    : settings.debug,
-        players  : settings.players,
-        teams    : settings.teams,
-        laps     : settings.laps,
-        selector : settings.selector,
+        debug    : globalState.get('debug'),
+        players  : globalState.get('players'),
+        teams    : globalState.get('teams'),
+        laps     : globalState.get('laps'),
+        selector : globalState.get('selector'),
     });
 
-    if (! global.state.score) {
-        global.setInitialScore(options.players, options.teams);
+    if (! globalState.get('score')) {
+        globalState.setInitialScore(options.players, options.teams);
     }
 
     if (options.teams && options.players !== 4) {
@@ -81,7 +81,6 @@ RaceState.prototype.preload = function()
     this.powerupFactory.loadAssets();
     this.track.loadAssets();
     this.score.loadAssets();
-
 
     this.load.tiledmap(
         cacheKey('track', 'tiledmap'),
@@ -251,7 +250,7 @@ RaceState.prototype.initPlayers = function()
         this.cars.push(this.carFactory.getNew(
             this.startingPoint[0] + offsetVector[0],
             this.startingPoint[1] + offsetVector[1],
-            'player' + (i + 1)
+            i
         ));
     }
 
@@ -522,7 +521,7 @@ RaceState.prototype.awardPoints = function()
         if (this.playerCount === 2) {
             this.score.awardTwoPlayerPointToPlayer(winningCar.playerNumber);
         } else if (this.teams) {
-            this.score.awardTwoPlayerPointToPlayer(winningCar.teamNumber);
+            this.score.awardPointToTeam(winningCar.playerNumber);
         } else {
             if (this.eliminationStack.indexOf(winningCar.playerNumber) === -1) {
                 this.eliminationStack.push(winningCar.playerNumber);
@@ -826,10 +825,15 @@ RaceState.prototype.showWinnerMessage = function()
 {
     var winningPlayerOrTeamNumber = this.score.getWinner() || this.score.getLeaders()[0];
 
+    var color;
+    if (this.teams) {
+        color = winningPlayerOrTeamNumber === 0 ? 'BLUE' : 'RED';
+    } else {
+        color = colors[globalState.get('colors')[winningPlayerOrTeamNumber]].name.toUpperCase();
+    }
+
     this.showMessage(
-        playerColorNames[winningPlayerOrTeamNumber]
-            .toUpperCase()
-            .concat(' WINS!'),
+        color + ' WINS!',
         {showFor : NEXT_GAME_DELAY}
     );
 };

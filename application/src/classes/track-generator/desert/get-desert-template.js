@@ -94,7 +94,8 @@ module.exports = function(options) {
             "AspirinBottle": true,
             "AspirinPill": true,
             "Toothbrush": true,
-            "Floss": true
+            "Floss": true,
+            "Lollipop": true,
         },
         "nextobjectid":28,
         "orientation":"orthogonal",

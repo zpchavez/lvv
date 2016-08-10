@@ -1,6 +1,9 @@
 'use strict';
 
-var UNAWARDED_POINT_FRAME = 4;
+var colors = require('../colors');
+var globalState = require('../global-state');
+var BLUE = 0;
+var RED = 1;
 
 var Score = function(state, playerCount)
 {
@@ -14,10 +17,9 @@ var Score = function(state, playerCount)
 
 Score.prototype.loadAssets = function()
 {
-    this.state.game.load.atlas(
-        'score-markers',
-        'assets/img/score-markers.png',
-        'assets/img/score-markers.json'
+    this.state.game.load.image(
+        'score-marker',
+        'assets/img/point-unawarded.png'
     );
 };
 
@@ -53,12 +55,16 @@ Score.prototype.show = function()
     }
 
     if (this.playerCount === 2) {
-        y        = 60;
+        y = 60;
         spriteCount = 0;
 
         for (var p1Point = 0; p1Point < this.playerScores[0]; p1Point += 1) {
-            this.twoPlayerSprites[spriteCount] = this.state.add.sprite(20, y, 'score-markers');
-            this.twoPlayerSprites[spriteCount].frame = 0;
+            this.twoPlayerSprites[spriteCount] = this.state.add.sprite(20, y, 'score-marker');
+            this.twoPlayerSprites[spriteCount].tint = (
+                globalState.get('teams')
+                    ? colors[BLUE].hex
+                    : colors[globalState.get('colors')[0]].hex
+            );
             this.twoPlayerSprites[spriteCount].fixedToCamera = true;
 
             y += 20;
@@ -66,8 +72,12 @@ Score.prototype.show = function()
         }
 
         for (var p2Point = 0; p2Point < this.playerScores[1]; p2Point += 1) {
-            this.twoPlayerSprites[spriteCount] = this.state.add.sprite(20, y, 'score-markers');
-            this.twoPlayerSprites[spriteCount].frame = 1;
+            this.twoPlayerSprites[spriteCount] = this.state.add.sprite(20, y, 'score-marker');
+            this.twoPlayerSprites[spriteCount].tint = (
+                globalState.get('teams')
+                    ? colors[RED].hex
+                    : colors[globalState.get('colors')[1]].hex
+            );
             this.twoPlayerSprites[spriteCount].fixedToCamera = true;
 
             y += 20;
@@ -79,8 +89,8 @@ Score.prototype.show = function()
             x = 30 * (i + 1);
 
             for (var p = 7; p >= 0; p -= 1) {
-                this.freeForAllSprites[i][p] = this.state.add.sprite(x, y, 'score-markers');
-                this.freeForAllSprites[i][p].frame = UNAWARDED_POINT_FRAME;
+                this.freeForAllSprites[i][p] = this.state.add.sprite(x, y, 'score-marker');
+                this.freeForAllSprites[i][p].tint = 0xffffff;
                 this.freeForAllSprites[i][p].fixedToCamera = true;
 
                 y += 20;
@@ -112,25 +122,59 @@ Score.prototype.awardTwoPlayerPointToPlayer = function(player)
         spriteIndexToChange = this.playerScores[0];
     }
 
-    this.flashBetweenFrames(this.twoPlayerSprites[spriteIndexToChange], player);
+    this.flashBetweenColors(
+        this.twoPlayerSprites[spriteIndexToChange],
+        globalState.get('colors')[player].hex
+    );
 };
 
-Score.prototype.flashBetweenFrames = function(sprite, frame)
+Score.prototype.awardPointToTeam = function(player)
 {
-    var originalFrame = sprite.frame;
+    var otherTeam, spriteIndexToChange;
 
-    sprite.frame = frame;
-    this.changeFrameIn(sprite, originalFrame, 500)
-        .then(this.changeFrameIn.bind(this, sprite, frame, 500))
-        .then(this.changeFrameIn.bind(this, sprite, originalFrame, 500))
-        .then(this.changeFrameIn.bind(this, sprite, frame, 500));
+    var team = (
+        globalState.get('teamPlayers').blue.indexOf(player) !== -1
+            ? 0 // is blue team
+            : 1 // is red team
+    );
+
+    otherTeam = (team === 0) ? 1 : 0;
+
+    if (this.playerScores[team] === 8) {
+        throw new Error('Score cannot exceed 8');
+    }
+
+    this.playerScores[team] += 1;
+    this.playerScores[otherTeam] -= 1;
+
+    if (team === 0) {
+        spriteIndexToChange = this.playerScores[0] - 1;
+    } else {
+        spriteIndexToChange = this.playerScores[0];
+    }
+
+    this.flashBetweenColors(
+        this.twoPlayerSprites[spriteIndexToChange],
+        colors[team].hex
+    );
 };
 
-Score.prototype.changeFrameIn = function(sprite, frame, delay)
+Score.prototype.flashBetweenColors = function(sprite, tint)
+{
+    var originalTint = sprite.tint;
+
+    sprite.tint = tint;
+    this.changeColorIn(sprite, originalTint, 500)
+        .then(this.changeColorIn.bind(this, sprite, tint, 500))
+        .then(this.changeColorIn.bind(this, sprite, originalTint, 500))
+        .then(this.changeColorIn.bind(this, sprite, tint, 500));
+};
+
+Score.prototype.changeColorIn = function(sprite, tint, delay)
 {
     return new Promise(function (resolve, reject) {
         setTimeout(function() {
-            sprite.frame = frame;
+            sprite.tint = tint;
             resolve();
         }.bind(this), delay);
     }.bind(this));
@@ -164,9 +208,13 @@ Score.prototype.awardPointsForFreeForAll = function(playerStack)
     // Redraw score
     for (var i = 0; i < this.playerCount; i += 1) {
         for (var p = 7; p >= 0; p -= 1) {
-            this.flashBetweenFrames(
+            this.flashBetweenColors(
                 this.freeForAllSprites[i][p],
-                (this.playerScores[i] > p) ? i : UNAWARDED_POINT_FRAME
+                (
+                    (this.playerScores[i] > p)
+                        ? colors[globalState.get('colors')[i]].hex
+                        : 0xffffff
+                )
             )
         }
     }
