@@ -124,7 +124,7 @@ Score.prototype.awardTwoPlayerPointToPlayer = function(player)
 
     this.flashBetweenColors(
         this.twoPlayerSprites[spriteIndexToChange],
-        globalState.get('colors')[player].hex
+        colors[globalState.get('colors')[player]].hex
     );
 };
 
