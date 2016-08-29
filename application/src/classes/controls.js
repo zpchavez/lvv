@@ -85,16 +85,33 @@ var getKeyboardConstant = function(player, button) {
 
 var Controls = function(game) {
     this.onDownMappings = [{}, {}, {}, {}];
+    this.isAxisDown = {
+        'UP': false,
+        'DOWN': false,
+        'LEFT': false,
+        'RIGHT': false,
+    };
 
     for (var player = 0; player < 4; player += 1) {
         game.input.gamepad['pad' + (player + 1)].onDownCallback = (
             this.getGamepadDownCallback(player)
+        );
+        game.input.gamepad['pad' + (player + 1)].onAxisCallback = (
+            this.getGamepadAxisCallback(player)
         );
     }
 
     game.input.gamepad.start();
 
     this.game = game;
+};
+
+Controls.prototype.leftXAxisNeutral = function() {
+    return this.isAxisDown.LEFT === false && this.isAxisDown.RIGHT === false;
+};
+
+Controls.prototype.leftYAxisNeutral = function() {
+    return this.isAxisDown.UP === false && this.isAxisDown.DOWN === false;
 };
 
 Controls.prototype.getGamepadDownCallback = function(player) {
@@ -108,6 +125,36 @@ Controls.prototype.getGamepadDownCallback = function(player) {
             playerMappings[button]();
         }
     };
+};
+
+Controls.prototype.getGamepadAxisCallback = function(player) {
+    var playerMappings = this.onDownMappings[player];
+
+    return function (pad, button, value) {
+        if (this.leftYAxisNeutral() && button === Phaser.Gamepad.XBOX360_STICK_LEFT_Y) {
+            if (value > 0 && playerMappings[gamepadButtonMappings.DOWN]) {
+                playerMappings[gamepadButtonMappings.DOWN]();
+                this.isAxisDown.DOWN = true;
+            } else if (value < 0 && playerMappings[gamepadButtonMappings.UP]) {
+                playerMappings[gamepadButtonMappings.UP]();
+                this.isAxisDown.UP = true;
+            }
+        } else if (this.leftXAxisNeutral() && button === Phaser.Gamepad.XBOX360_STICK_LEFT_X) {
+            if (value > 0 && playerMappings[gamepadButtonMappings.RIGHT]) {
+                playerMappings[gamepadButtonMappings.RIGHT]();
+                this.isAxisDown.RIGHT = true;
+            } else if (value < 0 && playerMappings[gamepadButtonMappings.LEFT]) {
+                playerMappings[gamepadButtonMappings.LEFT]();
+                this.isAxisDown.LEFT = true;
+            }
+        } else if (! this.leftYAxisNeutral() && button === Phaser.Gamepad.XBOX360_STICK_LEFT_Y && value === 0) {
+            this.isAxisDown.UP = false;
+            this.isAxisDown.DOWN = false;
+        } else if (! this.leftXAxisNeutral() && button === Phaser.Gamepad.XBOX360_STICK_LEFT_X && value === 0) {
+            this.isAxisDown.LEFT = false;
+            this.isAxisDown.RIGHT = false;
+        }
+    }.bind(this);
 };
 
 Controls.prototype.onDown = function(player, button, callback) {
@@ -129,6 +176,10 @@ Controls.prototype.isDown = function(player, button) {
     getGamepadConstants(button).forEach(function (buttonConstant) {
         isDown = isDown || this.game.input.gamepad['pad' + (player + 1)].isDown(buttonConstant);
     }.bind(this));
+
+    if (this.isAxisDown[button]) {
+        isDown = true;
+    }
 
     if (isDown) {
         return isDown;
