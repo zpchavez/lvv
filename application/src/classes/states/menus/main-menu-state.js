@@ -1,9 +1,9 @@
 'use strict';
 
 var Phaser = require('phaser');
-var LoadingNextRaceState = require('../loading-next-race-state');
-var settings = require('../../../settings');
-var global = require('../../../global-state');
+var Controls = require('../../controls');
+var SelectColorState = require('./select-color-state');
+var globalState = require('../../../global-state');
 
 var PLAYERS_1 = 0;
 var PLAYERS_2 = 1;
@@ -38,7 +38,7 @@ MainMenuState.prototype.create = function()
     this.renderNumPlayersMenu();
     this.renderNumPlayersCursor();
 
-    if (settings.profiler) {
+    if (globalState.get('profiler')) {
         this.game.add.plugin(Phaser.Plugin.Debug);
     }
 
@@ -117,33 +117,17 @@ MainMenuState.prototype.moveCursorDown = function()
 
 MainMenuState.prototype.selectOption = function()
 {
-    global.state.players = this.playerChoices[this.numPlayersSelection].players;
-    global.state.teams = this.playerChoices[this.numPlayersSelection].teams;
-    this.game.state.add('loading', new LoadingNextRaceState(), true);
+    globalState.set('players', this.playerChoices[this.numPlayersSelection].players);
+    globalState.set('teams', !! this.playerChoices[this.numPlayersSelection].teams);
+    this.game.state.add('select-color', new SelectColorState(), true);
 };
 
 MainMenuState.prototype.initInputs = function()
 {
-    this.cursors = this.game.input.keyboard.createCursorKeys();
-    this.game.input.gamepad.start();
-
-    this.cursors.up.onDown.add(this.moveCursorUp.bind(this));
-    this.cursors.down.onDown.add(this.moveCursorDown.bind(this));
-    this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(this.selectOption.bind(this));
-
-    this.game.input.gamepad.pad1.onDownCallback = function (button) {
-        switch (button) {
-            case Phaser.Gamepad.XBOX360_A:
-                this.selectOption();
-                break;
-            case Phaser.Gamepad.XBOX360_DPAD_UP:
-                this.moveCursorUp();
-                break;
-            case Phaser.Gamepad.XBOX360_DPAD_DOWN:
-                this.moveCursorDown();
-                break;
-        }
-    }.bind(this);
+    this.controls = new Controls(this.game);
+    this.controls.onDown(0, 'UP', this.moveCursorUp.bind(this));
+    this.controls.onDown(0, 'DOWN', this.moveCursorDown.bind(this));
+    this.controls.onDown(0, 'SELECT', this.selectOption.bind(this));
 };
 
 MainMenuState.prototype.toggleFullscreen = function()
@@ -157,7 +141,7 @@ MainMenuState.prototype.toggleFullscreen = function()
 
 MainMenuState.prototype.shutdown = function()
 {
-    this.game.input.gamepad.pad1.onDownCallback = null;
+    this.controls.reset();
 };
 
 module.exports = MainMenuState;

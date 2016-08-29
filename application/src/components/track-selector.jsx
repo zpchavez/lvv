@@ -1,9 +1,9 @@
 'use strict';
 
-var React     = require('react');
+var React = require('react');
 var trackList = require('../track-list');
-var settings  = require('../settings');
-var _         = require('underscore');
+var globalState = require('../global-state');
+var _ = require('underscore');
 
 module.exports = React.createClass({
 
@@ -21,10 +21,10 @@ module.exports = React.createClass({
     getInitialState : function()
     {
         return {
-            selectedTheme : settings.theme,
-            selectedTrack : settings.track,
+            selectedTheme : globalState.get('theme'),
+            selectedTrack : globalState.get('track'),
             debug         : this.props.initialDebug,
-            teams         : settings.teams,
+            teams         : globalState.get('teams'),
             playerCount   : this.props.initialPlayers,
             laps          : this.props.initialLaps
         };
@@ -126,8 +126,8 @@ module.exports = React.createClass({
             '&laps=' + this.state.laps +
             (this.state.teams ? '&teams=true' : '') +
             (this.state.debug ? '&debug=true' : '') +
-            (settings.profiler ? '&profiler=true' : '') +
-            (settings.seed ? '&seed=' + settings.seed : '')
+            (globalState.get('profiler') ? '&profiler=true' : '') +
+            (globalState.get('seed') ? '&seed=' + globalState.get('seed') : '')
         );
     },
 
@@ -144,7 +144,7 @@ module.exports = React.createClass({
         });
 
         return (
-            <select id="theme" onChange={this.selectTheme} defaultValue={settings.theme}>
+            <select id="theme" onChange={this.selectTheme} defaultValue={globalState.get('theme')}>
                 {options}
             </select>
         );
@@ -163,7 +163,7 @@ module.exports = React.createClass({
         });
 
         return (
-            <select id="track" onChange={this.selectTrack} defaultValue={settings.track}>
+            <select id="track" onChange={this.selectTrack} defaultValue={globalState.get('track')}>
                 {options}
             </select>
         );
