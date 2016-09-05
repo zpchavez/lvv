@@ -9,6 +9,8 @@ var Track            = require('../track');
 var TrackSelector    = require('../../components/track-selector');
 var TrackLoader      = require('../track-loader');
 var Score            = require('../score');
+var Controls         = require('../controls');
+
 var _                = require('underscore');
 var util             = require('../../util');
 var playerColorNames = require('../../player-color-names');
@@ -276,40 +278,11 @@ RaceState.prototype.initScore = function()
 
 RaceState.prototype.initInputs = function()
 {
-    this.cursors = this.game.input.keyboard.createCursorKeys();
+    this.controls = new Controls(this.game);
 
-    // Map fire buttons on gamepads
-    var gamepadOnDownCallback = function(i) {
-        return function(button) {
-            if (button === Phaser.Gamepad.XBOX360_RIGHT_BUMPER ||
-                button === Phaser.Gamepad.XBOX360_RIGHT_TRIGGER
-            ) {
-                this.cars[i].fire();
-            }
-        }.bind(this);
-    }.bind(this);
-
-    this.pads = [];
-    for (var i = 0; i < 4; i += 1) {
-        this.pads.push(this.game.input.gamepad['pad' + (i + 1)]);
-        this.game.input.gamepad['pad' + (i + 1)].onDownCallback = gamepadOnDownCallback(i);
+    for (var i = 0; i < this.playerCount; i += 1) {
+        this.controls.onDown(i, 'SPECIAL1', this.cars[i].fire.bind(this.cars[i]))
     }
-
-    // Map fire buttons on keyboard
-    this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(function() {
-        this.cars[0].fire();
-    }.bind(this));
-    this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR).onDown.add(function() {
-        this.cars[1].fire();
-    }.bind(this));
-    this.game.input.keyboard.addKey(Phaser.Keyboard.Y).onDown.add(function() {
-        this.cars[2].fire();
-    }.bind(this));
-    this.game.input.keyboard.addKey(Phaser.Keyboard.O).onDown.add(function() {
-        this.cars[3].fire();
-    }.bind(this));
-
-    this.game.input.gamepad.start();
 };
 
 RaceState.prototype.placeTrackMarkers = function()
@@ -546,73 +519,18 @@ RaceState.prototype.handleInput = function()
         return;
     }
 
-    if (this.cursors.up.isDown) {
-        this.cars[0].accelerate();
-    } else if (this.cursors.down.isDown) {
-        this.cars[0].brake();
-    }
-
-    if (this.cursors.right.isDown) {
-        this.cars[0].turnRight();
-    } else if (this.cursors.left.isDown) {
-        this.cars[0].turnLeft();
-    }
-
-    if (this.playerCount > 1) {
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-            this.cars[1].accelerate();
-        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.S)) {
-            this.cars[1].brake();
-        }
-
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.D)) {
-            this.cars[1].turnRight();
-        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.A)) {
-            this.cars[1].turnLeft();
-        }
-    }
-    if (this.playerCount > 2) {
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.T)) {
-            this.cars[2].accelerate();
-        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.G)) {
-            this.cars[2].brake();
-        }
-
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.H)) {
-            this.cars[2].turnRight();
-        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.F)) {
-            this.cars[2].turnLeft();
-        }
-    }
-    if (this.playerCount > 3) {
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.I)) {
-            this.cars[3].accelerate();
-        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.K)) {
-            this.cars[3].brake();
-        }
-
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.L)) {
-            this.cars[3].turnRight();
-        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.J)) {
-            this.cars[3].turnLeft();
-        }
-    }
-
     for (var i = 0; i < this.playerCount; i += 1) {
-        if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT) ||
-            this.pads[i].axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) < -0.1) {
-            this.cars[i].turnLeft();
-        } else if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_DPAD_RIGHT) ||
-            this.pads[i].axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) > 0.1) {
-            this.cars[i].turnRight();
-        }
-
-        if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_A)) {
+        if (this.controls.isDown(i, 'ACCEL')) {
             this.cars[i].accelerate();
         }
-
-        if (this.pads[i].isDown(Phaser.Gamepad.XBOX360_X)) {
+        if (this.controls.isDown(i, 'BRAKE')) {
             this.cars[i].brake();
+        }
+        if (this.controls.isDown(i, 'RIGHT')) {
+            this.cars[i].turnRight();
+        }
+        if (this.controls.isDown(i, 'LEFT')) {
+            this.cars[i].turnLeft();
         }
     }
 };
