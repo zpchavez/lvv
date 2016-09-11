@@ -33,8 +33,8 @@ AbstractDynamicObstacle.prototype.update = function()
             this.body.velocity.x * frictionMultiplier * this.body.mass,
             this.body.velocity.y * frictionMultiplier * this.body.mass
         ],
-        this.body.x,
-        this.body.y
+        0,
+        0
     );
 };
 
