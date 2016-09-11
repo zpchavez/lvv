@@ -11,6 +11,7 @@ var Comb           = require('./comb');
 var DynamicBox     = require('./dynamic-box');
 var Floss          = require('./floss');
 var LegalPad       = require('./legal-pad');
+var Lollipop       = require('./lollipop');
 var MarkerGreen    = require('./marker-green');
 var MarkerRed      = require('./marker-red');
 var MarkerBlue     = require('./marker-blue');
@@ -37,6 +38,7 @@ ObstacleFactory.prototype.types = {
     'DynamicBox'     : DynamicBox,
     'Floss'          : Floss,
     'LegalPad'       : LegalPad,
+    'Lollipop'       : Lollipop,
     'MarkerGreen'    : MarkerGreen,
     'MarkerRed'      : MarkerRed,
     'MarkerBlue'     : MarkerBlue,

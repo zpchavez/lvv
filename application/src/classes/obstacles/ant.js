@@ -3,6 +3,7 @@
 var AbstractDynamicObstacle = require('./abstract-dynamic-obstacle');
 var rotateVector = require('../../util').rotateVector;
 var rng = require('../../rng');
+var _ = require('underscore');
 
 var Ant = function(state, x, y, key, angle)
 {
@@ -10,6 +11,7 @@ var Ant = function(state, x, y, key, angle)
     this.falling = false;
     this.rotatingAwayFromTile = null;
     this.rotatingAwayFromBody = null;
+    this.rotatingTowardsCandy = null;
 
     this.animations.add('walking', [0, 1, 0, 2], 6, true);
     this.animations.play('walking');
@@ -79,11 +81,81 @@ Ant.prototype.update = function()
         }
     } else if (this.rotatingAwayFromBody) {
         this.body['rotate' + this.rotatingAwayFromBody](this.constants.TURNING_VELOCITY);
+    } else if (this.rotatingTowardsCandy) {
+        if (this.goingTowardsCandy()) {
+            this.rotatingTowardsCandy = null;
+            // Snap to exactly facing the candy
+            this.body.angle = this.getAngleToTheCandy() + 90;
+
+            // Temporarily disable angular damping so the ant doesn't over turn
+            this.body.angularDamping = 1;
+            setTimeout(function () {
+                this.body.angularDamping = this.constants.ANGULAR_DAMPING;
+            }.bind(this), 100)
+        } else {
+            this.body['rotate' + this.rotatingTowardsCandy](this.constants.TURNING_VELOCITY);
+        }
     } else {
         this.rotatingAwayFromTile = null;
     }
 
+    // If too far from candy, turn towards it
+    if (! this.rotatingTowardsCandy && this.isTooFarFromCandy()) {
+        this.startTurningTowardsCandy();
+    }
+
     this.body.moveForward(50);
+};
+
+Ant.prototype.getCandy = function() {
+    if (! this.candy) {
+        var obstaclesLayer = _.findWhere(this.state.trackData.layers, {name : 'obstacles'});
+        this.candy = _.findWhere(obstaclesLayer.objects, {type: 'Lollipop'});
+    }
+    return this.candy;
+};
+
+Ant.prototype.isTooFarFromCandy = function() {
+    var candy = this.getCandy();
+    var distanceFromCandy = Phaser.Math.distance(
+        candy.x,
+        candy.y,
+        this.x,
+        this.y
+    );
+
+    var angleToCandy = this.getAngleToTheCandy();
+
+    return distanceFromCandy > 2000 && !this.goingTowardsCandy();
+};
+
+Ant.prototype.getAdjustedAngle = function() {
+    // Because sprite faces up instead of to the right
+    return this.angle - 90;
+};
+
+Ant.prototype.goingTowardsCandy = function() {
+    var diff = Math.abs(
+        (this.getAngleToTheCandy()) -
+        (this.getAdjustedAngle())
+    ) % 360;
+
+    return (diff < 5);
+};
+
+Ant.prototype.getAngleToTheCandy = function() {
+    var obstaclesLayer = _.findWhere(this.state.trackData.layers, {name : 'obstacles'});
+    var candy = _.findWhere(obstaclesLayer.objects, {type: 'Lollipop'});
+    var targetAngle = Math.atan2(
+        candy.y - this.y,
+        candy.x - this.x
+    );
+    targetAngle = targetAngle * (180 / Math.PI);
+    return targetAngle;
+}
+
+Ant.prototype.startTurningTowardsCandy = function() {
+    this.rotatingTowardsCandy = rng.pickValueFromArray(['Right', 'Left']);
 }
 
 Ant.prototype.isUnpassableTile = function(point) {
