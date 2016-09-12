@@ -35,8 +35,8 @@
     "watchify": "1.0.2"
   },
   "dependencies": {
-    "phaser": "2.3.0",
-    "phaser-tiled": "1.4.1",
+    "phaser": "2.5.0",
+    "phaser-tiled": "^2.0.2",
     "query-string": "1.0.0",
     "random-seed": "0.2.0",
     "react": "0.12.2",
