@@ -81,8 +81,8 @@ Car.prototype.accelerate = function()
 
     this.body.applyForce(
         rotateVector(this.body.rotation, [0, this.constants.ACCELERATION_FORCE]),
-        this.body.x,
-        this.body.y
+        0,
+        0
     );
 };
 
@@ -97,8 +97,8 @@ Car.prototype.brake = function()
             this.body.rotation,
             [0, this.constants.BRAKE_FORCE * this.getMultiplierTotal('brake')]
         ),
-        this.body.x,
-        this.body.y
+        0,
+        0
     );
 };
 
@@ -283,8 +283,8 @@ Car.prototype.applyRollingFriction = function()
                 this.body.mass
             ]
         ),
-        this.body.x,
-        this.body.y
+        0,
+        0
     );
 };
 
@@ -302,8 +302,8 @@ Car.prototype.applySkidFriction = function()
                 0
             ]
         ),
-        this.body.x,
-        this.body.y
+        0,
+        0
     );
 };
 
@@ -452,8 +452,8 @@ Car.prototype.fire = function()
             this.body.rotation,
             [0, this.constants.KICK_BACK_FORCE * -1]
         ),
-        this.body.x,
-        this.body.y
+        0,
+        0
     );
 };
 

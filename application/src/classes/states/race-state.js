@@ -6,6 +6,7 @@ var React            = require('react');
 var CarFactory       = require('../car-factory');
 var ObstacleFactory  = require('../obstacles/obstacle-factory');
 var Track            = require('../track');
+var Tiled            = require('phaser-tiled/src/browser');
 var TrackSelector    = require('../../components/track-selector');
 var TrackLoader      = require('../track-loader');
 var Score            = require('../score');
@@ -73,11 +74,11 @@ RaceState.prototype = Object.create(Phaser.State.prototype);
 RaceState.prototype.preload = function()
 {
     var state = this,
-        cacheKey = Phaser.Plugin.Tiled.utils.cacheKey;
+        cacheKey = Tiled.utils.cacheKey;
 
     this.showMessage('Get Ready!');
 
-    this.game.add.plugin(Phaser.Plugin.Tiled);
+    this.game.add.plugin(Tiled);
 
     this.carFactory.loadAssets();
     this.powerupFactory.loadAssets();
