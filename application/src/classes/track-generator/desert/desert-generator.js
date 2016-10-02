@@ -7,6 +7,7 @@ var SAND = 48;
 var PAVEMENT = 58;
 var GRAVEL = 21;
 var PIT = 24;
+var WATER = 27;
 var FINISH = 53;
 var FINISH_E = 67;
 var FINISH_W = 81;
@@ -70,7 +71,21 @@ edges[PIT] = {
     CORNER_NE: 65,
     CORNER_SW: 52,
     CORNER_SE: 51,
-}
+};
+edges[WATER] = {
+    EDGE_NW: 12,
+    EDGE_N: 13,
+    EDGE_NE: 14,
+    EDGE_W: 26,
+    EDGE_E: 28,
+    EDGE_SW: 40,
+    EDGE_S: 41,
+    EDGE_SE: 42,
+    CORNER_NW: 69,
+    CORNER_NE: 68,
+    CORNER_SW: 55,
+    CORNER_SE: 54,
+};
 edges[PAVEMENT] = {
     EDGE_NW: 43,
     EDGE_N: 44,
@@ -84,7 +99,7 @@ edges[PAVEMENT] = {
     CORNER_NW: 75,
     CORNER_NE: 74,
     CORNER_SW: 61,
-}
+};
 
 var DesertGenerator = function(options) {
     options = options || {};
@@ -95,7 +110,7 @@ var DesertGenerator = function(options) {
         width: MAP_SIZE,
     });
     this.gravelIndices = [];
-    this.pitIndices = [];
+    this.waterIndices = [];
     this.trackIndices = [];
 };
 
@@ -107,10 +122,10 @@ DesertGenerator.prototype.generate = function() {
     this._generateTrackMarkers(points, data);
     this._generateObstacles(points, data);
     this._generateGravel(data);
-    this._generatePits(data);
+    this._generateWater(data);
     this._generateJumps(points, data);
     this._addEdgeTiles(data, this.gravelIndices, GRAVEL);
-    this._addEdgeTiles(data, this.pitIndices, PIT);
+    this._addEdgeTiles(data, this.waterIndices, WATER);
     this._addEdgeTiles(data, this.trackIndices, PAVEMENT);
     this._drawFinishLine(data);
     this._generatePossiblePowerupPoints(data);
@@ -488,15 +503,15 @@ DesertGenerator.prototype._generateJumps = function(points, data) {
 
 DesertGenerator.prototype._addJump = function(data, line, point) {
     var ramps = this._getLayer(data, 'ramps');
-    var pits = this._getLayer(data, 'drops');
+    var water = this._getLayer(data, 'water');
     var gravel = this._getLayer(data, 'rough');
     var background = this._getLayer(data, 'background');
 
     var topLeft, bottomRight, innerTopLeft, innerBottomRight, rampTopLeft;
 
-    var jumpingOverTile = rng.pickValueFromArray([PIT, GRAVEL]);
-    var jumpingOverLayer = jumpingOverTile === PIT ? pits : gravel;
-    var jumpingOverIndices = jumpingOverTile === PIT ? this.pitIndices : this.gravelIndices;
+    var jumpingOverTile = rng.pickValueFromArray([WATER, GRAVEL]);
+    var jumpingOverLayer = jumpingOverTile === WATER ? water : gravel;
+    var jumpingOverIndices = jumpingOverTile === WATER ? this.waterIndices : this.gravelIndices;
     var jumpLength = rng.getIntBetween(5, 10);
 
     if (line[0][ANGLE] === NORTH || line[0][ANGLE] === SOUTH) {
@@ -590,12 +605,12 @@ DesertGenerator.prototype._generateGravel = function(data) {
     }
 };
 
-DesertGenerator.prototype._generatePits = function(data) {
+DesertGenerator.prototype._generateWater = function(data) {
     var background = this._getLayer(data, 'background');
     var obstacles = this._getLayer(data, 'obstacles');
-    var drops = this._getLayer(data, 'drops');
+    var water = this._getLayer(data, 'water');
 
-    this._fillLayer(drops.data, 0);
+    this._fillLayer(water.data, 0);
 
     var totalTiles = MAP_SIZE * MAP_SIZE;
     var pitCount = Math.round(totalTiles * .005);
@@ -621,10 +636,10 @@ DesertGenerator.prototype._generatePits = function(data) {
         this._generatePatch(
             tileIndex,
             background.data,
-            PIT,
-            drops.data,
+            WATER,
+            water.data,
             1,
-            this.pitIndices
+            this.waterIndices
         );
     }
 };
