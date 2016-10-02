@@ -6,6 +6,7 @@ var globalState = require('./global-state');
 var RNG = function()
 {
     this.rng = randomSeed.create(globalState.get('seed'));
+    console.log('The seed is ' + globalState.get('seed'));
 };
 
 RNG.prototype.getIntBetween = function(min, max)
