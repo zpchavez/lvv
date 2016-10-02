@@ -3,15 +3,15 @@ var desertEmbels = require('./desert-embellishments');
 var rng = require('../../../rng');
 var _ = require('underscore');
 
-var SAND = 39;
-var PAVEMENT = 46;
-var GRAVEL = 18;
-var PIT = 21;
-var FINISH = 44;
-var FINISH_E = 55;
-var FINISH_W = 66;
-var FINISH_S = 64;
-var FINISH_N = 65;
+var SAND = 48;
+var PAVEMENT = 58;
+var GRAVEL = 21;
+var PIT = 24;
+var FINISH = 53;
+var FINISH_E = 67;
+var FINISH_W = 81;
+var FINISH_S = 79;
+var FINISH_N = 80;
 
 var NORTH = 0;
 var EAST = 90;
@@ -47,13 +47,13 @@ edges[GRAVEL] = {
     EDGE_NW: 6,
     EDGE_N: 7,
     EDGE_NE: 8,
-    EDGE_W: 17,
-    EDGE_E: 19,
-    EDGE_SW: 28,
-    EDGE_S: 29,
-    EDGE_SE: 30,
-    CORNER_NW: 16,
-    CORNER_NE: 15,
+    EDGE_W: 20,
+    EDGE_E: 22,
+    EDGE_SW: 34,
+    EDGE_S: 35,
+    EDGE_SE: 36,
+    CORNER_NW: 19,
+    CORNER_NE: 18,
     CORNER_SW: 5,
     CORNER_SE: 4,
 };
@@ -61,29 +61,29 @@ edges[PIT] = {
     EDGE_NW: 9,
     EDGE_N: 10,
     EDGE_NE: 11,
-    EDGE_W: 20,
-    EDGE_E: 22,
-    EDGE_SW: 31,
-    EDGE_S: 32,
-    EDGE_SE: 33,
-    CORNER_NW: 54,
-    CORNER_NE: 53,
-    CORNER_SW: 43,
-    CORNER_SE: 42,
+    EDGE_W: 23,
+    EDGE_E: 25,
+    EDGE_SW: 37,
+    EDGE_S: 38,
+    EDGE_SE: 39,
+    CORNER_NW: 66,
+    CORNER_NE: 65,
+    CORNER_SW: 52,
+    CORNER_SE: 51,
 }
 edges[PAVEMENT] = {
-    EDGE_NW: 34,
-    EDGE_N: 35,
-    EDGE_NE: 36,
-    EDGE_W: 45,
-    EDGE_E: 47,
-    EDGE_SW: 56,
-    EDGE_S: 57,
-    EDGE_SE: 58,
-    CORNER_SE: 48,
-    CORNER_NW: 60,
-    CORNER_NE: 59,
-    CORNER_SW: 49,
+    EDGE_NW: 43,
+    EDGE_N: 44,
+    EDGE_NE: 45,
+    EDGE_W: 57,
+    EDGE_E: 59,
+    EDGE_SW: 71,
+    EDGE_S: 72,
+    EDGE_SE: 73,
+    CORNER_SE: 60,
+    CORNER_NW: 75,
+    CORNER_NE: 74,
+    CORNER_SW: 61,
 }
 
 var DesertGenerator = function(options) {
