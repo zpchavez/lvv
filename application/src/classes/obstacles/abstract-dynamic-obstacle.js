@@ -38,6 +38,20 @@ AbstractDynamicObstacle.prototype.update = function()
     );
 };
 
+AbstractDynamicObstacle.prototype.splash = function(splashTargetLocation)
+{
+    this.splashing = true;
+    this.body.velocity.x = 0;
+    this.body.velocity.y = 0;
+    this.body.angle = 0;
+    this.tint = 0xffffff;
+    this.loadTexture('splash', 0);
+    this.body.x = splashTargetLocation.x;
+    this.body.y = splashTargetLocation.y;
+    this.animations.add('splash', [0, 1], 2, false);
+    this.animations.play('splash', null, false, true);
+};
+
 AbstractDynamicObstacle.prototype.fall = function(fallTargetLocation, easeToTarget)
 {
     this.falling = true;

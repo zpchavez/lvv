@@ -434,6 +434,7 @@ RaceState.prototype.eliminateOffCameraPlayers = function()
 
             this.track.enforce(car);
 
+            this.handleWater(car);
             this.handleDrops(car);
             this.handleRamps(car);
             this.handleRoughTerrain(car);
@@ -591,6 +592,36 @@ RaceState.prototype.updateCamera = function()
     }
 };
 
+RaceState.prototype.handleWater = function(car)
+{
+    var width  = this.map.scaledTileWidth,
+        height = this.map.scaledTileHeight;
+
+    if (this.map.getTilelayerIndex('water') !== -1) {
+        if (! (car.splashing || car.falling || car.airborne || car.onRamp || car.victorySpinning || car.hovering)) {
+            if (this.map.getTileWorldXY(car.x, car.y, width, height, 'water')) {
+                car.splash({
+                    x : Math.floor(car.x / width) * width + (width / 2),
+                    y : Math.floor(car.y / height) * height + (height / 2)
+                });
+            }
+        }
+
+        // Obstacles splash too
+        this.obstacles.forEach(function (obstacle) {
+            if (
+                ! obstacle.splashing &&
+                this.map.getTileWorldXY(obstacle.x, obstacle.y, width, height, 'water')
+            ) {
+                obstacle.splash({
+                    x : Math.floor(obstacle.x / width) * width + (width / 2),
+                    y : Math.floor(obstacle.y / height) * height + (height / 2)
+                });
+            }
+        }.bind(this));
+    }
+};
+
 RaceState.prototype.handleDrops = function(car)
 {
     var width  = this.map.scaledTileWidth,
@@ -610,7 +641,7 @@ RaceState.prototype.handleDrops = function(car)
         // Obstacles fall too
         this.obstacles.forEach(function (obstacle) {
             if (
-                obstacle.falling === false &&
+                ! obstacle.falling &&
                 this.map.getTileWorldXY(obstacle.x, obstacle.y, width, height, 'drops')
             ) {
                 obstacle.fall({
