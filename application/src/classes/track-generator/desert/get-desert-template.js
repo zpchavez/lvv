@@ -69,6 +69,17 @@ module.exports = function(options) {
             {
              "data":[],
              "height":options.height,
+             "name":"water",
+             "opacity":1,
+             "type":"tilelayer",
+             "visible":false,
+             "width":options.width,
+             "x":0,
+             "y":0
+            },
+            {
+             "data":[],
+             "height":options.height,
              "name":"ramps",
              "opacity":1,
              "type":"tilelayer",

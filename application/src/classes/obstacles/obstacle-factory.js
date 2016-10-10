@@ -61,6 +61,12 @@ ObstacleFactory.prototype.loadAssets = function(types)
         }
     }, this);
 
+    this.state.game.load.atlas(
+        'splash',
+        'assets/img/ker-splash.png',
+        'assets/img/ker-splash.json'
+    );
+
     this.state.load.physics('Obstacles', 'assets/physics/obstacles.json');
 };
 

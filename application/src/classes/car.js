@@ -5,6 +5,8 @@ var Phaser = require('phaser');
 var rotateVector = require('../util').rotateVector;
 var getVectorMagnitude = require('../util').getVectorMagnitude;
 var globalState = require('../global-state');
+var colors = require('../colors');
+var global = require('../global-state');
 var transformCallback;
 
 var Car = function(state, x, y, key, weaponFactory)
@@ -42,6 +44,7 @@ var Car = function(state, x, y, key, weaponFactory)
 
     this.transformCallback        = transformCallback;
     this.transformCallbackContext = this;
+    this.spriteKey = key;
 };
 
 Car.prototype = Object.create(Phaser.Sprite.prototype);
@@ -67,6 +70,7 @@ Car.prototype.getConstants = function()
 Car.prototype.controlsLocked = function()
 {
     return (
+        this.splashing ||
         this.falling ||
         this.victorySpinning ||
         this.spinningOut
@@ -343,6 +347,24 @@ transformCallback = function(worldTransform, parentTransform)
         .translate(0, -this.airborneHeight * 180);
 };
 
+Car.prototype.splash = function(splashTargetLocation)
+{
+    this.splashing = true;
+    this.body.velocity.x = 0;
+    this.body.velocity.y = 0;
+    this.body.angle = 0;
+
+    this.tint = 0xffffff;
+    this.loadTexture('splash', 0);
+    this.body.x = splashTargetLocation.x;
+    this.body.y = splashTargetLocation.y;
+    this.animations.add('splash', [0, 1], 2, false);
+    this.animations.play('splash');
+    setTimeout(function() {
+        this.doneSplashing();
+    }.bind(this), 1000);
+};
+
 Car.prototype.fall = function(fallTargetLocation, easeToTarget)
 {
     this.falling = true;
@@ -378,6 +400,14 @@ Car.prototype.doneFalling = function()
     this.falling = false;
     this.scale.x = 1;
     this.scale.y = 1;
+    this.state.moveCarToLastActivatedMarker(this);
+};
+
+Car.prototype.doneSplashing = function()
+{
+    this.splashing = false;
+    this.loadTexture(this.spriteKey);
+    this.tint = colors[global.state.colors[this.playerNumber]].hex;
     this.state.moveCarToLastActivatedMarker(this);
 };
 
