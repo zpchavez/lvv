@@ -260,6 +260,9 @@ SelectColorState.prototype.getNextAvailableColorIndex = function(index, directio
         if (candidate === colors.length) {
             candidate = 0;
         }
+        if (candidate < 0) {
+            candidate = colors.length - 1;
+        }
 
         if (this.selectedColors.indexOf(candidate) === -1) {
             nextAvailable = candidate;
