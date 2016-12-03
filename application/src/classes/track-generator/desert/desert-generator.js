@@ -14,6 +14,13 @@ var FINISH_W = 81;
 var FINISH_S = 79;
 var FINISH_N = 80;
 
+var BRIDGE_NS = 56;
+var BRIDGE_EW = 70;
+var BRIDGE_W = 82;
+var BRIDGE_E = 83;
+var BRIDGE_N = 84;
+var BRIDGE_S = 98;
+
 var NORTH = 0;
 var EAST = 90;
 var SOUTH = 180;
@@ -123,7 +130,7 @@ DesertGenerator.prototype.generate = function() {
     this._generateObstacles(points, data);
     this._generateGravel(data);
     this._generateWater(data);
-    this._generateJumps(points, data);
+    this._generatePuddles(points, data);
     this._addEdgeTiles(data, this.gravelIndices, GRAVEL);
     this._addEdgeTiles(data, this.waterIndices, WATER);
     this._addEdgeTiles(data, this.trackIndices, PAVEMENT);
@@ -471,7 +478,7 @@ DesertGenerator.prototype._generateTrack = function(points, data) {
     return data;
 }
 
-DesertGenerator.prototype._generateJumps = function(points, data) {
+DesertGenerator.prototype._generatePuddles = function(points, data) {
     var candidateLines = [];
     for (var i = 0; i < points.length; i += 1) {
         var nextPoint = (i === points.length - 1) ? points[0] : points[i + 1];
@@ -496,25 +503,19 @@ DesertGenerator.prototype._generateJumps = function(points, data) {
             }.bind(this))
             && rng.happensGivenProbability(.50)
         ) {
-            this._addJump(data, line, midpoint);
+            this._addPuddle(data, line, midpoint);
         }
     }.bind(this));
 };
 
-DesertGenerator.prototype._addJump = function(data, line, point) {
-    var ramps = this._getLayer(data, 'ramps');
-    var water = this._getLayer(data, 'water');
-    var gravel = this._getLayer(data, 'rough');
+DesertGenerator.prototype._addPuddle = function(data, line, point) {
     var background = this._getLayer(data, 'background');
 
     var topLeft, bottomRight, innerTopLeft, innerBottomRight, rampTopLeft;
-
-    var jumpingOverTile = rng.pickValueFromArray([WATER, GRAVEL]);
-    var jumpingOverLayer = jumpingOverTile === WATER ? water : gravel;
-    var jumpingOverIndices = jumpingOverTile === WATER ? this.waterIndices : this.gravelIndices;
     var jumpLength = rng.getIntBetween(5, 10);
 
-    if (line[0][ANGLE] === NORTH || line[0][ANGLE] === SOUTH) {
+    var isNorthSouth = line[0][ANGLE] === NORTH || line[0][ANGLE] === SOUTH;
+    if (isNorthSouth) {
         topLeft = [
             point[X] - (TRACK_WIDTH / 2),
             point[Y] - jumpLength
@@ -531,10 +532,6 @@ DesertGenerator.prototype._addJump = function(data, line, point) {
             bottomRight[X],
             bottomRight[Y] - 2
         ];
-        rampTopLeft = line[0][ANGLE] === NORTH ?
-            [topLeft[X], bottomRight[Y]] :
-            [topLeft[X], topLeft[Y] - 1];
-        this._drawHorizontalLine(ramps.data, 1, rampTopLeft, TRACK_WIDTH);
     } else {
         topLeft = [
             point[X] - jumpLength,
@@ -552,10 +549,6 @@ DesertGenerator.prototype._addJump = function(data, line, point) {
             bottomRight[X] - 2,
             bottomRight[Y]
         ];
-        rampTopLeft = line[0][ANGLE] === EAST ?
-            [topLeft[X] - 1, topLeft[Y]] :
-            [bottomRight[X] + 1, topLeft[Y]];
-        this._drawVerticalLine(ramps.data, 1, rampTopLeft, TRACK_WIDTH);
     }
     var sandIndices = [];
     // First fill entire area with sand
@@ -566,21 +559,62 @@ DesertGenerator.prototype._addJump = function(data, line, point) {
         bottomRight,
         sandIndices
     );
-    // Then fill inner area with gravel or pit
+    // Then fill background layer area with water tiles
     this._fillArea(
         background.data,
-        jumpingOverTile,
+        WATER,
         innerTopLeft,
         innerBottomRight,
-        jumpingOverIndices
+        this.waterIndices
     );
-    // Fill the gravel or pit layer
+    // Fill water layer with tiles
     this._fillArea(
-        jumpingOverLayer.data,
+        this._getLayer(data, 'water').data,
         1,
         innerTopLeft,
         innerBottomRight
     );
+    // Add bridges
+
+    if (isNorthSouth) {
+        // Vertical bridge
+        var bridgeTopLeft = [
+            innerTopLeft[X] + Math.floor(Math.abs(innerTopLeft[X] - innerBottomRight[X]) / 2),
+            innerTopLeft[Y]
+        ];
+        var bridgeBottomRight = [
+            innerBottomRight[X] - Math.floor(Math.abs(innerTopLeft[X] - innerBottomRight[X]) / 2),
+            innerBottomRight[Y]
+        ];
+    } else {
+        // Horizontal bridge
+        var bridgeTopLeft = [
+            innerTopLeft[X],
+            innerTopLeft[Y] + Math.floor(Math.abs(innerTopLeft[Y] - innerBottomRight[Y]) / 2)
+        ];
+        var bridgeBottomRight = [
+            innerBottomRight[X],
+            innerBottomRight[Y] - Math.floor(Math.abs(innerTopLeft[Y] - innerBottomRight[Y]) / 2),
+        ];
+    }
+    var bridgeIndices = [];
+    // Add bridge tiles
+    this._fillArea(
+        this._getLayer(data, 'foreground').data,
+        isNorthSouth ? BRIDGE_NS : BRIDGE_EW,
+        bridgeTopLeft,
+        bridgeBottomRight,
+        bridgeIndices
+    );
+    // Remove water files
+    this._fillArea(
+        this._getLayer(data, 'water').data,
+        0,
+        bridgeTopLeft,
+        bridgeBottomRight
+    );
+    this.waterIndices = _.difference(this.waterIndices, bridgeIndices);
+
     // Remove trackIndices that no longer refer to track tiles
     this.trackIndices = _.difference(this.trackIndices, sandIndices);
 };

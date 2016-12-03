@@ -33,6 +33,17 @@ module.exports = function(options) {
                 "y":0
             },
             {
+                "data":[],
+                "height":options.height,
+                "name":"foreground",
+                "opacity":1.0,
+                "type":"tilelayer",
+                "visible":true,
+                "width":options.width,
+                "x":0,
+                "y":0
+            },
+            {
              "draworder":"topdown",
              "height":0,
              "name":"track",
