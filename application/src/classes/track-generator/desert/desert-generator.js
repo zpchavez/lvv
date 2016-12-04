@@ -512,7 +512,7 @@ DesertGenerator.prototype._addPuddle = function(data, line, point) {
     var background = this._getLayer(data, 'background');
 
     var topLeft, bottomRight, innerTopLeft, innerBottomRight, rampTopLeft;
-    var puddleLength = rng.getIntBetween(5, 10);
+    var puddleLength = 3 + (5 * rng.getIntBetween(1, 4));
 
     var isNorthSouth = line[0][ANGLE] === NORTH || line[0][ANGLE] === SOUTH;
     if (isNorthSouth) {
@@ -530,7 +530,7 @@ DesertGenerator.prototype._addPuddle = function(data, line, point) {
         ];
         innerBottomRight = [
             bottomRight[X],
-            bottomRight[Y] - 2
+            bottomRight[Y] - 1
         ];
     } else {
         topLeft = [
@@ -574,14 +574,14 @@ DesertGenerator.prototype._addPuddle = function(data, line, point) {
         innerTopLeft,
         innerBottomRight
     );
-    // Add bridges
 
+    // Add bridges
     var bridgeIndices = [];
     if (isNorthSouth) {
         // Vertical bridge
         var bridgeNorthEnd = [
             innerTopLeft[X] + Math.floor(Math.abs(innerTopLeft[X] - innerBottomRight[X]) / 2),
-            innerTopLeft[Y]
+            innerTopLeft[Y] - 1
         ];
         var bridgeSouthEnd = [
             innerBottomRight[X] - Math.floor(Math.abs(innerTopLeft[X] - innerBottomRight[X]) / 2),
@@ -594,11 +594,11 @@ DesertGenerator.prototype._addPuddle = function(data, line, point) {
     } else {
         // Horizontal bridge
         var bridgeWestEnd = [
-            innerTopLeft[X],
+            innerTopLeft[X] - 1,
             innerTopLeft[Y] + Math.floor(Math.abs(innerTopLeft[Y] - innerBottomRight[Y]) / 2)
         ];
         var bridgeEastEnd = [
-            innerBottomRight[X],
+            innerBottomRight[X] + 1,
             innerBottomRight[Y] - Math.floor(Math.abs(innerTopLeft[Y] - innerBottomRight[Y]) / 2),
         ];
         this._drawEastWestBridge(bridgeWestEnd, bridgeEastEnd, data, bridgeIndices);
@@ -619,6 +619,7 @@ DesertGenerator.prototype._drawEastWestBridge = function(westPoint, eastPoint, d
         BRIDGE_W,
         BRIDGE_EW,
         BRIDGE_EW,
+        BRIDGE_EW,
         BRIDGE_E,
     ];
     let tileCursor = 0;
@@ -634,6 +635,7 @@ DesertGenerator.prototype._drawEastWestBridge = function(westPoint, eastPoint, d
 DesertGenerator.prototype._drawNorthSouthBridge = function(northPoint, southPoint, data, affectedIndices) {
     let tileOrder = [
         BRIDGE_N,
+        BRIDGE_NS,
         BRIDGE_NS,
         BRIDGE_NS,
         BRIDGE_S,
