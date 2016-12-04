@@ -403,6 +403,12 @@ DesertGenerator.prototype._fillArea = function(layerData, value, topLeft, bottom
     }
 };
 
+DesertGenerator.prototype._fillIndices = function(data, tile, indices) {
+    indices.forEach(index => {
+        data[index] = tile;
+    });
+};
+
 DesertGenerator.prototype._addEdgeTiles = function(data, tileIndices, tile) {
     tileIndices.forEach(function (index) {
         var adj = this._getAdjacentTileIndex.bind(this);
@@ -589,8 +595,7 @@ DesertGenerator.prototype._addPuddle = function(data, line, point) {
         ];
         this._drawNorthSouthBridge(bridgeNorthEnd, bridgeSouthEnd, data, bridgeIndices);
         // Remove water tiles from water layer
-        var northSouthBridgeLength = Math.abs(bridgeNorthEnd[Y] - bridgeSouthEnd[Y]);
-        this._drawVerticalLine(this._getLayer(data, 'water').data, 0, bridgeNorthEnd, northSouthBridgeLength);
+        this._fillIndices(this._getLayer(data, 'water').data, 0, bridgeIndices);
     } else {
         // Horizontal bridge
         var bridgeWestEnd = [
@@ -603,8 +608,7 @@ DesertGenerator.prototype._addPuddle = function(data, line, point) {
         ];
         this._drawEastWestBridge(bridgeWestEnd, bridgeEastEnd, data, bridgeIndices);
         // Remove water tiles from water layer
-        var eastWestBridgeLength = Math.abs(bridgeWestEnd[X] - bridgeEastEnd[X]);
-        this._drawHorizontalLine(this._getLayer(data, 'water').data, 0, bridgeWestEnd, eastWestBridgeLength);
+        this._fillIndices(this._getLayer(data, 'water').data, 0, bridgeIndices);
     }
 
     // Remove waterIndices that no longer refer to water tiles
@@ -624,11 +628,13 @@ DesertGenerator.prototype._drawEastWestBridge = function(westPoint, eastPoint, d
     ];
     let tileCursor = 0;
     let foregroundData = this._getLayer(data, 'foreground').data;
-    for (let x = westPoint[X]; x <= eastPoint[X]; x += 1) {
-        let index = this._convertPointToIndex([x, westPoint[Y]]);
-        foregroundData[index] = tileOrder[tileCursor];
-        tileCursor = (tileCursor === tileOrder.length - 1) ? 0 : tileCursor + 1;
-        affectedIndices.push(index);
+    for (let y = westPoint[Y] - 1; y <= westPoint[Y] + 1; y += 1) {
+        for (let x = westPoint[X]; x <= eastPoint[X]; x += 1) {
+            let index = this._convertPointToIndex([x, y]);
+            foregroundData[index] = tileOrder[tileCursor];
+            tileCursor = (tileCursor === tileOrder.length - 1) ? 0 : tileCursor + 1;
+            affectedIndices.push(index);
+        }
     }
 };
 
@@ -642,10 +648,13 @@ DesertGenerator.prototype._drawNorthSouthBridge = function(northPoint, southPoin
     ];
     let tileCursor = 0;
     let foregroundData = this._getLayer(data, 'foreground').data;
-    for (let y = northPoint[Y]; y <= southPoint[Y]; y += 1) {
-        let index = this._convertPointToIndex([northPoint[X], y]);
-        foregroundData[index] = tileOrder[tileCursor];
-        tileCursor = (tileCursor === tileOrder.length - 1) ? 0 : tileCursor + 1;
+    for (let x = northPoint[X] - 1; x <= northPoint[X] + 1; x += 1) {
+        for (let y = northPoint[Y]; y <= southPoint[Y]; y += 1) {
+            let index = this._convertPointToIndex([x, y]);
+            foregroundData[index] = tileOrder[tileCursor];
+            tileCursor = (tileCursor === tileOrder.length - 1) ? 0 : tileCursor + 1;
+            affectedIndices.push(index);
+        }
     }
 };
 
