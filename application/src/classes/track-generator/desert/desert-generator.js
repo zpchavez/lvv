@@ -128,12 +128,12 @@ DesertGenerator.prototype.generate = function() {
     this._generateTrack(points, data);
     this._generateTrackMarkers(points, data);
     this._generateObstacles(points, data);
+    this._generatePuddles(points, data);
     this._generateGravel(data);
     this._generateWater(data);
-    this._generatePuddles(points, data);
     this._addEdgeTiles(data, this.gravelIndices, GRAVEL);
-    this._addEdgeTiles(data, this.waterIndices, WATER);
     this._addEdgeTiles(data, this.trackIndices, PAVEMENT);
+    this._addEdgeTiles(data, this.waterIndices, WATER);
     this._drawFinishLine(data);
     this._generatePossiblePowerupPoints(data);
 
@@ -523,11 +523,11 @@ DesertGenerator.prototype._addPuddle = function(data, line, point) {
     var isNorthSouth = line[0][ANGLE] === NORTH || line[0][ANGLE] === SOUTH;
     if (isNorthSouth) {
         topLeft = [
-            point[X] - (TRACK_WIDTH / 2),
+            point[X] - (TRACK_WIDTH / 2) - 8,
             point[Y] - puddleLength
         ];
         bottomRight = [
-            point[X] + (TRACK_WIDTH / 2),
+            point[X] + (TRACK_WIDTH / 2) + 8,
             point[Y] + puddleLength
         ];
         innerTopLeft = [
@@ -541,11 +541,11 @@ DesertGenerator.prototype._addPuddle = function(data, line, point) {
     } else {
         topLeft = [
             point[X] - puddleLength,
-            point[Y] - (TRACK_WIDTH / 2)
+            point[Y] - (TRACK_WIDTH / 2) - 8
         ];
         bottomRight = [
             point[X] + puddleLength,
-            point[Y] + (TRACK_WIDTH / 2) + 1 // Can't figure out why it needs the +1
+            point[Y] + (TRACK_WIDTH / 2) + 9 // Can't figure out why it needs the +1
         ];
         innerTopLeft = [
             topLeft[X] + 2,
@@ -557,6 +557,7 @@ DesertGenerator.prototype._addPuddle = function(data, line, point) {
         ];
     }
     var sandIndices = [];
+
     // First fill entire area with sand
     this._fillArea(
         background.data,
@@ -565,6 +566,11 @@ DesertGenerator.prototype._addPuddle = function(data, line, point) {
         bottomRight,
         sandIndices
     );
+    // Remove all special tile indices in this area
+    this.trackIndices = _.difference(this.trackIndices, sandIndices);
+    this.gravelIndices = _.difference(this.gravelIndices, sandIndices);
+    this.waterIndices = _.difference(this.waterIndices, sandIndices);
+
     // Then fill background layer area with water tiles
     this._fillArea(
         background.data,
@@ -613,9 +619,6 @@ DesertGenerator.prototype._addPuddle = function(data, line, point) {
 
     // Remove waterIndices that no longer refer to water tiles
     this.waterIndices = _.difference(this.waterIndices, bridgeIndices);
-
-    // Remove trackIndices that no longer refer to track tiles
-    this.trackIndices = _.difference(this.trackIndices, sandIndices);
 };
 
 DesertGenerator.prototype._drawEastWestBridge = function(westPoint, eastPoint, data, affectedIndices) {
