@@ -800,7 +800,7 @@ RaceState.prototype.showMessage = function(text, options)
         strokeThickness : 5
     });
 
-    this.message = this.game.add.text(
+    let message = this.game.add.text(
         this.game.width / 2,
         this.game.height / 2,
         text,
@@ -811,14 +811,14 @@ RaceState.prototype.showMessage = function(text, options)
             strokeThickness : options.strokeThickness
         }
     );
-    this.message.fixedToCamera = true;
-    this.message.anchor.setTo(0.5, 0.5);
+    message.fixedToCamera = true;
+    message.anchor.setTo(0.5, 0.5);
 
     if (options.showFor) {
         return new Promise(function(resolve) {
             window.setTimeout(
                 function() {
-                    this.message.destroy();
+                    message.destroy();
                     resolve();
                 }.bind(this),
                 options.showFor
