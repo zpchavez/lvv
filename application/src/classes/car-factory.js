@@ -24,13 +24,14 @@ CarFactory.prototype.loadAssets = function()
     this.state.load.image('player1', this.getSpritePath());
     this.state.load.image('player2', this.getSpritePath());
     this.state.load.image('player3', this.getSpritePath());
+    this.state.load.image('car-glass', 'assets/img/vehicles/car-glass.png');
 
     this.weaponFactory.loadAssets();
 };
 
 CarFactory.prototype.getSpritePath = function(player)
 {
-    return 'assets/img/vehicles/car.png';
+    return 'assets/img/vehicles/car-body.png';
 };
 
 CarFactory.prototype.spritePrototype = CarSprite;
