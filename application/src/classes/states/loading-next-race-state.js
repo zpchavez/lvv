@@ -21,7 +21,7 @@ LoadingNextRaceState.prototype.create = function()
 
 LoadingNextRaceState.prototype.renderNextRaceInfo = function()
 {
-    var textString = 'Next Up: Badly Drawn Cars in the Desert';
+    var textString = 'Back Yard';
 
     this.titleText = this.game.add.text(
         this.game.width / 2,

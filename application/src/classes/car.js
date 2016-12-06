@@ -19,6 +19,9 @@ var Car = function(state, x, y, key, weaponFactory)
 
     this.state.game.physics.p2.enable(this);
 
+    this.glassSprite = this.addChild(state.game.make.sprite(0, 0, 'car-glass'));
+    this.glassSprite.anchor.setTo(0.5);
+
     centerOfMassParticle = this.body.addParticle(0, 0);
     centerOfMassParticle.centerOfMassFor = this;
 
@@ -356,6 +359,7 @@ Car.prototype.splash = function(splashTargetLocation)
 
     this.tint = 0xffffff;
     this.loadTexture('splash', 0);
+    this.glassSprite.visible = false;
     this.body.x = splashTargetLocation.x;
     this.body.y = splashTargetLocation.y;
     this.animations.add('splash', [0, 1], 2, false);
@@ -407,6 +411,7 @@ Car.prototype.doneSplashing = function()
 {
     this.splashing = false;
     this.loadTexture(this.spriteKey);
+    this.glassSprite.visible = true;
     this.tint = colors[global.state.colors[this.playerNumber]].hex;
     this.state.moveCarToLastActivatedMarker(this);
 };
