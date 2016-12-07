@@ -669,7 +669,7 @@ DesertGenerator.prototype._generateGravel = function(data) {
 
     var totalTiles = MAP_SIZE * MAP_SIZE;
     var gravelCount = Math.round(totalTiles * .015);
-    for (i = 0; i < gravelCount; i += 1) {
+    for (let i = 0; i < gravelCount; i += 1) {
         this._generatePatch(
             rng.getIntBetween(0, totalTiles),
             background.data,
@@ -690,7 +690,7 @@ DesertGenerator.prototype._generateWater = function(data) {
 
     var totalTiles = MAP_SIZE * MAP_SIZE;
     var pitCount = Math.round(totalTiles * .005);
-    for (i = 0; i < pitCount; i += 1) {
+    for (let i = 0; i < pitCount; i += 1) {
         // If there's an obstacle nearby, pick a different tile
         var point;
         var tileIndex;
