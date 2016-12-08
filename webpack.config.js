@@ -104,6 +104,7 @@ module.exports = [{
   resolve: {
     alias: {
       base: path.resolve('./'),
+      app: path.resolve('./application/src'),
     },
     extensions: ['', '.css', '.js', '.json', '.jsx', '.scss', '.webpack.js', '.web.js'],
   },

@@ -1,24 +1,24 @@
-var rng = require('../../../rng');
+import rng from 'app/rng';
 
-var EMBEL_NONE = 'EMBEL_NONE';
+const EMBEL_NONE = 'EMBEL_NONE';
 // Center embellishments
-var EMBEL_T = 'EMBEL_T';
-var EMBEL_PLUS = 'EMBEL_PLUS';
-var EMBEL_I = 'EMBEL_I';
-var EMBEL_L = 'EMBEL_L';
-var EMBEL_J = 'EMBEL_J';
+const EMBEL_T = 'EMBEL_T';
+const EMBEL_PLUS = 'EMBEL_PLUS';
+const EMBEL_I = 'EMBEL_I';
+const EMBEL_L = 'EMBEL_L';
+const EMBEL_J = 'EMBEL_J';
 // Corner embellishments
-var EMBEL_CORNER_RECT = 'EMBEL_CORNER_RECT';
-var EMBEL_CORNER_CUT = 'EMBEL_CORNER_CUT';
-var EMBEL_CORNER_CUT_STAIRS = 'EMBEL_CORNER_CUT_STAIRS';
+const EMBEL_CORNER_RECT = 'EMBEL_CORNER_RECT';
+const EMBEL_CORNER_CUT = 'EMBEL_CORNER_CUT';
+const EMBEL_CORNER_CUT_STAIRS = 'EMBEL_CORNER_CUT_STAIRS';
 
-var INWARD = 'INWARD';
-var OUTWARD = 'OUTWARD';
-var LEFT = 'LEFT';
-var RIGHT = 'RIGHT';
+const INWARD = 'INWARD';
+const OUTWARD = 'OUTWARD';
+const LEFT = 'LEFT';
+const RIGHT = 'RIGHT';
 
-module.exports = {
-    getCenterEmbellishments: function() {
+export default {
+    getCenterEmbellishments() {
         return [
             EMBEL_NONE,
             EMBEL_T,
@@ -29,7 +29,7 @@ module.exports = {
         ];
     },
 
-    getCornerEmbellishments: function() {
+    getCornerEmbellishments() {
         return [
             EMBEL_NONE,
             EMBEL_CORNER_RECT,
@@ -38,11 +38,12 @@ module.exports = {
         ];
     },
 
-    getCenterEmbelInstructions: function(type, orientation) {
-        var instructions;
+    getCenterEmbelInstructions(type, orientation) {
+        let instructions;
+        let lengthOut
         switch(type) {
             case EMBEL_T:
-                var lengthOut = rng.getIntBetween(30, 60);
+                lengthOut = rng.getIntBetween(30, 60);
                 instructions = [
                     RIGHT,
                     lengthOut,
@@ -89,7 +90,7 @@ module.exports = {
                 ];
                 break;
             case EMBEL_I:
-                var lengthOut = rng.getIntBetween(60, 100);
+                lengthOut = rng.getIntBetween(60, 100);
                 instructions = [
                     RIGHT,
                     lengthOut,
@@ -134,14 +135,14 @@ module.exports = {
 
         // Flip all the directions if this is an outward embellishment
         if (orientation === 'OUTWARD') {
-            for (var i = 0; i < instructions.length; i += 2) {
+            for (let i = 0; i < instructions.length; i += 2) {
                 instructions[i] = instructions[i] === RIGHT ? LEFT : RIGHT;
             }
         }
         return instructions;
     },
 
-    getCornerEmbelInstructions: function(type) {
+    getCornerEmbelInstructions(type) {
         switch(type) {
             case EMBEL_CORNER_RECT:
                 return [
@@ -180,4 +181,4 @@ module.exports = {
                 break;
         }
     },
-}
+};

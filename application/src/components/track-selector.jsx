@@ -1,11 +1,9 @@
-'use strict';
+import React from 'react';
+import trackList from '../track-list';
+import globalState from '../global-state';
+import _ from 'underscore';
 
-var React = require('react');
-var trackList = require('../track-list');
-var globalState = require('../global-state');
-var _ = require('underscore');
-
-module.exports = React.createClass({
+export default React.createClass({
 
     propTypes : {
         phaserLoader            : React.PropTypes.object.isRequired,

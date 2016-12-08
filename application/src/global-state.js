@@ -1,6 +1,6 @@
-var settingsFromQuery = require('./settings-from-query');
+import settingsFromQuery from './settings-from-query';
 
-var initialState = Object.assign(
+const initialState = Object.assign(
     {
         colors: [0, 1, 2, 3],
         teamPlayers: {blue: [0, 1], red: [2, 3]},
@@ -8,26 +8,26 @@ var initialState = Object.assign(
     settingsFromQuery
 );
 
-module.exports = {
+export default {
     state: Object.assign({}, initialState),
 
-    reset: function() {
+    reset() {
         this.state = Object.assign({}, initialState);
     },
 
-    set: function(key, value) {
+    set(key, value) {
         this.state[key] = value;
     },
 
-    setFromObj: function(stateValues) {
+    setFromObj(stateValues) {
         this.state = Object.assign(this.state, stateValues);
     },
 
-    get: function(key) {
+    get(key) {
         return this.state[key];
     },
 
-    setInitialScore: function(players, teams) {
+    setInitialScore(players, teams) {
         if (players) {
             this.set('players', players);
         }

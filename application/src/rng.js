@@ -1,32 +1,30 @@
-'use strict';
+import randomSeed from 'random-seed';
+import globalState from './global-state';
 
-var randomSeed = require('random-seed');
-var globalState = require('./global-state');
-
-var RNG = function()
+class RNG
 {
-    this.rng = randomSeed.create(globalState.get('seed'));
-    console.log('The seed is ' + globalState.get('seed'));
-};
+    constructor() {
+        this.rng = randomSeed.create(globalState.get('seed'));
+        console.log('The seed is ' + globalState.get('seed'));
+    }
 
-RNG.prototype.getIntBetween = function(min, max)
-{
-    return Math.round(this.rng.random() * (max - min) + min);
-};
+    getIntBetween(min, max) {
+        return Math.round(this.rng.random() * (max - min) + min);
+    }
 
-RNG.prototype.happensGivenProbability = function(chance) {
-    return this.rng.random() <= chance;
-};
+    happensGivenProbability(chance) {
+        return this.rng.random() <= chance;
+    }
 
-RNG.prototype.pickValueFromArray = function(array)
-{
-    var max, selectedIndex;
+    pickValueFromArray(array) {
+        const max = array.length - 1;
 
-    max = array.length - 1;
+        const selectedIndex = this.getIntBetween(0, max);
 
-    selectedIndex = this.getIntBetween(0, max);
+        return array[selectedIndex];
+    }
+}
 
-    return array[selectedIndex];
-};
+const rng = new RNG();
 
-module.exports = new RNG();
+export default rng;
