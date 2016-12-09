@@ -1,62 +1,56 @@
-'use strict';
+import TrackMarker from './track-marker';
+import FinishMarker from './finish-marker';
 
-var TrackMarker  = require('./track-marker');
-var FinishMarker = require('./finish-marker');
-
-var TrackMarkerFactory = function(state)
+class TrackMarkerFactory
 {
-    this.state = state;
+    constructor(state) {
+        this.state = state;
+        this.debug = false;
+    }
 
-    this.debug = false;
-};
+    enableDebug() {
+        this.debug = true;
+    }
 
-TrackMarkerFactory.prototype.enableDebug = function()
-{
-    this.debug = true;
-};
+    disableDebug() {
+        this.debug = false;
+    }
 
-TrackMarkerFactory.prototype.disableDebug = function()
-{
-    this.debug = false;
-};
+    loadAssets() {
+        this.state.load.image('track-marker-off', 'assets/img/track-marker-off.png');
+        this.state.load.image('track-marker-on', 'assets/img/track-marker-on.png');
+        this.state.load.image('finish-line', 'assets/img/finish-line.png');
+    }
 
-TrackMarkerFactory.prototype.loadAssets = function()
-{
-    this.state.load.image('track-marker-off', 'assets/img/track-marker-off.png');
-    this.state.load.image('track-marker-on', 'assets/img/track-marker-on.png');
-    this.state.load.image('finish-line', 'assets/img/finish-line.png');
-};
+    createMarker(x, y, angle, length) {
+        var sprite = new TrackMarker(
+            this.state,
+            x,
+            y,
+            'track-marker-off',
+            angle,
+            length
+        );
 
-TrackMarkerFactory.prototype.createMarker = function(x, y, angle, length)
-{
-    var sprite = new TrackMarker(
-        this.state,
-        x,
-        y,
-        'track-marker-off',
-        angle,
-        length
-    );
+        sprite.renderable = this.debug;
 
-    sprite.renderable = this.debug;
+        return sprite;
+    }
 
-    return sprite;
-};
+    createFinishLine(x, y, angle, length) {
+        var sprite = new FinishMarker(
+            this.state,
+            x,
+            y,
+            'finish-line',
+            angle,
+            length
+        );
 
-TrackMarkerFactory.prototype.createFinishLine = function(x, y, angle, length)
-{
-    var sprite = new FinishMarker(
-        this.state,
-        x,
-        y,
-        'finish-line',
-        angle,
-        length
-    );
+        sprite.renderable = this.debug;
 
-    sprite.renderable = this.debug;
+        return sprite;
+    }
+}
 
-    return sprite;
-};
-
-module.exports = TrackMarkerFactory;
+export default TrackMarkerFactory;
