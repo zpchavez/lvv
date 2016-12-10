@@ -1,69 +1,59 @@
-'use strict';
+import Car from 'app/classes/car';
 
-var Phaser = require('phaser');
-var Car = require('../car');
-var _ = require('underscore');
-
-var AbstractWeapon = function(state, x, y, key)
+class AbstractWeapon extends Phaser.Sprite
 {
-    Phaser.Sprite.apply(this, [state.game, x, y, key]);
-    this.state = state;
-    this.createPhysicsBody(state);
-};
+    constructor(state, x, y, key) {
+        super(state.game, x, y, key);
+        this.state = state;
+        this.createPhysicsBody(state);
+    }
 
-AbstractWeapon.prototype = Object.create(Phaser.Sprite.prototype);
+    loadAssets(state, key) {
+        state.load.image(key, this.getSpritePath(key));
+    }
 
-AbstractWeapon.prototype.loadAssets = function(state, key)
-{
-    state.load.image(key, this.getSpritePath(key));
-};
+    getSpritePath(key) {
+        return 'assets/img/weapons/' + key + '.png';
+    }
 
-AbstractWeapon.prototype.getSpritePath = function(key)
-{
-    return 'assets/img/weapons/' + key + '.png';
-};
+    createPhysicsBody(state) {
+        state.game.physics.p2.enable(this);
 
-AbstractWeapon.prototype.createPhysicsBody = function(state)
-{
-    state.game.physics.p2.enable(this);
+        this.body.kinematic = true;
 
-    this.body.kinematic = true;
+        _this.body.data.shapes.forEach((shape) => {
+            shape.sensor = true;
+        });
 
-    _.each(this.body.data.shapes, function(shape) {
-        shape.sensor = true;
-    });
+        this.body.onBeginContact.add((contactingBody) => {
+            if (Car.prototype.isPrototypeOf(contactingBody.sprite) &&
+                contactingBody.sprite.playerNumber !== this.shotBy
+            ) {
+                this.hit(contactingBody.sprite);
+                this.destroy();
+            }
+        }, this);
+    }
 
-    this.body.onBeginContact.add(function (contactingBody) {
-        if (Car.prototype.isPrototypeOf(contactingBody.sprite) &&
-            contactingBody.sprite.playerNumber !== this.shotBy
-        ) {
-            this.hit(contactingBody.sprite);
+    add(state) {
+        state.add.existing(this);
+    }
+
+    addToCollisionGroup(collisionGroup) {
+        this.body.setCollisionGroup(collisionGroup);
+        this.body.collides(collisionGroup);
+    }
+
+    hit(car) {
+        throw new Error('You must overwrite hit');
+    }
+
+    update()
+    {
+        if (! this.inCamera) {
             this.destroy();
         }
-    }, this);
-};
-
-AbstractWeapon.prototype.add = function(state)
-{
-    state.add.existing(this);
-};
-
-AbstractWeapon.prototype.addToCollisionGroup = function(collisionGroup)
-{
-    this.body.setCollisionGroup(collisionGroup);
-    this.body.collides(collisionGroup);
-};
-
-AbstractWeapon.prototype.hit = function(car)
-{
-    throw new Error('You must overwrite hit');
-}
-
-AbstractWeapon.prototype.update = function()
-{
-    if (! this.inCamera) {
-        this.destroy();
     }
 }
 
-module.exports = AbstractWeapon;
+export default AbstractWeapon;

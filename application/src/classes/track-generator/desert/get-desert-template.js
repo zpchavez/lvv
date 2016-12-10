@@ -1,6 +1,6 @@
-var _ = require('underscore');
+import _ from 'underscore';
 
-module.exports = function(options) {
+export default function(options) {
     options = options || {};
     _(options).defaults({
         height: 200,
@@ -141,4 +141,4 @@ module.exports = function(options) {
         "tilewidth":32,
         "version":1,
     }
-}
+};
