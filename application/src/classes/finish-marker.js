@@ -1,12 +1,7 @@
-'use strict';
+import AbstractMarker from './abstract-marker';
 
-var AbstractMarker = require('./abstract-marker');
-
-var FinishMarker = function(state, x, y, key, angle, length)
+class FinishMarker extends AbstractMarker
 {
-    AbstractMarker.apply(this, arguments);
-};
+}
 
-FinishMarker.prototype = Object.create(AbstractMarker.prototype);
-
-module.exports = FinishMarker;
+export default FinishMarker;
