@@ -1,37 +1,27 @@
-'use strict';
+import AbstractDynamicObstacle from './abstract-dynamic-obstacle';
 
-var AbstractDynamicObstacle = require('./abstract-dynamic-obstacle');
-
-var AspirinPill = function(state, x, y, key, angle)
+class AspirinPill extends AbstractDynamicObstacle
 {
-    AbstractDynamicObstacle.apply(this, arguments);
-    this.falling = false;
-};
-
-AspirinPill.prototype = Object.create(AbstractDynamicObstacle.prototype);
-
-AspirinPill.prototype.getSpritePath = function()
-{
-    return 'assets/img/obstacles/aspirin-pill.png';
-};
-
-AspirinPill.prototype.getConstants = function()
-{
-    return {
-        ANGULAR_DAMPING     : 0.8,
-        MASS                : 1.0,
-        FRICTION_MULTIPLIER : 0.2
-    };
-};
-
-AspirinPill.prototype.createPhysicsBody = function(state, angle)
-{
-    state.game.physics.p2.enable(this);
-    this.body.setCircle(17);
-
-    if (angle) {
-        this.body.angle = angle;
+    getSpritePath() {
+        return 'assets/img/obstacles/aspirin-pill.png';
     }
-};
 
-module.exports = AspirinPill;
+    getConstants() {
+        return {
+            ANGULAR_DAMPING     : 0.8,
+            MASS                : 1.0,
+            FRICTION_MULTIPLIER : 0.2
+        };
+    }
+
+    createPhysicsBody(state, angle) {
+        state.game.physics.p2.enable(this);
+        this.body.setCircle(17);
+
+        if (angle) {
+            this.body.angle = angle;
+        }
+    }
+}
+
+export default AspirinPill;

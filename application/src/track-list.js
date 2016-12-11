@@ -1,8 +1,6 @@
-'use strict';
+const urlRoot = 'assets/tilemaps/maps/';
 
-var urlRoot = 'assets/tilemaps/maps/';
-
-module.exports = {
+export default {
     'Breakroom' : {
         'Table Hop'   : [
             [

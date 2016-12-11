@@ -1,17 +1,10 @@
-'use strict';
+import AbstractStaticObstacle from './abstract-static-obstacle';
 
-var AbstractStaticObstacle = require('./abstract-static-obstacle');
-
-var StaticBox = function(state, x, y, key, angle)
+class StaticBox extends AbstractStaticObstacle
 {
-    AbstractStaticObstacle.apply(this, arguments);
-};
+    getSpritePath() {
+        return 'assets/img/obstacles/black-box.png';
+    }
+}
 
-StaticBox.prototype = Object.create(AbstractStaticObstacle.prototype);
-
-StaticBox.prototype.getSpritePath = function()
-{
-    return 'assets/img/obstacles/black-box.png';
-};
-
-module.exports = StaticBox;
+export default AbstractStaticObstacle;

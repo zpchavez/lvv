@@ -1,17 +1,10 @@
-'use strict';
+import AbstractProjectile from './abstract-powerup';
 
-var AbstractProjectile = require('./abstract-powerup');
-
-var CannonBall = function(state, x, y, key)
+class CannonBall extends AbstractProjectile
 {
-    AbstractProjectile.apply(this, arguments);
-};
-
-CannonBall.prototype = Object.create(AbstractProjectile.prototype);
-
-CannonBall.prototype.applyPowerup = function(car)
-{
-    car.armWithCannon();
+    applyPowerup(car) {
+        car.armWithCannon();
+    }
 }
 
-module.exports = CannonBall;
+export default CannonBall;

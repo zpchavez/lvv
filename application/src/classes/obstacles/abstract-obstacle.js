@@ -1,45 +1,36 @@
-'use strict';
-
-var Phaser = require('phaser');
-
-var AbstractObstacle = function(state, x, y, key, angle)
+class AbstractObstacle extends Phaser.Sprite
 {
-    Phaser.Sprite.apply(this, [state.game, x, y, key]);
+    constructor(state, x, y, key, angle) {
+        super(state.game, x, y, key);
 
-    this.createPhysicsBody(state, angle);
-    this.state = state;
-};
-
-AbstractObstacle.prototype = Object.create(Phaser.Sprite.prototype);
-
-AbstractObstacle.prototype.loadAssets = function(state, key)
-{
-    state.load.image(key, this.getSpritePath());
-};
-
-AbstractObstacle.prototype.getSpritePath = function()
-{
-    throw new Error('Attempted to load assets on abstract class');
-};
-
-AbstractObstacle.prototype.createPhysicsBody = function(state, angle)
-{
-    state.game.physics.p2.enable(this);
-
-    if (angle) {
-        this.body.angle = angle;
+        this.createPhysicsBody(state, angle);
+        this.state = state;
     }
-};
 
-AbstractObstacle.prototype.add = function(state)
-{
-    state.add.existing(this);
-};
+    loadAssets(state, key) {
+        state.load.image(key, this.getSpritePath());
+    }
 
-AbstractObstacle.prototype.addToCollisionGroup = function(collisionGroup)
-{
-    this.body.setCollisionGroup(collisionGroup);
-    this.body.collides(collisionGroup);
-};
+    getSpritePath() {
+        throw new Error('Attempted to load assets on abstract class');
+    }
 
-module.exports = AbstractObstacle;
+    createPhysicsBody(state, angle) {
+        state.game.physics.p2.enable(this);
+
+        if (angle) {
+            this.body.angle = angle;
+        }
+    }
+
+    add(state) {
+        state.add.existing(this);
+    }
+
+    addToCollisionGroup(collisionGroup) {
+        this.body.setCollisionGroup(collisionGroup);
+        this.body.collides(collisionGroup);
+    }
+}
+
+export default AbstractObstacle;

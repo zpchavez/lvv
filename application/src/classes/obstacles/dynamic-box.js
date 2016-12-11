@@ -1,26 +1,18 @@
-'use strict';
+import AbstractDynamicObstacle from './abstract-dynamic-obstacle';
 
-var AbstractDynamicObstacle = require('./abstract-dynamic-obstacle');
-
-var DynamicBox = function(state, x, y, key, angle)
+class DynamicBox extends AbstractDynamicObstacle
 {
-    AbstractDynamicObstacle.apply(this, arguments);
-};
+    getSpritePath() {
+        return 'assets/img/obstacles/gray-box.png';
+    }
 
-DynamicBox.prototype = Object.create(AbstractDynamicObstacle.prototype);
+    getConstants() {
+        return {
+            ANGULAR_DAMPING     : 0.97,
+            MASS                : 1,
+            FRICTION_MULTIPLIER : 0.2
+        };
+    }
+}
 
-DynamicBox.prototype.getSpritePath = function()
-{
-    return 'assets/img/obstacles/gray-box.png';
-};
-
-DynamicBox.prototype.getConstants = function()
-{
-    return {
-        ANGULAR_DAMPING     : 0.97,
-        MASS                : 1,
-        FRICTION_MULTIPLIER : 0.2
-    };
-};
-
-module.exports = DynamicBox;
+export default DynamicBox;

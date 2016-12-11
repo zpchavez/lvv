@@ -1,13 +1,11 @@
 /* global window */
-'use strict';
+import _ from 'underscore';
+import queryString from 'query-string';
+import trackList from './track-list';
 
-var _           = require('underscore');
-var queryString = require('query-string');
-var trackList   = require('./track-list');
+const defaultTheme = _(trackList).keys()[0];
 
-var defaultTheme = _(trackList).keys()[0];
-
-var settings = queryString.parse(window.location.search);
+let settings = queryString.parse(window.location.search);
 
 settings = _(settings).defaults({
     seed     : Date.now(),
@@ -30,4 +28,4 @@ settings.debug    = settings.debug === 'false' ? false : !! settings.debug;
 settings.profiler = settings.profiler === 'false' ? false : !! settings.profiler;
 settings.startWithCannons = !! settings.startWithCannons;
 
-module.exports = settings;
+export default settings;

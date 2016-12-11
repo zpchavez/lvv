@@ -1,30 +1,22 @@
-'use strict';
+import AbstractStaticObstacle from './abstract-static-obstacle';
 
-var AbstractStaticObstacle = require('./abstract-static-obstacle');
-
-var MarkerRed = function(state, x, y, key, angle)
+class MarkerRed extends AbstractStaticObstacle
 {
-    AbstractStaticObstacle.apply(this, arguments);
-};
-
-MarkerRed.prototype = Object.create(AbstractStaticObstacle.prototype);
-
-MarkerRed.prototype.getSpritePath = function()
-{
-    return ('assets/img/obstacles/marker-red.png');
-};
-
-MarkerRed.prototype.createPhysicsBody = function(state, angle)
-{
-    state.game.physics.p2.enable(this);
-
-    this.body.clearShapes();
-
-    this.body.loadPolygon('Obstacles', 'marker');
-
-    if (angle) {
-        this.body.angle = angle;
+    getSpritePath() {
+        return ('assets/img/obstacles/marker-red.png');
     }
-};
 
-module.exports = MarkerRed;
+    createPhysicsBody(state, angle) {
+        state.game.physics.p2.enable(this);
+
+        this.body.clearShapes();
+
+        this.body.loadPolygon('Obstacles', 'marker');
+
+        if (angle) {
+            this.body.angle = angle;
+        }
+    }
+}
+
+export default MarkerRed;
