@@ -1,32 +1,23 @@
-'use strict';
+import AbstractDynamicObstacle from './abstract-dynamic-obstacle';
 
-var AbstractDynamicObstacle = require('./abstract-dynamic-obstacle');
-
-var ClownNose = function(state, x, y, key, angle)
+class ClownNose extends AbstractDynamicObstacle
 {
-    AbstractDynamicObstacle.apply(this, arguments);
-};
+    getSpritePath() {
+        return 'assets/img/obstacles/red-circle.png';
+    }
 
-ClownNose.prototype = Object.create(AbstractDynamicObstacle.prototype);
+    getConstants() {
+        return {
+            ANGULAR_DAMPING     : 0.97,
+            MASS                : 150,
+            FRICTION_MULTIPLIER : 0.01
+        };
+    }
 
-ClownNose.prototype.getSpritePath = function()
-{
-    return 'assets/img/obstacles/red-circle.png';
-};
+    createPhysicsBody(state, angle) {
+        state.game.physics.p2.enable(this);
+        this.body.setCircle(150);
+    }
+}
 
-ClownNose.prototype.getConstants = function()
-{
-    return {
-        ANGULAR_DAMPING     : 0.97,
-        MASS                : 150,
-        FRICTION_MULTIPLIER : 0.01
-    };
-};
-
-ClownNose.prototype.createPhysicsBody = function(state, angle)
-{
-    state.game.physics.p2.enable(this);
-    this.body.setCircle(150);
-};
-
-module.exports = ClownNose;
+export default ClownNose;

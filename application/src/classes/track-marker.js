@@ -1,26 +1,24 @@
-'use strict';
+import AbstractMarker from './abstract-marker';
 
-var AbstractMarker = require('./abstract-marker');
-
-var TrackMarker = function(state, x, y, key, angle, length)
+class TrackMarker extends AbstractMarker
 {
-    AbstractMarker.apply(this, arguments);
+    constructor(state, x, y, key, angle, length) {
+        super(...arguments);
 
-    this.activated = false;
-};
+        AbstractMarker.apply(this, arguments);
 
-TrackMarker.prototype = Object.create(AbstractMarker.prototype);
+        this.activated = false;
+    }
 
-TrackMarker.prototype.activate = function()
-{
-    this.loadTexture('track-marker-on');
-    this.activated = true;
-};
+    activate() {
+        this.loadTexture('track-marker-on');
+        this.activated = true;
+    }
 
-TrackMarker.prototype.deactivate = function()
-{
-    this.loadTexture('track-marker-off');
-    this.activated = false;
-};
+    deactivate() {
+        this.loadTexture('track-marker-off');
+        this.activated = false;
+    }
+}
 
-module.exports = TrackMarker;
+export default TrackMarker;

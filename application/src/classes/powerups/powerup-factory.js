@@ -1,44 +1,42 @@
-'use strict';
+import Cannon from './cannon';
+import Hover from './hover';
 
-var _ = require('underscore');
-var Cannon = require('./cannon');
-var Hover = require('./hover');
-
-var PowerupFactory = function(state) {
-    this.state       = state;
-    this.loadedTypes = {};
-};
-
-PowerupFactory.prototype.types = {
+const allTypes = {
     'cannon': Cannon,
     'hover': Hover,
 };
 
-PowerupFactory.prototype.loadAssets = function(types)
+class PowerupFactory
 {
-    types = types || Object.keys(this.types);
-
-    _.each(types, function(type) {
-        if (this.types[type]) {
-            this.types[type].prototype.loadAssets(this.state, type);
-            this.loadedTypes[type] = true;
-        } else {
-            throw new Error('Attempted to load assets for unknown class: ' + type);
-        }
-    }, this);
-};
-
-PowerupFactory.prototype.getNew = function(type, x, y)
-{
-    if (this.types[type]) {
-        if (this.loadedTypes[type]) {
-            return new this.types[type](this.state, x, y, type);
-        } else {
-            throw new Error('Attempted to create unloaded type. Add a call to load assets for ' + type + '.');
-        }
-    } else {
-        throw new Error('Attempted to create unknown class: ' + type);
+    constructor(state) {
+        this.state       = state;
+        this.loadedTypes = {};
     }
-};
 
-module.exports = PowerupFactory;
+    loadAssets(types) {
+        types = types || Object.keys(allTypes);
+
+        types.forEach((type) => {
+            if (allTypes[type]) {
+                allTypes[type].prototype.loadAssets(this.state, type);
+                this.loadedTypes[type] = true;
+            } else {
+                throw new Error('Attempted to load assets for unknown class: ' + type);
+            }
+        });
+    }
+
+    getNew(type, x, y) {
+        if (allTypes[type]) {
+            if (this.loadedTypes[type]) {
+                return new allTypes[type](this.state, x, y, type);
+            } else {
+                throw new Error('Attempted to create unloaded type. Add a call to load assets for ' + type + '.');
+            }
+        } else {
+            throw new Error('Attempted to create unknown class: ' + type);
+        }
+    }
+}
+
+export default PowerupFactory;

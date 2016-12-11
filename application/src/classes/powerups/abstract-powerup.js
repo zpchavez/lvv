@@ -1,60 +1,50 @@
-'use strict';
+import Car from '../car';
 
-var Phaser = require('phaser');
-var Car = require('../car');
-var _ = require('underscore');
-
-var AbstractPowerup = function(state, x, y, key)
+class AbstractPowerup extends Phaser.Sprite
 {
-    Phaser.Sprite.apply(this, [state.game, x, y, key]);
+    constructor(state, x, y, key) {
+        super(state.game, x, y, key);
 
-    this.createPhysicsBody(state);
-};
+        this.createPhysicsBody(state);
+    }
 
-AbstractPowerup.prototype = Object.create(Phaser.Sprite.prototype);
+    loadAssets(state, key) {
+        state.load.image(key, this.getSpritePath(key));
+    }
 
-AbstractPowerup.prototype.loadAssets = function(state, key)
-{
-    state.load.image(key, this.getSpritePath(key));
-};
+    getSpritePath(key) {
+        return 'assets/img/powerups/' + key + '.png';
+    }
 
-AbstractPowerup.prototype.getSpritePath = function(key)
-{
-    return 'assets/img/powerups/' + key + '.png';
-};
+    createPhysicsBody(state) {
+        state.game.physics.p2.enable(this);
 
-AbstractPowerup.prototype.createPhysicsBody = function(state)
-{
-    state.game.physics.p2.enable(this);
+        this.body.dynamic = false;
 
-    this.body.dynamic = false;
+        this.body.data.shapes.forEach((shape) => {
+            shape.sensor = true;
+        });
 
-    _.each(this.body.data.shapes, function(shape) {
-        shape.sensor = true;
-    });
+        this.body.onBeginContact.add((contactingBody) => {
+            if (Car.prototype.isPrototypeOf(contactingBody.sprite)) {
+                this.applyPowerup(contactingBody.sprite);
+                this.destroy();
+            }
+        });
+    }
 
-    this.body.onBeginContact.add(function (contactingBody) {
-        if (Car.prototype.isPrototypeOf(contactingBody.sprite)) {
-            this.applyPowerup(contactingBody.sprite);
-            this.destroy();
-        }
-    }, this);
-};
+    add(state) {
+        state.add.existing(this);
+    }
 
-AbstractPowerup.prototype.add = function(state)
-{
-    state.add.existing(this);
-};
+    addToCollisionGroup(collisionGroup) {
+        this.body.setCollisionGroup(collisionGroup);
+        this.body.collides(collisionGroup);
+    }
 
-AbstractPowerup.prototype.addToCollisionGroup = function(collisionGroup)
-{
-    this.body.setCollisionGroup(collisionGroup);
-    this.body.collides(collisionGroup);
-};
-
-AbstractPowerup.prototype.applyPowerup = function(car)
-{
-    throw new Error('You must overwrite applyPowerUp');
+    applyPowerup(car) {
+        throw new Error('You must overwrite applyPowerUp');
+    }
 }
 
-module.exports = AbstractPowerup;
+export default AbstractPowerup;

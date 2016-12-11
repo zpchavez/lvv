@@ -1,4 +1,4 @@
-module.exports = [
+export default [
     {
         name: 'blue',
         hex: 0x0000ff,

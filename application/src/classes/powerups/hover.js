@@ -1,17 +1,10 @@
-'use strict';
+import AbstractPowerup from './abstract-powerup';
 
-var AbstractPowerup = require('./abstract-powerup');
-
-var HoverPowerup = function(state, x, y, key)
+class HoverPowerup extends AbstractPowerup
 {
-    AbstractPowerup.apply(this, arguments);
-};
-
-HoverPowerup.prototype = Object.create(AbstractPowerup.prototype);
-
-HoverPowerup.prototype.applyPowerup = function(car)
-{
-    car.startHovering();
+    applyPowerup(car) {
+        car.startHovering();
+    }
 }
 
-module.exports = HoverPowerup;
+export default HoverPowerup;

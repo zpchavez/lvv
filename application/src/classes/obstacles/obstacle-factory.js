@@ -1,33 +1,25 @@
-'use strict';
+import Ant from './ant';
+import AspirinBottle from './aspirin-bottle';
+import AspirinPill from './aspirin-pill';
+import BathroomSink from './bathroom-sink';
+import Binder from './binder';
+import ClownNose from './clown-nose';
+import Comb from './comb';
+import DynamicBox from './dynamic-box';
+import Floss from './floss';
+import LegalPad from './legal-pad';
+import Lollipop from './lollipop';
+import MarkerGreen from './marker-green';
+import MarkerRed from './marker-red';
+import MarkerBlue from './marker-blue';
+import MarkerBlack from './marker-black';
+import QTip from './q-tip';
+import Razor from './razor';
+import StaticBox from './static-box';
+import Toothbrush from './toothbrush';
+import XboxController from './xbox-controller';
 
-var _              = require('underscore');
-var Ant = require('./ant');
-var AspirinBottle  = require('./aspirin-bottle');
-var AspirinPill    = require('./aspirin-pill');
-var BathroomSink   = require('./bathroom-sink');
-var Binder         = require('./binder');
-var ClownNose      = require('./clown-nose');
-var Comb           = require('./comb');
-var DynamicBox     = require('./dynamic-box');
-var Floss          = require('./floss');
-var LegalPad       = require('./legal-pad');
-var Lollipop       = require('./lollipop');
-var MarkerGreen    = require('./marker-green');
-var MarkerRed      = require('./marker-red');
-var MarkerBlue     = require('./marker-blue');
-var MarkerBlack    = require('./marker-black');
-var QTip           = require('./q-tip');
-var Razor          = require('./razor');
-var StaticBox      = require('./static-box');
-var Toothbrush     = require('./toothbrush');
-var XboxController = require('./xbox-controller');
-
-var ObstacleFactory = function(state) {
-    this.state       = state;
-    this.loadedTypes = {};
-};
-
-ObstacleFactory.prototype.types = {
+const allTypes = {
     'Ant': Ant,
     'AspirinBottle'  : AspirinBottle,
     'AspirinPill'    : AspirinPill,
@@ -50,37 +42,43 @@ ObstacleFactory.prototype.types = {
     'XboxController' : XboxController
 };
 
-ObstacleFactory.prototype.loadAssets = function(types)
+class ObstacleFactory
 {
-    _.each(types, function(type) {
-        if (this.types[type]) {
-            this.types[type].prototype.loadAssets(this.state, type);
-            this.loadedTypes[type] = true;
-        } else {
-            throw new Error('Attempted to load assets for unknown class: ' + type);
-        }
-    }, this);
-
-    this.state.game.load.atlas(
-        'splash',
-        'assets/img/ker-splash.png',
-        'assets/img/ker-splash.json'
-    );
-
-    this.state.load.physics('Obstacles', 'assets/physics/obstacles.json');
-};
-
-ObstacleFactory.prototype.getNew = function(type, x, y, angle)
-{
-    if (this.types[type]) {
-        if (this.loadedTypes[type]) {
-            return new this.types[type](this.state, x, y, type, angle);
-        } else {
-            throw new Error('Attempted to create unloaded type. Add a call to load assets for ' + type + '.');
-        }
-    } else {
-        throw new Error('Attempted to create unknown class: ' + type);
+    constructor(state) {
+        this.state       = state;
+        this.loadedTypes = {};
     }
-};
 
-module.exports = ObstacleFactory;
+    loadAssets(types) {
+        types.forEach((type) => {
+            if (allTypes[type]) {
+                allTypes[type].prototype.loadAssets(this.state, type);
+                this.loadedTypes[type] = true;
+            } else {
+                throw new Error('Attempted to load assets for unknown class: ' + type);
+            }
+        });
+
+        this.state.game.load.atlas(
+            'splash',
+            'assets/img/ker-splash.png',
+            'assets/img/ker-splash.json'
+        );
+
+        this.state.load.physics('Obstacles', 'assets/physics/obstacles.json');
+    }
+
+    getNew(type, x, y, angle) {
+        if (allTypes[type]) {
+            if (this.loadedTypes[type]) {
+                return new allTypes[type](this.state, x, y, type, angle);
+            } else {
+                throw new Error('Attempted to create unloaded type. Add a call to load assets for ' + type + '.');
+            }
+        } else {
+            throw new Error('Attempted to create unknown class: ' + type);
+        }
+    }
+}
+
+export default ObstacleFactory;

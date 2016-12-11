@@ -1,14 +1,13 @@
-'use strict';
+import AbstractObstacle from './abstract-obstacle';
 
-var AbstractObstacle = require('./abstract-obstacle');
-
-var AbstractStaticObstacle = function(state, x, y, key, angle)
+class AbstractStaticObstacle extends AbstractObstacle
 {
-    AbstractObstacle.apply(this, arguments);
+    constructor(state, x, y, key, angle)
+    {
+        super(...arguments);
 
-    this.body.dynamic = false;
-};
+        this.body.dynamic = false;
+    }
+}
 
-AbstractStaticObstacle.prototype = Object.create(AbstractObstacle.prototype);
-
-module.exports = AbstractStaticObstacle;
+export default AbstractStaticObstacle;

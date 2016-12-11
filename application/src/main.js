@@ -1,10 +1,8 @@
-'use strict';
-
-var Phaser = require('phaser');
-var DesertGenerator = require('./classes/track-generator/desert/desert-generator');
-var TrackLoader = require('./classes/track-loader');
-var MainMenuState = require('./classes/states/menus/main-menu-state');
-var globalState = require('./global-state');
+import DesertGenerator from './classes/track-generator/desert/desert-generator';
+import RaceState from './classes/states/race-state';
+import TrackLoader from './classes/track-loader';
+import MainMenuState from './classes/states/menus/main-menu-state';
+import globalState from './global-state';
 
 var game = new Phaser.Game(
     960,
@@ -14,7 +12,7 @@ var game = new Phaser.Game(
     null
 );
 
-var loadTrack = function() {
+const loadTrack = function() {
     // If loader not yet initialized, try again in a bit
     if (! game.load) {
         setTimeout(
@@ -23,7 +21,7 @@ var loadTrack = function() {
         );
         return;
     }
-    var trackLoader = new TrackLoader(game.load);
+    const trackLoader = new TrackLoader(game.load);
 
     trackLoader.load(globalState.get('theme'), globalState.get('track'), function(data) {
         game.state.add(
@@ -32,10 +30,9 @@ var loadTrack = function() {
             true
         );
     });
-}
+};
 
 if (globalState.get('state') === 'random') {
-    var RaceState = require('./classes/states/race-state');
     var desertGenerator = new DesertGenerator();
     game.state.add(
         'race',
