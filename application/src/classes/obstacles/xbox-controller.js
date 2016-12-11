@@ -1,30 +1,22 @@
-'use strict';
+import AbstractStaticObstacle from './abstract-static-obstacle';
 
-var AbstractStaticObstacle = require('./abstract-static-obstacle');
-
-var XboxController = function(state, x, y, key, angle)
+class XboxController extends AbstractStaticObstacle
 {
-    AbstractStaticObstacle.apply(this, arguments);
-};
-
-XboxController.prototype = Object.create(AbstractStaticObstacle.prototype);
-
-XboxController.prototype.getSpritePath = function()
-{
-    return ('assets/img/obstacles/xbox-controller.png');
-};
-
-XboxController.prototype.createPhysicsBody = function(state, angle)
-{
-    state.game.physics.p2.enable(this);
-
-    this.body.clearShapes();
-
-    this.body.loadPolygon('Obstacles', 'xboxController');
-
-    if (angle) {
-        this.body.angle = angle;
+    getSpritePath() {
+        return ('assets/img/obstacles/xbox-controller.png');
     }
-};
 
-module.exports = XboxController;
+    createPhysicsBody(state, angle) {
+        state.game.physics.p2.enable(this);
+
+        this.body.clearShapes();
+
+        this.body.loadPolygon('Obstacles', 'xboxController');
+
+        if (angle) {
+            this.body.angle = angle;
+        }
+    }
+}
+
+export default XboxController;

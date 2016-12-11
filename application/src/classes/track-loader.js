@@ -1,6 +1,6 @@
 import rng from '../rng';
 import trackList from '../track-list';
-import util from '../util';
+import { rotateVector } from '../util';
 import TrackAssembler from './track-assembler';
 import _ from 'underscore';
 
@@ -31,8 +31,8 @@ class TrackLoader
                 }
             } else if (tileset.tileproperties) {
                 // Convert image collection tileset data to object data
-                tileset.tileproperties.forEach((tile, index) => {
-                    objectClasses[parseInt(tileset.firstgid, 10) + parseInt(index, 10)] = tile;
+                Object.keys(tileset.tileproperties).forEach((index) => {
+                    objectClasses[parseInt(tileset.firstgid, 10) + parseInt(index, 10)] = tileset.tileproperties[index];
                 });
             }
         });
@@ -74,7 +74,7 @@ class TrackLoader
                                 parseInt(objectClasses[tilemapObject.gid].imageWidth, 10) / 2,
                                 - parseInt(objectClasses[tilemapObject.gid].imageHeight, 10) / 2
                             ];
-                            translationVector = util.rotateVector(
+                            translationVector = rotateVector(
                                 tilemapObject.rotation * Math.PI / 180,
                                 translationVector
                             );
@@ -87,7 +87,7 @@ class TrackLoader
                         (tilemapObject.width !== 0 || tilemapObject.imageHeight !== 0)
                     ) {
                         translationVector = [tilemapObject.width / 2, tilemapObject.height / 2];
-                        translationVector = util.rotateVector(
+                        translationVector = rotateVector(
                             tilemapObject.rotation * Math.PI / 180,
                             translationVector
                         );

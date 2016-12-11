@@ -1,5 +1,3 @@
-'use strict';
-
 import AbstractObstacle from './abstract-obstacle';
 
 class AbstractStaticObstacle extends AbstractObstacle

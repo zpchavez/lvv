@@ -1,30 +1,22 @@
-'use strict';
+import AbstractStaticObstacle from './abstract-static-obstacle';
 
-var AbstractStaticObstacle = require('./abstract-static-obstacle');
-
-var Lollipop = function(state, x, y, key, angle)
+class Lollipop extends AbstractStaticObstacle
 {
-    AbstractStaticObstacle.apply(this, arguments);
-};
-
-Lollipop.prototype = Object.create(AbstractStaticObstacle.prototype);
-
-Lollipop.prototype.getSpritePath = function()
-{
-    return ('assets/img/obstacles/lollipop.png');
-};
-
-Lollipop.prototype.createPhysicsBody = function(state, angle)
-{
-    state.game.physics.p2.enable(this);
-
-    this.body.clearShapes();
-
-    this.body.loadPolygon('Obstacles', 'lollipop');
-
-    if (angle) {
-        this.body.angle = angle;
+    getSpritePath() {
+        return ('assets/img/obstacles/lollipop.png');
     }
-};
 
-module.exports = Lollipop;
+    createPhysicsBody(state, angle) {
+        state.game.physics.p2.enable(this);
+
+        this.body.clearShapes();
+
+        this.body.loadPolygon('Obstacles', 'lollipop');
+
+        if (angle) {
+            this.body.angle = angle;
+        }
+    }
+}
+
+export default Lollipop;

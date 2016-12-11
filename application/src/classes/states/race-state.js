@@ -10,7 +10,7 @@ import Score from 'app/classes/score';
 import Controls from 'app/classes/controls';
 
 import _ from 'underscore';
-import util from 'app/util';
+import { rotateVector } from 'app/util';
 import playerColorNames from 'app/player-color-names';
 import globalState from 'app/global-state';
 import OverallScoreState from './overall-score-state';
@@ -236,7 +236,7 @@ class RaceState extends Phaser.State
         this.cars = [];
 
         for (let i = 0; i < this.playerCount; i += 1) {
-            offsetVector = util.rotateVector(this.startingPoint[2] * Math.PI / 180, this.startingPointVectors[i]);
+            offsetVector = rotateVector(this.startingPoint[2] * Math.PI / 180, this.startingPointVectors[i]);
 
             this.cars.push(this.carFactory.getNew(
                 this.startingPoint[0] + offsetVector[0],
@@ -695,7 +695,7 @@ class RaceState extends Phaser.State
 
         const lastActivatedMarker = this.track.getLastActivatedMarker();
 
-        offsetVector = util.rotateVector(
+        offsetVector = rotateVector(
             lastActivatedMarker.angle * Math.PI / 180,
             offsetVector
         );

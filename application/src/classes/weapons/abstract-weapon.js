@@ -21,7 +21,7 @@ class AbstractWeapon extends Phaser.Sprite
 
         this.body.kinematic = true;
 
-        _this.body.data.shapes.forEach((shape) => {
+        this.body.data.shapes.forEach((shape) => {
             shape.sensor = true;
         });
 

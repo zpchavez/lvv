@@ -1,4 +1,3 @@
-
 class AbstractObstacle extends Phaser.Sprite
 {
     constructor(state, x, y, key, angle) {

@@ -43,7 +43,7 @@ class OverallScoreState extends Phaser.State
     }
 
     getWinnerColor() {
-        var winnerColor;
+        let winnerColor;
         if (globalState.get('teams')) {
             winnerColor = (
                 this.winner === 0

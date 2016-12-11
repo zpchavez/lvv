@@ -10,6 +10,7 @@ class AbstractDynamicObstacle extends AbstractObstacle
 
         this.body.mass = this.constants.MASS;
         this.body.angularDamping = this.constants.ANGULAR_DAMPING;
+        this.falling = false;
     }
 
     getConstants() {

@@ -15,8 +15,8 @@ class WeaponFactory
         types = types || Object.keys(allTypes);
 
         types.forEach((type) => {
-            if (this.types[type]) {
-                this.types[type].prototype.loadAssets(this.state, type);
+            if (allTypes[type]) {
+                allTypes[type].prototype.loadAssets(this.state, type);
                 this.loadedTypes[type] = true;
             } else {
                 throw new Error('Attempted to load assets for unknown class: ' + type);
@@ -25,9 +25,9 @@ class WeaponFactory
     }
 
     getNew(type, x, y, angle) {
-        if (this.types[type]) {
+        if (allTypes[type]) {
             if (this.loadedTypes[type]) {
-                return new this.types[type](this.state, x, y, type, angle);
+                return new allTypes[type](this.state, x, y, type, angle);
             } else {
                 throw new Error('Attempted to create unloaded type. Add a call to load assets for ' + type + '.');
             }

@@ -1,5 +1,6 @@
 import colors from '../colors';
 import globalState from '../global-state';
+
 const BLUE = 0;
 const RED = 1;
 
@@ -218,7 +219,7 @@ class Score
             }
         }
 
-        return false;
+        return 0;
     }
 
     getLeaders() {
