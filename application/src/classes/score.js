@@ -213,13 +213,17 @@ class Score
     }
 
     getWinner() {
+        if (globalState.get('players') === 1) {
+            return 0;
+        }
+
         for (let i = 0; i <= 8; i += 1) {
             if (this.playerScores[i] >= 8) {
                 return i;
             }
         }
 
-        return 0;
+        return false;
     }
 
     getLeaders() {
