@@ -1,67 +1,57 @@
-'use strict';
+import RaceState from './race-state';
+import DesertGenerator from 'app/classes/track-generator/desert/desert-generator';
+import global from 'app/global-state';
 
-var Phaser = require('phaser');
-var RaceState = require('./race-state');
-var DesertGenerator = require('../track-generator/desert/desert-generator');
-var global = require('../../global-state');
-
-var LoadingNextRaceState = function()
+class LoadingNextRaceState extends Phaser.State
 {
-    Phaser.State.apply(this, arguments);
-};
+    create() {
+        this.renderNextRaceInfo();
 
-LoadingNextRaceState.prototype = Object.create(Phaser.State.prototype);
+        setTimeout(this.loadTrack.bind(this));
+    }
 
-LoadingNextRaceState.prototype.create = function()
-{
-    this.renderNextRaceInfo();
+    renderNextRaceInfo() {
+        const textString = 'Backyard';
 
-    setTimeout(this.loadTrack.bind(this));
-};
+        this.titleText = this.game.add.text(
+            this.game.width / 2,
+            (this.game.height / 2) - 100,
+            textString,
+            {
+                font: '42px Arial',
+                fill: '#ffffff',
+                stroke: '#000000',
+                strokeThickness: 5,
+            }
+        );
+        this.titleText.anchor.setTo(0.5, 0.5);
 
-LoadingNextRaceState.prototype.renderNextRaceInfo = function()
-{
-    var textString = 'Back Yard';
+        this.loadingText = this.game.add.text(
+            this.game.width / 2,
+            this.game.height / 2,
+            'Loading...',
+            {
+                font: '42px Arial',
+                fill: '#ffffff',
+                stroke: '#000000',
+                strokeThickness: 5,
+            }
+        )
+        this.loadingText.anchor.set(0.5, 0.5);
+    }
 
-    this.titleText = this.game.add.text(
-        this.game.width / 2,
-        (this.game.height / 2) - 100,
-        textString,
-        {
-            font: '42px Arial',
-            fill: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 5,
-        }
-    );
-    this.titleText.anchor.setTo(0.5, 0.5);
+    loadTrack(type) {
+        const desertGenerator = new DesertGenerator();
+        var trackData = desertGenerator.generate();
+        this.game.state.add(
+            'race',
+            new RaceState(trackData, {
+                players: global.state.players,
+                teams: global.state.teams
+            }),
+            true
+        );
+    };
+}
 
-    this.loadingText = this.game.add.text(
-        this.game.width / 2,
-        this.game.height / 2,
-        'Loading...',
-        {
-            font: '42px Arial',
-            fill: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 5,
-        }
-    )
-    this.loadingText.anchor.set(0.5, 0.5);
-};
-
-LoadingNextRaceState.prototype.loadTrack = function(type)
-{
-    var desertGenerator = new DesertGenerator();
-    var trackData = desertGenerator.generate();
-    this.game.state.add(
-        'race',
-        new RaceState(trackData, {
-            players: global.state.players,
-            teams: global.state.teams
-        }),
-        true
-    );
-};
-
-module.exports = LoadingNextRaceState;
+export default LoadingNextRaceState;
