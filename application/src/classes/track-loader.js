@@ -103,7 +103,7 @@ class TrackLoader
 
     // Load track data by theme and track name and pass track data object to callback
     load(theme, name, callback) {
-        var trackInstructions, trackSegmentData = [], trackLoader = this;
+        let trackInstructions, trackSegmentData = [], trackLoader = this;
 
         trackInstructions = trackList[theme][name];
 

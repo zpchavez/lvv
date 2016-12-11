@@ -1,17 +1,17 @@
 import AbstractStaticObstacle from './abstract-static-obstacle';
 import Car from 'app/classes/car';
-import util from 'app/util';
+import { getVectorMagnitude } from 'app/util';
 
 /*
     Upon detecting contact between this and a car object, trigger a jump or register the ids of the
     overlapping shapes in the contactingEntities object and apply a friction multiplier.
 */
-const onBeginContact = (contactingBody, qTipContactingShape, otherContactingShape) => {
+const onBeginContact = function(contactingBody, qTipContactingShape, otherContactingShape) {
     let velocity;
 
     if (Car.prototype.isPrototypeOf(contactingBody.sprite) &&
         ! (contactingBody.sprite.falling || contactingBody.sprite.airborne)) {
-        velocity = util.getVectorMagnitude([
+        velocity = getVectorMagnitude([
             contactingBody.velocity.x,
             contactingBody.velocity.y
         ]);
@@ -36,7 +36,7 @@ const onBeginContact = (contactingBody, qTipContactingShape, otherContactingShap
     pair from contactingEntities. If contactingEntities shows there are no more overlapping shapes
     between the two bodies, then remove the friction multiplier.
 */
-const onEndContact = (contactingBody, qTipContactingShape, otherContactingShape) => {
+const onEndContact = function(contactingBody, qTipContactingShape, otherContactingShape) {
     if (Car.prototype.isPrototypeOf(contactingBody.sprite)) {
         if (this.contactingEntities[contactingBody.id]) {
             // Remove the key in contactingEntities that corresponds to these two shapes
@@ -77,7 +77,7 @@ class QTip extends AbstractStaticObstacle
             shape.sensor = true;
         });
 
-        this.body.onBeginContact.add(onBeginContact , this);
+        this.body.onBeginContact.add(onBeginContact, this);
 
         this.body.onEndContact.add(onEndContact, this);
 

@@ -341,6 +341,10 @@ class RaceState extends Phaser.State
     }
 
     placePowerups() {
+        if (! this.trackData.possiblePowerupPoints) {
+            return;
+        }
+
         const targetPowerupCount = this.playerCount * 5;
 
         if (! this.powerups) {
