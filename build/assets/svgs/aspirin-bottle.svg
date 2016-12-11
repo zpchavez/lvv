@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg2985"
+   version="1.1"
+   inkscape:version="0.48.2 r9819"
+   width="953"
+   height="1300"
+   sodipodi:docname="aspirin-bottle.svg">
+  <metadata
+     id="metadata2991">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs2989">
+    <linearGradient
+       id="linearGradient3863">
+      <stop
+         style="stop-color:#0d0a02;stop-opacity:1;"
+         offset="0"
+         id="stop3871" />
+      <stop
+         id="stop3873"
+         offset="0.51031268"
+         style="stop-color:#0d0a02;stop-opacity:0;" />
+      <stop
+         style="stop-color:#0d0a02;stop-opacity:1;"
+         offset="1"
+         id="stop3875" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient3851">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop3853" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop3855" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3829">
+      <stop
+         style="stop-color:#000000;stop-opacity:0.29846153;"
+         offset="0"
+         id="stop3831" />
+      <stop
+         id="stop3837"
+         offset="0.5"
+         style="stop-color:#000000;stop-opacity:0;" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0.30153847;"
+         offset="1"
+         id="stop3833" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3803">
+      <stop
+         style="stop-color:#060501;stop-opacity:1;"
+         offset="0"
+         id="stop3805" />
+      <stop
+         id="stop3821"
+         offset="0.06443898"
+         style="stop-color:#171204;stop-opacity:1;" />
+      <stop
+         id="stop3817"
+         offset="0.77714622"
+         style="stop-color:#171204;stop-opacity:1;" />
+      <stop
+         id="stop3815"
+         offset="0.85436773"
+         style="stop-color:#0d0a02;stop-opacity:1;" />
+      <stop
+         style="stop-color:#0d0a02;stop-opacity:1;"
+         offset="0.88691521"
+         id="stop3819" />
+      <stop
+         id="stop3823"
+         offset="0.9118346"
+         style="stop-color:#0d0a02;stop-opacity:1;" />
+      <stop
+         id="stop3813"
+         offset="0.96494424"
+         style="stop-color:#171204;stop-opacity:1;" />
+      <stop
+         style="stop-color:#171204;stop-opacity:1;"
+         offset="1"
+         id="stop3807" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient3789">
+      <stop
+         style="stop-color:#008000;stop-opacity:1;"
+         offset="0"
+         id="stop3791" />
+      <stop
+         style="stop-color:#008000;stop-opacity:0;"
+         offset="1"
+         id="stop3793" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3789"
+       id="linearGradient3795"
+       x1="423.10861"
+       y1="630.74506"
+       x2="433.44434"
+       y2="696.09515"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(0,-87.522441)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3803"
+       id="linearGradient3809"
+       x1="421.91278"
+       y1="1096.4191"
+       x2="418.49625"
+       y2="165.62793"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3829"
+       id="linearGradient3835"
+       x1="144.65583"
+       y1="604.61808"
+       x2="700.70421"
+       y2="604.61808"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3851"
+       id="radialGradient3859"
+       cx="428.27649"
+       cy="213.55476"
+       fx="428.27649"
+       fy="213.55476"
+       r="182.04668"
+       gradientTransform="matrix(1,0,0,0.2628205,0,157.42819)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3863"
+       id="linearGradient3861"
+       x1="260.2334"
+       y1="215.88869"
+       x2="588.15088"
+       y2="215.30522"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1600"
+     inkscape:window-height="838"
+     id="namedview2987"
+     showgrid="false"
+     inkscape:zoom="0.85692308"
+     inkscape:cx="333.68948"
+     inkscape:cy="779.5501"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2985"
+     showguides="true"
+     inkscape:guide-bbox="true" />
+  <image
+     width="953"
+     height="1300"
+     xlink:href="file:///C:/Users/Trev/Projects/mm-ripoff/application/assets/reference-images/aspirin-bottle.jpg"
+     id="image2993"
+     x="0"
+     y="0"
+     style="opacity:0.10000000000000001;stroke:#000000;stroke-opacity:0.47311828000000000;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-linecap:round" />
+  <path
+     style="fill:url(#linearGradient3809);stroke:#000000;stroke-width:4.50000000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1"
+     d="M 147.0377,354.75763 C 148.20467,298.74327 176.21185,298.74327 194.8833,285.90664 213.55476,273.07002 289.40754,243.89587 288.24057,228.72531 287.07361,213.55476 289.10843,164.55449 289.10843,164.55449 277.05066,163.12273 264.56086,163.27897 259.30951,154.66474 259.30951,145.17529 259.32062,148.56749 259.30951,143.11237 272.71852,134.44809 343.08797,122.53142 422.44165,122.53142 501.79533,122.53142 559.73519,127.3008 579.47528,142.49349 579.23108,148.4234 579.53471,149.40407 579.34193,154.47311 575.23175,160.5903 566.30582,161.29719 549.16066,164.16455 549.37413,170.75162 549.8989,198.34424 549.76918,215.52099 549.7353,220.00795 550.07773,226.50669 553.27615,228.51741 559.57316,232.4761 657.0018,287.65709 667.50449,295.53411 678.00718,303.41113 695.21993,316.5395 695.80341,342.50449 696.3869,368.46948 698.72083,1007.0916 698.42909,1024.596 698.13734,1042.1005 676.25673,1066.8986 644.45691,1073.0251 612.65709,1079.1517 490.12567,1085.2783 414.56463,1086.4452 339.00359,1087.6122 216.18043,1084.9865 188.75673,1075.6508 161.33303,1066.3151 151.64435,1044.2737 151.41382,1033.9318 152.87253,923.07002 145.87074,410.77199 147.0377,354.75763 z"
+     id="path2995"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="ssscccscccsssssssscs" />
+  <path
+     style="fill:#ffffff;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
+     d="M 626.66068,449.28187 626.66068,806.37343 223.61984,806.37343 223.47396,449.28187 z"
+     id="path2997"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="ccccc" />
+  <text
+     xml:space="preserve"
+     style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+     x="295.24237"
+     y="529.80249"
+     id="text2999"
+     sodipodi:linespacing="125%"><tspan
+       sodipodi:role="line"
+       id="tspan3001"
+       x="295.24237"
+       y="529.80249"
+       style="font-size:64px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Cooper Std Black;-inkscape-font-specification:Cooper Std Black">Aspirin</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:36px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+     x="292.90845"
+     y="612.65704"
+     id="text3007"
+     sodipodi:linespacing="125%"><tspan
+       sodipodi:role="line"
+       id="tspan3009"
+       x="292.90845"
+       y="612.65704">150 Tables</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:36px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+     x="296.40933"
+     y="660.50269"
+     id="text3011"
+     sodipodi:linespacing="125%"><tspan
+       sodipodi:role="line"
+       id="tspan3013"
+       x="296.40933"
+       y="660.50269">85 mg</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+     x="322.08258"
+     y="764.36267"
+     id="text3015"
+     sodipodi:linespacing="125%"><tspan
+       sodipodi:role="line"
+       id="tspan3017"
+       x="322.08258"
+       y="764.36267">Keep out of reach of children</tspan></text>
+  <path
+     style="fill:url(#linearGradient3795);fill-opacity:1;stroke:none"
+     d="M 263.73429,567.14543 263.73429,547.30701 581.14902,547.30701 581.14902,567.14543 z"
+     id="path3019"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="ccccc" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:4.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     d="M 289.40754,165.12568 C 418.05983,175.35834 556.14281,169.84729 549.64094,162.79175"
+     id="path3797"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="cc" />
+  <path
+     style="fill:#000000;fill-opacity:0.65053767;stroke:#000000;stroke-width:4.50000000000000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:0.26344085000000000;stroke-dasharray:none"
+     d="M 296.10042,147.32945 C 394.04936,131.10029 449.04778,129.66217 546.93233,146.16248 444.07701,153.00197 397.54152,152.5381 296.10042,147.32945 z"
+     id="path3801"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="ccc" />
+  <path
+     sodipodi:nodetypes="ssscccscccsssssssscs"
+     inkscape:connector-curvature="0"
+     id="path3825"
+     d="M 147.0377,354.75763 C 148.20467,298.74327 176.21185,298.74327 194.8833,285.90664 213.55476,273.07002 289.40754,243.89587 288.24057,228.72531 287.07361,213.55476 289.10843,164.55449 289.10843,164.55449 277.05066,163.12273 264.56086,163.27897 259.30951,154.66474 259.30951,145.17529 259.32062,148.56749 259.30951,143.11237 272.71852,134.44809 343.08797,122.53142 422.44165,122.53142 501.79533,122.53142 559.73519,127.3008 579.47528,142.49349 579.23108,148.4234 579.53471,149.40407 579.34193,154.47311 575.23175,160.5903 566.30582,161.29719 549.16066,164.16455 549.37413,170.75162 549.8989,198.34424 549.76918,215.52099 549.7353,220.00795 550.07773,226.50669 553.27615,228.51741 559.57316,232.4761 657.0018,287.65709 667.50449,295.53411 678.00718,303.41113 695.21993,316.5395 695.80341,342.50449 696.3869,368.46948 698.72083,1007.0916 698.42909,1024.596 698.13734,1042.1005 676.25673,1066.8986 644.45691,1073.0251 612.65709,1079.1517 490.12567,1085.2783 414.56463,1086.4452 339.00359,1087.6122 216.18043,1084.9865 188.75673,1075.6508 161.33303,1066.3151 151.64435,1044.2737 151.41382,1033.9318 152.87253,923.07002 145.87074,410.77199 147.0377,354.75763 z"
+     style="fill:url(#linearGradient3835);stroke:none;stroke-width:4.50000000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1;opacity:1"
+     inkscape:export-filename="C:\Users\Trev\Projects\mm-ripoff\application\assets\svgs\aspirin-bottle.png"
+     inkscape:export-xdpi="51.400749"
+     inkscape:export-ydpi="51.400749" />
+  <path
+     style="fill:url(#linearGradient3861);fill-opacity:1;stroke:none"
+     d="M 249.7307,260.67101 606.67639,262.12971 C 606.67639,262.12971 579.388,248.38279 549.20332,229.01706 546.60014,211.90497 547.04796,190.34711 547.16112,168.04309 430.2807,178.66002 413.64092,172.02565 290.57451,168.04309 290.64453,200.09983 290.34253,209.0467 289.69928,234.70602 278.97251,246.90652 249.7307,260.67101 249.7307,260.67101 z"
+     id="path3839"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="ccccccc" />
+</svg>
