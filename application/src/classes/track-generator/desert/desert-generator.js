@@ -120,6 +120,8 @@ class DesertGenerator
         });
         this.gravelIndices = [];
         this.waterIndices = [];
+        this.puddleIndices = [];
+        this.bridgeIndices = [];
         this.trackIndices = [];
     }
 
@@ -139,7 +141,33 @@ class DesertGenerator
         this._drawFinishLine(data);
         this._generatePossiblePowerupPoints(data);
 
+        this.generatedData = data;
+
         return data;
+    }
+
+    generateMinimap(game) {
+        const minimap = game.make.bitmapData(MAP_SIZE, MAP_SIZE, 'minimap', true);
+
+        this.trackIndices.forEach(index => {
+            let point = this._convertIndexToPoint(index);
+            minimap.setPixel(point[X], point[Y], 255, 255, 255, false);
+        });
+
+        this.puddleIndices.forEach(index => {
+            let point = this._convertIndexToPoint(index);
+            minimap.setPixel(point[X], point[Y], 0, 0, 255, false);
+        });
+
+        this.bridgeIndices.forEach(index => {
+            let point = this._convertIndexToPoint(index);
+            minimap.setPixel(point[X], point[Y], 0xF6, 0xD4, 0xA4, false);
+        });
+
+        minimap.context.putImageData(minimap.imageData, 0, 0);
+        minimap.dirty = true;
+
+        return minimap;
     }
 
     _getLayer(data, name) {
@@ -573,14 +601,17 @@ class DesertGenerator
         this.gravelIndices = _.difference(this.gravelIndices, sandIndices);
         this.waterIndices = _.difference(this.waterIndices, sandIndices);
 
+        const puddleIndices = [];
         // Then fill background layer area with water tiles
         this._fillArea(
             background.data,
             WATER,
             innerTopLeft,
             innerBottomRight,
-            this.waterIndices
+            puddleIndices
         );
+        this.puddleIndices.push.apply(this.puddleIndices, puddleIndices);
+        this.waterIndices.push.apply(this.waterIndices, puddleIndices);
         // Fill water layer with tiles
         this._fillArea(
             this._getLayer(data, 'water').data,
@@ -621,6 +652,7 @@ class DesertGenerator
 
         // Remove waterIndices that no longer refer to water tiles
         this.waterIndices = _.difference(this.waterIndices, bridgeIndices);
+        this.bridgeIndices.push.apply(this.bridgeIndices, bridgeIndices);
     }
 
     _drawEastWestBridge(westPoint, eastPoint, data, affectedIndices) {
