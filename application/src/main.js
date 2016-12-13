@@ -1,5 +1,6 @@
 import DesertGenerator from './classes/track-generator/desert/desert-generator';
 import RaceState from './classes/states/race-state';
+import LoadingNextRaceState from './classes/states/loading-next-race-state';
 import TrackLoader from './classes/track-loader';
 import MainMenuState from './classes/states/menus/main-menu-state';
 import globalState from './global-state';
@@ -33,10 +34,9 @@ const loadTrack = function() {
 };
 
 if (globalState.get('state') === 'random') {
-    var desertGenerator = new DesertGenerator();
     game.state.add(
         'race',
-        new RaceState(desertGenerator.generate()),
+        new LoadingNextRaceState(),
         true
     );
 } else if (globalState.get('state') === 'track') {
