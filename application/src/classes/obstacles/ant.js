@@ -58,6 +58,10 @@ class Ant extends AbstractDynamicObstacle
     update() {
         super.update(...arguments);
 
+        if (this.splashing) {
+            return;
+        }
+
         // Get point in front of ant.
         const xRotation = Math.cos(this.body.rotation - (90 * Math.PI / 180));
         const yRotation = Math.sin(this.body.rotation - (90 * Math.PI / 180));

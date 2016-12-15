@@ -323,7 +323,7 @@ class Car extends Phaser.Sprite
         this.body.velocity.x = 0;
         this.body.velocity.y = 0;
         this.body.angle = 0;
-
+        this.body.clearCollision();
         this.tint = 0xffffff;
         this.loadTexture('splash', 0);
         this.glassSprite.visible = false;
@@ -374,6 +374,7 @@ class Car extends Phaser.Sprite
 
     doneSplashing() {
         this.splashing = false;
+        this.addToCollisionGroup(this.state.collisionGroup);
         this.loadTexture(this.spriteKey);
         this.glassSprite.visible = true;
         this.tint = colors[global.state.colors[this.playerNumber]].hex;

@@ -1,5 +1,6 @@
 /* globals window */
 import AbstractState from './abstract-state';
+import AbstractDynamicObstacle from 'app/classes/obstacles/abstract-dynamic-obstacle';
 import React from 'react';
 import CarFactory from 'app/classes/car-factory';
 import ObstacleFactory from 'app/classes/obstacles/obstacle-factory';
@@ -592,6 +593,7 @@ class RaceState extends AbstractState
             // Obstacles splash too
             this.obstacles.forEach((obstacle) => {
                 if (
+                    obstacle instanceof AbstractDynamicObstacle &&
                     ! obstacle.splashing &&
                     this.map.getTileWorldXY(obstacle.x, obstacle.y, width, height, 'water')
                 ) {
