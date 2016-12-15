@@ -1,3 +1,4 @@
+import AbstractState from './abstract-state';
 import RaceState from './race-state';
 import DesertGenerator from 'app/classes/track-generator/desert/desert-generator';
 import global from 'app/global-state';
@@ -9,9 +10,11 @@ const textStyle = {
     strokeThickness: 5,
 };
 
-class LoadingNextRaceState extends Phaser.State
+class LoadingNextRaceState extends AbstractState
 {
     create() {
+        super.create();
+
         this.renderNextRaceInfo();
 
         setTimeout(this.loadTrack.bind(this));

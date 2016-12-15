@@ -1,3 +1,4 @@
+import AbstractState from 'app/classes/states/abstract-state';
 import Controls from 'app/classes/controls';
 import LoadingNextRaceState from 'app/classes/states/loading-next-race-state';
 import CarFactory from 'app/classes/car-factory';
@@ -5,7 +6,7 @@ import globalState from 'app/global-state';
 import colors from 'app/colors';
 import _ from 'underscore';
 
-class SelectColorState extends Phaser.State
+class SelectColorState extends AbstractState
 {
     constructor() {
         super(...arguments);
@@ -14,10 +15,14 @@ class SelectColorState extends Phaser.State
     }
 
     preload() {
+        super.preload();
+
         this.carFactory.loadAssets();
     }
 
     create() {
+        super.create();
+
         this.renderText();
         this.renderCars();
         this.initInputs();

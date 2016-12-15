@@ -1,3 +1,4 @@
+import AbstractState from './abstract-state';
 import globalState from 'app/global-state';
 import colors from 'app/colors';
 import LoadingNextRaceState from './loading-next-race-state';
@@ -14,7 +15,7 @@ const leftpad = function(str, len, ch) {
   return str;
 }
 
-class OverallScoreState extends Phaser.State
+class OverallScoreState extends AbstractState
 {
     constructor(winner) {
         super(...arguments);
@@ -23,6 +24,8 @@ class OverallScoreState extends Phaser.State
     }
 
     create() {
+        super.create();
+
         if (globalState.get('score')[this.winner] === 3) {
             this.renderWinnerMessage();
             setTimeout(this.returnToMainMenu.bind(this), 5000);

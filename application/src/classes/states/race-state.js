@@ -1,4 +1,5 @@
 /* globals window */
+import AbstractState from './abstract-state';
 import React from 'react';
 import CarFactory from 'app/classes/car-factory';
 import ObstacleFactory from 'app/classes/obstacles/obstacle-factory';
@@ -21,7 +22,7 @@ import colors from 'app/colors';
 const NEXT_GAME_DELAY  = 5000;
 const NEXT_ROUND_DELAY = 2500;
 
-class RaceState extends Phaser.State
+class RaceState extends AbstractState
 {
     constructor(trackData, options) {
         super(...arguments);
@@ -68,6 +69,8 @@ class RaceState extends Phaser.State
     }
 
     preload() {
+        super.preload();
+
         const cacheKey = Tiled.utils.cacheKey;
 
         this.showMessage('Get Ready!');
@@ -108,6 +111,8 @@ class RaceState extends Phaser.State
     }
 
     create() {
+        super.create();
+
         if (this.options.selector) {
             this.showTrackSelectorOffCanvas();
         }
@@ -133,9 +138,6 @@ class RaceState extends Phaser.State
             this.startingPoint[0] - (this.game.width / 2),
             this.startingPoint[1] - (this.game.height / 2)
         );
-
-        this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
-        this.game.input.onDown.add(this.toggleFullscreen, this);
 
         this.game.add.graphics();
 
@@ -927,14 +929,6 @@ class RaceState extends Phaser.State
             }),
             window.document.getElementById('content')
         );
-    }
-
-    toggleFullscreen() {
-        if (this.game.scale.isFullScreen) {
-            this.game.scale.stopFullScreen();
-        } else {
-            this.game.scale.startFullScreen(false);
-        }
     }
 }
 
