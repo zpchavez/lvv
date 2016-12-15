@@ -37,7 +37,7 @@ class OverallScoreState extends Phaser.State
     }
 
     returnToMainMenu() {
-        global.reset();
+        globalState.reset();
 
         this.game.state.add('main-menu', new MainMenuState, true);
     }
