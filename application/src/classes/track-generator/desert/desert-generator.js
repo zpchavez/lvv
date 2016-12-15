@@ -665,7 +665,7 @@ class DesertGenerator
         ];
         let tileCursor = 0;
         const foregroundData = this._getLayer(data, 'foreground').data;
-        for (let y = westPoint[Y] - 1; y <= westPoint[Y] + 1; y += 1) {
+        for (let y = westPoint[Y] - 2; y <= westPoint[Y] + 2; y += 1) {
             for (let x = westPoint[X]; x <= eastPoint[X]; x += 1) {
                 let index = this._convertPointToIndex([x, y]);
                 foregroundData[index] = tileOrder[tileCursor];
@@ -685,7 +685,7 @@ class DesertGenerator
         ];
         let tileCursor = 0;
         let foregroundData = this._getLayer(data, 'foreground').data;
-        for (let x = northPoint[X] - 1; x <= northPoint[X] + 1; x += 1) {
+        for (let x = northPoint[X] - 2; x <= northPoint[X] + 2; x += 1) {
             for (let y = northPoint[Y]; y <= southPoint[Y]; y += 1) {
                 let index = this._convertPointToIndex([x, y]);
                 foregroundData[index] = tileOrder[tileCursor];
