@@ -3,7 +3,7 @@ import Controls from 'app/classes/controls';
 import LoadingNextRaceState from 'app/classes/states/loading-next-race-state';
 import CarFactory from 'app/classes/car-factory';
 import globalState from 'app/global-state';
-import colors from 'app/colors';
+import colors, { BLUE, RED, CYAN, PINK } from 'app/colors';
 import _ from 'underscore';
 
 class SelectColorState extends AbstractState
@@ -195,11 +195,6 @@ class SelectColorState extends AbstractState
     }
 
     changeTeamColor(player, direction) {
-        const BLUE = 0;
-        const CYAN = 6;
-        const RED = 1;
-        const PINK = 8;
-
         let selectTeamColor = (teamShades, teamColorKey, directionMultiplier) => {
             if (this.selectedColors[player] === null) {
                 // If both team colors already selected, do nothing
@@ -225,7 +220,8 @@ class SelectColorState extends AbstractState
                 this.playerSprites[player].tint = 0xffffff;
                 this.unselectColor(player);
                 this.playerSprites[player].body.x = (this.game.width / 2);
-                this.teamPlayers[teamColorKey] = _.without(this.teamPlayers[teamColorKey], player);
+                const unselectedColorKey = teamColorKey === 'red' ? 'blue' : 'red';
+                this.teamPlayers[unselectedColorKey] = _.without(this.teamPlayers[unselectedColorKey], player);
             }
         };
 

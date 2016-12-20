@@ -13,7 +13,6 @@ import Controls from 'app/classes/controls';
 
 import _ from 'underscore';
 import { rotateVector } from 'app/util';
-import playerColorNames from 'app/player-color-names';
 import globalState from 'app/global-state';
 import OverallScoreState from './overall-score-state';
 import PowerupFactory from 'app/classes/powerups/powerup-factory';
@@ -248,11 +247,17 @@ class RaceState extends AbstractState
             ));
         }
 
+        const teamPlayers = [null, null, null, null];
+        teamPlayers[globalState.get('teamPlayers').blue[0]] = 0;
+        teamPlayers[globalState.get('teamPlayers').blue[1]] = 0;
+        teamPlayers[globalState.get('teamPlayers').red[0]] = 1;
+        teamPlayers[globalState.get('teamPlayers').red[1]] = 1;
+
         this.cars.forEach((car, index) => {
             car.playerNumber = index;
 
             if (this.teams) {
-                car.teamNumber = [0, 0, 1, 1][index];
+                car.teamNumber = teamPlayers[index];
             }
 
             car.body.angle = this.startingPoint[2];
