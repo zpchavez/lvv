@@ -167,6 +167,16 @@ class DesertGenerator
         minimap.context.putImageData(minimap.imageData, 0, 0);
         minimap.dirty = true;
 
+        // Mark starting line
+        minimap.text(
+          '★',
+          Math.floor(this.finishPoint.x / this.template.tilewidth) - 12,
+          Math.floor(this.finishPoint.y / this.template.tileheight) + 5,
+          '24px Arial',
+          'rgb(255,0,0)',
+          false
+        );
+
         return minimap;
     }
 
