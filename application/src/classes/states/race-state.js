@@ -247,16 +247,19 @@ class RaceState extends AbstractState
             ));
         }
 
-        const teamPlayers = [null, null, null, null];
-        teamPlayers[globalState.get('teamPlayers').blue[0]] = 0;
-        teamPlayers[globalState.get('teamPlayers').blue[1]] = 0;
-        teamPlayers[globalState.get('teamPlayers').red[0]] = 1;
-        teamPlayers[globalState.get('teamPlayers').red[1]] = 1;
+        let teamPlayers = null;
+        if (this.teams) {
+          teamPlayers = [null, null, null, null];
+          teamPlayers[globalState.get('teamPlayers').blue[0]] = 0;
+          teamPlayers[globalState.get('teamPlayers').blue[1]] = 0;
+          teamPlayers[globalState.get('teamPlayers').red[0]] = 1;
+          teamPlayers[globalState.get('teamPlayers').red[1]] = 1;
+        }
 
         this.cars.forEach((car, index) => {
             car.playerNumber = index;
 
-            if (this.teams) {
+            if (teamPlayers) {
                 car.teamNumber = teamPlayers[index];
             }
 
