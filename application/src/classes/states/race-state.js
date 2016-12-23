@@ -400,7 +400,7 @@ class RaceState extends AbstractState
         // a bug where the game would be stuck if both remaining players
         // were eliminated at the exact same time. This maybe isn't the
         // best solution since no points are awarded. Everyone just gets a do-over.
-        if (_.every(this.cars, (car) => {return ! car.visible;})) {
+        if (_.every(this.cars, (car) => {return car.isEliminated();})) {
             this.resetAllCarsToLastMarker();
         }
 
@@ -474,7 +474,7 @@ class RaceState extends AbstractState
             return;
         }
 
-        visibleCars = _.where(this.cars, {visible : true});
+        visibleCars = _.where(this.cars, {visible: true, eliminated: false});
 
         if (this.teams && visibleCars.length === 2 && visibleCars[0].teamNumber === visibleCars[1].teamNumber) {
             visibleCars[0].setVictorySpinning(true);
@@ -717,6 +717,8 @@ class RaceState extends AbstractState
             lastActivatedMarker.angle * Math.PI / 180,
             offsetVector
         );
+
+        car.eliminated = false;
 
         car.reset(
             lastActivatedMarker.x + offsetVector[0],

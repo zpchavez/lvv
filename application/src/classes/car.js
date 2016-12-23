@@ -43,6 +43,7 @@ class Car extends Phaser.Sprite
         this.victorySpinning = false;
         this.falling = false;
         this.disabled = false;
+        this.eliminated = false;
         this.airborne = false;
         this.airborneHeight = 0;
         this.onRoughTerrain = false;
@@ -323,6 +324,9 @@ class Car extends Phaser.Sprite
 
     splash(splashTargetLocation) {
         this.splashing = true;
+        if (global.get('players') > 1) {
+          this.eliminated = true;
+        }
         this.body.velocity.x = 0;
         this.body.velocity.y = 0;
         this.body.angle = 0;
@@ -341,6 +345,9 @@ class Car extends Phaser.Sprite
 
     fall(fallTargetLocation, easeToTarget) {
         this.falling = true;
+        if (global.get('players') > 1) {
+          this.eliminated = true;
+        }
 
         this.body.velocity.x = 0;
         this.body.velocity.y = 0;
@@ -372,7 +379,11 @@ class Car extends Phaser.Sprite
         this.falling = false;
         this.scale.x = 1;
         this.scale.y = 1;
-        this.state.moveCarToLastActivatedMarker(this);
+        if (global.get('players') === 1) {
+          this.state.moveCarToLastActivatedMarker(this);
+        } else {
+          this.visible = false;
+        }
     }
 
     doneSplashing() {
@@ -381,7 +392,11 @@ class Car extends Phaser.Sprite
         this.loadTexture(this.spriteKey);
         this.glassSprite.visible = true;
         this.tint = colors[global.state.colors[this.playerNumber]].hex;
-        this.state.moveCarToLastActivatedMarker(this);
+        if (global.get('players') === 1) {
+          this.state.moveCarToLastActivatedMarker(this);
+        } else {
+          this.visible = false;
+        }
     }
 
     setVictorySpinning(value) {
@@ -453,6 +468,10 @@ class Car extends Phaser.Sprite
             0,
             0
         );
+    }
+
+    isEliminated() {
+      return this.eliminated || ! this.visible;
     }
 
     addToCollisionGroup(collisionGroup) {
