@@ -2,6 +2,7 @@ import AbstractDynamicObstacle from './abstract-dynamic-obstacle';
 import { rotateVector } from 'app/util';
 import rng from 'app/rng';
 import _ from 'underscore';
+import DelayTimer from 'app/delay';
 
 class Ant extends AbstractDynamicObstacle
 {
@@ -15,6 +16,8 @@ class Ant extends AbstractDynamicObstacle
 
         this.animations.add('walking', [0, 1, 0, 2], 6, true);
         this.animations.play('walking');
+
+        this.delayTimer = new DelayTimer(state.game);
     }
 
     loadAssets(state, key) {
@@ -87,7 +90,7 @@ class Ant extends AbstractDynamicObstacle
 
                 // Temporarily disable angular damping so the ant doesn't over turn
                 this.body.angularDamping = 1;
-                setTimeout(() => {
+                this.delayTimer.setTimeout(() => {
                     this.body.angularDamping = this.constants.ANGULAR_DAMPING;
                 }, 100)
             } else {

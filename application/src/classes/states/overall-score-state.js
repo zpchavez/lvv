@@ -3,6 +3,7 @@ import globalState from 'app/global-state';
 import colors from 'app/colors';
 import LoadingNextRaceState from './loading-next-race-state';
 import MainMenuState from './menus/main-menu-state';
+import DelayTimer from 'app/delay';
 
 const leftpad = function(str, len, ch) {
   str = String(str);
@@ -26,12 +27,14 @@ class OverallScoreState extends AbstractState
     create() {
         super.create();
 
+        this.delayTimer = new DelayTimer(this.game);
+
         if (globalState.get('score')[this.winner] === 3) {
             this.renderWinnerMessage();
-            setTimeout(this.returnToMainMenu.bind(this), 5000);
+            this.delayTimer.setTimeout(this.returnToMainMenu.bind(this), 5000);
         } else {
             this.renderScore();
-            setTimeout(this.loadNextRace.bind(this), 5000);
+            this.delayTimer.setTimeout(this.loadNextRace.bind(this), 5000);
         }
     }
 

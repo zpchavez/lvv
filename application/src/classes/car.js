@@ -3,6 +3,7 @@ import { rotateVector, getVectorMagnitude } from 'app/util';
 import globalState from 'app/global-state';
 import colors from 'app/colors';
 import global from 'app/global-state';
+import DelayTimer from 'app/delay';
 
 const transformCallback = function(worldTransform, parentTransform)
 {
@@ -57,6 +58,8 @@ class Car extends Phaser.Sprite
         this.transformCallback = transformCallback;
         this.transformCallbackContext = this;
         this.spriteKey = key;
+
+        this.delayTimer = new DelayTimer(this.game);
     }
 
     getConstants() {
@@ -331,7 +334,7 @@ class Car extends Phaser.Sprite
         this.body.y = splashTargetLocation.y;
         this.animations.add('splash', [0, 1], 2, false);
         this.animations.play('splash');
-        setTimeout(() => {
+        this.delayTimer.setTimeout(() => {
             this.doneSplashing();
         }, 1000);
     }
@@ -414,7 +417,7 @@ class Car extends Phaser.Sprite
 
     spinOut() {
         this.spinningOut = true;
-        setTimeout(() => {
+        this.delayTimer.setTimeout(() => {
             this.spinningOut = false;
         }, 1000);
     };

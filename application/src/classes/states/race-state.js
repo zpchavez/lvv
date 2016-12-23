@@ -1,4 +1,3 @@
-/* globals window */
 import AbstractState from './abstract-state';
 import AbstractDynamicObstacle from 'app/classes/obstacles/abstract-dynamic-obstacle';
 import React from 'react';
@@ -18,6 +17,7 @@ import OverallScoreState from './overall-score-state';
 import PowerupFactory from 'app/classes/powerups/powerup-factory';
 import rng from 'app/rng';
 import colors from 'app/colors';
+import DelayTimer from 'app/delay';
 
 const NEXT_GAME_DELAY  = 5000;
 const NEXT_ROUND_DELAY = 2500;
@@ -70,6 +70,8 @@ class RaceState extends AbstractState
 
     preload() {
         super.preload();
+
+        this.delayTimer = new DelayTimer(this.game);
 
         const cacheKey = Tiled.utils.cacheKey;
 
@@ -141,7 +143,7 @@ class RaceState extends AbstractState
 
         this.game.add.graphics();
 
-        setTimeout(this.countDown.bind(this));
+        this.delayTimer.setTimeout(this.countDown.bind(this));
     }
 
     countDown() {
@@ -500,10 +502,10 @@ class RaceState extends AbstractState
             if (this.score.getWinner() === false && ! this.suddenDeath) {
                 // Start next round if no overall winner
                 this.eliminationStack = [];
-                window.setTimeout(this.resetAllCarsToLastMarker.bind(this), NEXT_ROUND_DELAY);
+                this.delayTimer.setTimeout(this.resetAllCarsToLastMarker.bind(this), NEXT_ROUND_DELAY);
             } else {
                 this.showWinnerMessage();
-                window.setTimeout(this.nextRace.bind(this), NEXT_GAME_DELAY);
+                this.delayTimer.setTimeout(this.nextRace.bind(this), NEXT_GAME_DELAY);
             }
         }
     }
@@ -797,7 +799,7 @@ class RaceState extends AbstractState
 
         if (options.showFor) {
             return new Promise((resolve) => {
-                window.setTimeout(
+                this.delayTimer.setTimeout(
                     () => {
                         message.destroy();
                         resolve();
@@ -838,7 +840,7 @@ class RaceState extends AbstractState
 
         if (this.raceOver) {
             this.showWinnerMessage();
-            window.setTimeout(this.nextRace.bind(this), NEXT_GAME_DELAY);
+            this.delayTimer.setTimeout(this.nextRace.bind(this), NEXT_GAME_DELAY);
         } else {
             this.lapNumber += 1;
             this.lapDisplay.setText('Lap ' + this.lapNumber);
@@ -937,7 +939,7 @@ class RaceState extends AbstractState
                 initialDebug            : this.debug,
                 initialLaps             : this.laps
             }),
-            window.document.getElementById('content')
+            this.delayTimer.document.getElementById('content')
         );
     }
 }
