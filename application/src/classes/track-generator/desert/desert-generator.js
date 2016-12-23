@@ -217,12 +217,11 @@ class DesertGenerator
         const obstacleLayer = this._getLayer(data, 'obstacles');
 
         const obstacles = [
-            'Comb',
-            'Razor',
-            'AspirinBottle',
-            'Floss',
-            'Toothbrush',
+            'HandShovel',
+            'HorseShoe',
+            'HorseShoe', // Generate two of them
             'Lollipop',
+            'Sprayer',
         ];
 
         const pickedPoints = [];
