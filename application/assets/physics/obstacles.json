@@ -3592,5 +3592,28 @@
         174
       ]
     }
+  ],
+  "pebble-1": [
+    {
+      "density": 2,
+      "friction": 0,
+      "bounce": 0,
+      "filter": {
+        "categoryBits": 1,
+        "maskBits": 65535
+      },
+      "shape": [
+        6,
+        0,
+        16,
+        0,
+        22,
+        21,
+        12,
+        25,
+        0.5,
+        12
+      ]
+    }
   ]
 }
