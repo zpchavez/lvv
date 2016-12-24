@@ -115,6 +115,7 @@ export default function(options) {
             "HorseShoe": true,
             "Lollipop": true,
             "Sprayer":  true,
+            "Pebble1": true,
         },
         "nextobjectid":28,
         "orientation":"orthogonal",

@@ -180,6 +180,20 @@ class DesertGenerator
         return minimap;
     }
 
+    _getRandomizedPebble(x, y) {
+      const pebbleTypes = [
+        'Pebble1',
+      ];
+
+      return {
+        rotation: rng.getIntBetween(0, 359),
+        type: rng.pickValueFromArray(pebbleTypes),
+        visible: true,
+        x: x,
+        y: y,
+      };
+    }
+
     _getLayer(data, name) {
         let returnedLayer;
 
@@ -493,6 +507,7 @@ class DesertGenerator
 
     _generateTrack(points, data) {
         const background = this._getLayer(data, 'background');
+        const obstacleLayer = this._getLayer(data, 'obstacles');
 
         this._fillLayer(background.data, SAND);
 
@@ -511,8 +526,8 @@ class DesertGenerator
                 } else {
                     var leftPoint = (prevPoint[X] < point[X] ? prevPoint : point).slice();
                     leftPoint[X] -= 3; // -3 to fill in corners
-                    this._drawHorizontalTrack(
-                        background.data,
+                    this._drawHorizontalPebbleTrack(
+                        obstacleLayer,
                         leftPoint,
                         Math.abs(point[X] - prevPoint[X]) + 6 // +6 to fill in corners
                     )
@@ -1256,6 +1271,17 @@ class DesertGenerator
         });
 
         return points;
+    }
+
+    _drawHorizontalPebbleTrack(obstacleLayer, leftPos, length) {
+      const pad = (TRACK_WIDTH / 2) * this.template.tileheight;
+      for (
+        let x = leftPos[X];
+        x < leftPos[X] + (length * this.template.tilewidth);
+        x += this.template.tilewidth
+      ) {
+        obstacleLayer.objects.push(this._getRandomizedPebble(x, leftPos[Y] - pad));
+      }
     }
 
     _drawHorizontalTrack(data, leftPos, length) {
