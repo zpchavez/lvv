@@ -75,7 +75,7 @@ class AbstractDynamicObstacle extends AbstractObstacle
                 Phaser.Easing.Linear.None,
                 true
             )
-            .onComplete.add(this.destroy, this);
+            .onComplete.add(this.kill, this);
     }
 }
 
