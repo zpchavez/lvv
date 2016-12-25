@@ -1275,13 +1275,22 @@ class DesertGenerator
 
     _drawHorizontalPebbleTrack(obstacleLayer, leftPos, length) {
       const pad = (TRACK_WIDTH / 2) * this.template.tileheight;
+      const objectPos = [
+        leftPos[X] * this.template.tilewidth,
+        leftPos[Y] * this.template.tileheight,
+      ];
       for (
-        let x = leftPos[X];
-        x < leftPos[X] + (length * this.template.tilewidth);
+        let x = objectPos[X];
+        x < objectPos[X] + (length * this.template.tilewidth);
         x += this.template.tilewidth
       ) {
-        obstacleLayer.objects.push(this._getRandomizedPebble(x, leftPos[Y] - pad));
+        obstacleLayer.objects.push(this._getRandomizedPebble(x, objectPos[Y] - pad));
+        obstacleLayer.objects.push(this._getRandomizedPebble(x, objectPos[Y] + pad));
       }
+
+      // Call drawHorizontalTrack with an empty object for data for the side
+      // effect of setting trackIndices
+      this._drawHorizontalTrack({}, leftPos, length);
     }
 
     _drawHorizontalTrack(data, leftPos, length) {
