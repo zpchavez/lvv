@@ -71,6 +71,10 @@ class RaceState extends AbstractState
     preload() {
         super.preload();
 
+        if (globalState.get('profiler')) {
+            this.game.add.plugin(Phaser.Plugin.Debug);
+        }
+
         this.delayTimer = new DelayTimer(this.game);
 
         const cacheKey = Tiled.utils.cacheKey;
