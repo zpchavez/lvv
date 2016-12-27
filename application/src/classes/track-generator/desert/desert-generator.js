@@ -136,7 +136,7 @@ class DesertGenerator
         this._generateGravel(data);
         this._generateWater(data);
         this._addEdgeTiles(data, this.gravelIndices, GRAVEL);
-        this._addEdgeTiles(data, this.trackIndices, PAVEMENT);
+        // this._addEdgeTiles(data, this.trackIndices, PAVEMENT);
         this._addEdgeTiles(data, this.waterIndices, WATER);
         this._drawFinishLine(data);
         this._generatePossiblePowerupPoints(data);
@@ -188,6 +188,8 @@ class DesertGenerator
       return {
         rotation: rng.getIntBetween(0, 359),
         type: rng.pickValueFromArray(pebbleTypes),
+        // rotation: 0,
+        // type: pebbleTypes[0],
         visible: true,
         x: x,
         y: y,
@@ -786,7 +788,7 @@ class DesertGenerator
         layerTile,
         tileIndices
     ) {
-         if (backgroundData[pointIndex] !== SAND) {
+         if (backgroundData[pointIndex] !== SAND || this.trackIndices.indexOf(pointIndex) > -1) {
              return false;
          }
 
@@ -1282,7 +1284,7 @@ class DesertGenerator
       for (
         let x = objectPos[X];
         x < objectPos[X] + (length * this.template.tilewidth);
-        x += this.template.tilewidth
+        x += (this.template.tilewidth * 2)
       ) {
         obstacleLayer.objects.push(this._getRandomizedPebble(x, objectPos[Y] - pad));
         obstacleLayer.objects.push(this._getRandomizedPebble(x, objectPos[Y] + pad));
