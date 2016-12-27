@@ -59,6 +59,8 @@ class AbstractTrackDelineator extends AbstractStaticObstacle
     constructor(state, x, y, key, angle) {
         super(...arguments);
 
+        this.angle = angle;
+
         this.contactingEntities = {};
     }
 
@@ -66,7 +68,7 @@ class AbstractTrackDelineator extends AbstractStaticObstacle
         super.update();
 
         if (this.inCamera && ! this.body && this.collisionGroup) {
-            this.createPhysicsBody(this.state);
+            this.createPhysicsBody(this.state, this.angle);
             this.addToCollisionGroup(this.collisionGroup);
         }
 

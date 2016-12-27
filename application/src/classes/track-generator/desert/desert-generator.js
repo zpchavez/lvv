@@ -188,8 +188,6 @@ class DesertGenerator
       return {
         rotation: rng.getIntBetween(0, 359),
         type: rng.pickValueFromArray(pebbleTypes),
-        // rotation: 0,
-        // type: pebbleTypes[0],
         visible: true,
         x: x,
         y: y,
