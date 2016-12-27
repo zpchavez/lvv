@@ -32,10 +32,6 @@ class MainMenuState extends AbstractState
         this.renderNumPlayersMenu();
         this.renderNumPlayersCursor();
 
-        if (globalState.get('profiler')) {
-            this.game.add.plugin(Phaser.Plugin.Debug);
-        }
-
         this.initInputs();
     }
 
