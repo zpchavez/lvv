@@ -518,14 +518,24 @@ class DesertGenerator
             if (index > 0) {
                 var prevPoint = points[index - 1];
                 if ([NORTH, SOUTH].indexOf(prevPoint[ANGLE]) !== -1) {
-                    this._drawVerticalTrack(
-                        background.data,
+                    // this._drawVerticalTrack(
+                    //     background.data,
+                    //     prevPoint[Y] < point[Y] ? prevPoint : point,
+                    //     Math.abs(point[Y] - prevPoint[Y])
+                    // );
+                    this._drawVerticalPebbleTrack(
+                        obstacleLayer,
                         prevPoint[Y] < point[Y] ? prevPoint : point,
                         Math.abs(point[Y] - prevPoint[Y])
                     )
                 } else {
                     var leftPoint = (prevPoint[X] < point[X] ? prevPoint : point).slice();
                     leftPoint[X] -= 3; // -3 to fill in corners
+                    // this._drawHorizontalTrack(
+                    //     background.data,
+                    //     leftPoint,
+                    //     Math.abs(point[X] - prevPoint[X]) + 6 // +6 to fill in corners
+                    // );
                     this._drawHorizontalPebbleTrack(
                         obstacleLayer,
                         leftPoint,
@@ -1291,6 +1301,26 @@ class DesertGenerator
       // Call drawHorizontalTrack with an empty object for data for the side
       // effect of setting trackIndices
       this._drawHorizontalTrack({}, leftPos, length);
+    }
+
+    _drawVerticalPebbleTrack(obstacleLayer, topPos, length) {
+      const pad = (TRACK_WIDTH / 2) * this.template.tileheight;
+      const objectPos = [
+        topPos[X] * this.template.tilewidth,
+        topPos[Y] * this.template.tileheight,
+      ];
+      for (
+        let y = objectPos[Y];
+        y < objectPos[Y] + (length * this.template.tileheight);
+        y += (this.template.tileheight * 2)
+      ) {
+        obstacleLayer.objects.push(this._getRandomizedPebble(objectPos[X] + pad, y));
+        obstacleLayer.objects.push(this._getRandomizedPebble(objectPos[X] - pad, y));
+      }
+
+      // Call drawVerticalTrack with an empty object for data for the side
+      // effect of setting trackIndices
+      this._drawVerticalTrack({}, topPos, length);
     }
 
     _drawHorizontalTrack(data, leftPos, length) {
