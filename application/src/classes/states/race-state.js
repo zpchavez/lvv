@@ -329,7 +329,7 @@ class RaceState extends AbstractState
     }
 
     placeObstacles() {
-        let obstacles = [], obstaclesLayer;
+        let obstacles = [], dynamicObstacles = [], obstaclesLayer;
 
         obstaclesLayer = _.findWhere(this.trackData.layers, {name : 'obstacles'});
 
@@ -337,13 +337,17 @@ class RaceState extends AbstractState
             return;
         }
 
-        obstaclesLayer.objects.forEach((obstacle) => {
-            obstacles.push(this.obstacleFactory.getNew(
-                obstacle.type,
-                obstacle.x,
-                obstacle.y,
-                obstacle.rotation
-            ));
+        obstaclesLayer.objects.forEach((obstacleData) => {
+            let obstacle = this.obstacleFactory.getNew(
+                obstacleData.type,
+                obstacleData.x,
+                obstacleData.y,
+                obstacleData.rotation
+            );
+            obstacles.push(obstacle);
+            if (obstacle instanceof AbstractDynamicObstacle) {
+                dynamicObstacles.push(obstacles);
+            }
         });
 
         obstacles.forEach((obstacle) => {
@@ -351,6 +355,7 @@ class RaceState extends AbstractState
             obstacle.add(this);
         });
         this.obstacles = obstacles;
+        this.dynamicObstacles = dynamicObstacles;
     }
 
     postGameObjectPlacement() {
@@ -605,9 +610,8 @@ class RaceState extends AbstractState
             }
 
             // Obstacles splash too
-            this.obstacles.forEach((obstacle) => {
+            this.dynamicObstacles.forEach((obstacle) => {
                 if (
-                    obstacle instanceof AbstractDynamicObstacle &&
                     ! obstacle.splashing &&
                     this.map.getTileWorldXY(obstacle.x, obstacle.y, width, height, 'water')
                 ) {
@@ -637,7 +641,7 @@ class RaceState extends AbstractState
             }
 
             // Obstacles fall too
-            this.obstacles.forEach((obstacle) => {
+            this.dynamicObstacles.forEach((obstacle) => {
                 if (
                     ! obstacle.falling &&
                     this.map.getTileWorldXY(obstacle.x, obstacle.y, width, height, 'drops')

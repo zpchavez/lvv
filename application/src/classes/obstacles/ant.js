@@ -145,8 +145,7 @@ class Ant extends AbstractDynamicObstacle
     }
 
     getAngleToTheCandy() {
-        const obstaclesLayer = _.findWhere(this.state.trackData.layers, {name : 'obstacles'});
-        const candy = _.findWhere(obstaclesLayer.objects, {type: 'Lollipop'});
+        const candy = this.getCandy();
         let targetAngle = Math.atan2(
             candy.y - this.y,
             candy.x - this.x
