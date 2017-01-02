@@ -64,19 +64,6 @@ class AbstractTrackDelineator extends AbstractStaticObstacle
         this.contactingEntities = {};
     }
 
-    update() {
-        super.update();
-
-        if (this.inCamera && ! this.body && this.collisionGroup) {
-            this.createPhysicsBody(this.state, this.angle);
-            this.addToCollisionGroup(this.collisionGroup);
-        }
-
-        if (! this.inCamera && this.body) {
-            this.body.destroy();
-        }
-    }
-
     getPolygonName() {
       throw new Error('You must override getPolygonName')
     }

@@ -1,5 +1,6 @@
 import AbstractState from './abstract-state';
 import AbstractDynamicObstacle from 'app/classes/obstacles/abstract-dynamic-obstacle';
+import AbstractTrackDelineator from 'app/classes/obstacles/abstract-track-delineator';
 import React from 'react';
 import CarFactory from 'app/classes/car-factory';
 import ObstacleFactory from 'app/classes/obstacles/obstacle-factory';
@@ -331,6 +332,8 @@ class RaceState extends AbstractState
     placeObstacles() {
         let obstacles = [], dynamicObstacles = [], obstaclesLayer;
 
+        this.trackDelineators = [];
+
         obstaclesLayer = _.findWhere(this.trackData.layers, {name : 'obstacles'});
 
         if (! obstaclesLayer) {
@@ -344,6 +347,10 @@ class RaceState extends AbstractState
                 obstacleData.y,
                 obstacleData.rotation
             );
+            if (obstacle instanceof AbstractTrackDelineator) {
+                this.trackDelineators.push(obstacle);
+                return;
+            }
             obstacles.push(obstacle);
             if (obstacle instanceof AbstractDynamicObstacle) {
                 dynamicObstacles.push(obstacles);
@@ -404,7 +411,34 @@ class RaceState extends AbstractState
         }
     }
 
+    inCamera(sprite) {
+        return (
+            sprite.x > this.game.camera.x &&
+            sprite.x < this.game.camera.x + this.game.camera.width &&
+            sprite.y > this.game.camera.y &&
+            sprite.y < this.game.camera.y + this.game.camera.height
+        );
+    }
+
+    updateTrackDelineators() {
+        this.trackDelineators.forEach(delineator => {
+            if (
+                this.game.world.children.indexOf(delineator) === -1 &&
+                this.inCamera(delineator)
+            ) {
+                delineator.addToCollisionGroup(this.collisionGroup);
+                delineator.add(this);
+                delineator.sendToBack().moveUp().moveUp();
+            } else if (this.game.world.children.indexOf(delineator) > -1 && ! this.inCamera(delineator)) {
+                delineator.body.removeCollisionGroup(this.collisionGroup);
+                this.game.world.removeChild(delineator);
+            }
+        });
+    }
+
     update() {
+        this.updateTrackDelineators();
+
         // If all cars are invisible, reset to last marker. This fixes
         // a bug where the game would be stuck if both remaining players
         // were eliminated at the exact same time. This maybe isn't the
