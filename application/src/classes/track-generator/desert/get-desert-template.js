@@ -108,6 +108,15 @@ export default function(options) {
                 "type": "objectgroup",
                 "visible": true,
             },
+            {
+                "draworder": "topdown",
+                "height": 50,
+                "name": "track-delineators",
+                "objects": [],
+                "opacity": 1,
+                "type": "objectgroup",
+                "visible": true,
+            },
         ],
         "placedObjectClasses": {
             "Ant": true,

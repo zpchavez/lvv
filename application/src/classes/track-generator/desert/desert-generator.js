@@ -507,7 +507,7 @@ class DesertGenerator
 
     _generateTrack(points, data) {
         const background = this._getLayer(data, 'background');
-        const obstacleLayer = this._getLayer(data, 'obstacles');
+        const trackDelineatorLayer = this._getLayer(data, 'track-delineators');
 
         this._fillLayer(background.data, SAND);
 
@@ -524,7 +524,7 @@ class DesertGenerator
                     //     Math.abs(point[Y] - prevPoint[Y])
                     // );
                     this._drawVerticalPebbleTrack(
-                        obstacleLayer,
+                        trackDelineatorLayer,
                         prevPoint[Y] < point[Y] ? prevPoint : point,
                         Math.abs(point[Y] - prevPoint[Y])
                     )
@@ -537,7 +537,7 @@ class DesertGenerator
                     //     Math.abs(point[X] - prevPoint[X]) + 6 // +6 to fill in corners
                     // );
                     this._drawHorizontalPebbleTrack(
-                        obstacleLayer,
+                        trackDelineatorLayer,
                         leftPoint,
                         Math.abs(point[X] - prevPoint[X]) + 6 // +6 to fill in corners
                     )

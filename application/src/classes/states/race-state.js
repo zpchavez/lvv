@@ -330,16 +330,27 @@ class RaceState extends AbstractState
     }
 
     placeObstacles() {
-        let obstacles = [], dynamicObstacles = [], obstaclesLayer;
-
         this.trackDelineators = [];
 
-        obstaclesLayer = _.findWhere(this.trackData.layers, {name : 'obstacles'});
+        let obstaclesLayer = _.findWhere(this.trackData.layers, {name : 'obstacles'});
+        let trackDelineatorLayer = _.findWhere(this.trackData.layers, {name : 'track-delineators'}) || {objects: []};
 
         if (! obstaclesLayer) {
             return;
         }
 
+        trackDelineatorLayer.objects.forEach(delineatorData => {
+            let obstacle = this.obstacleFactory.getNew(
+                delineatorData.type,
+                delineatorData.x,
+                delineatorData.y,
+                delineatorData.rotation
+            );
+            this.trackDelineators.push(obstacle);
+        });
+
+        let obstacles = [];
+        let dynamicObstacles = [];
         obstaclesLayer.objects.forEach((obstacleData) => {
             let obstacle = this.obstacleFactory.getNew(
                 obstacleData.type,
@@ -347,10 +358,6 @@ class RaceState extends AbstractState
                 obstacleData.y,
                 obstacleData.rotation
             );
-            if (obstacle instanceof AbstractTrackDelineator) {
-                this.trackDelineators.push(obstacle);
-                return;
-            }
             obstacles.push(obstacle);
             if (obstacle instanceof AbstractDynamicObstacle) {
                 dynamicObstacles.push(obstacles);
