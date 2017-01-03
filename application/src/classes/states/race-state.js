@@ -412,11 +412,15 @@ class RaceState extends AbstractState
     }
 
     inCamera(sprite) {
+        return !this.offCamera(sprite);
+    }
+
+    offCamera(sprite) {
         return (
-            sprite.x > this.game.camera.x &&
-            sprite.x < this.game.camera.x + this.game.camera.width &&
-            sprite.y > this.game.camera.y &&
-            sprite.y < this.game.camera.y + this.game.camera.height
+            sprite.x < this.game.camera.x ||
+            sprite.x > (this.game.camera.x + this.game.camera.width) ||
+            sprite.y < this.game.camera.y ||
+            sprite.y > (this.game.camera.y + this.game.camera.height)
         );
     }
 
@@ -489,12 +493,7 @@ class RaceState extends AbstractState
                             car.y > this.game.world.height
                         ) ||
                         // car.inCamera is false at unexpected times, so doing this:
-                        (
-                            car.x < this.game.camera.x ||
-                            car.x > (this.game.camera.x + this.game.camera.width) ||
-                            car.y < this.game.camera.y ||
-                            car.y > (this.game.camera.y + this.game.camera.height)
-                        )
+                        this.offCamera(car)
                     )
                 ) {
                     car.visible = false;
