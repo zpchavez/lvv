@@ -1094,19 +1094,19 @@ class DesertGenerator
         if ([EAST, WEST].indexOf(finishMarker.rotation) !== -1) {
             startingPos = [point[X], point[Y] - TRACK_WIDTH / 2 - 1];
             decoration.data[this._convertPointToIndex(startingPos)] = FINISH_N;
-            this._drawVerticalLine(decoration.data, FINISH, [startingPos[X], startingPos[Y] + 1], TRACK_WIDTH + 1);
+            this._drawVerticalLine(decoration.data, FINISH, [startingPos[X], startingPos[Y] + 1], TRACK_WIDTH);
             decoration.data[
                 this._convertPointToIndex(
-                    [startingPos[X], startingPos[Y] + TRACK_WIDTH + 2]
+                    [startingPos[X], startingPos[Y] + TRACK_WIDTH + 1]
                 )
             ] = FINISH_S;
         } else {
             startingPos = [point[X] - TRACK_WIDTH / 2 - 1, point[Y]];
             decoration.data[this._convertPointToIndex(startingPos)] = FINISH_W;
-            this._drawHorizontalLine(decoration.data, FINISH, [startingPos[X] + 1, startingPos[Y]], TRACK_WIDTH + 1);
+            this._drawHorizontalLine(decoration.data, FINISH, [startingPos[X] + 1, startingPos[Y]], TRACK_WIDTH);
             decoration.data[
                 this._convertPointToIndex(
-                    [startingPos[X] + TRACK_WIDTH + 2, startingPos[Y]]
+                    [startingPos[X] + TRACK_WIDTH + 1, startingPos[Y]]
                 )
             ] = FINISH_E;
         }
@@ -1284,7 +1284,7 @@ class DesertGenerator
     }
 
     _drawHorizontalPebbleTrack(obstacleLayer, leftPos, length) {
-      const pad = (TRACK_WIDTH / 2) * this.template.tileheight;
+      const pad = ((TRACK_WIDTH / 2) + 1) * this.template.tileheight;
       const objectPos = [
         leftPos[X] * this.template.tilewidth,
         leftPos[Y] * this.template.tileheight,
@@ -1304,7 +1304,7 @@ class DesertGenerator
     }
 
     _drawVerticalPebbleTrack(obstacleLayer, topPos, length) {
-      const pad = (TRACK_WIDTH / 2) * this.template.tileheight;
+      const pad = ((TRACK_WIDTH / 2) + 1) * this.template.tileheight;
       const objectPos = [
         topPos[X] * this.template.tilewidth,
         topPos[Y] * this.template.tileheight,
