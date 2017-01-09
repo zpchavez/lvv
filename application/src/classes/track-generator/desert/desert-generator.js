@@ -123,6 +123,7 @@ class DesertGenerator
         this.puddleIndices = [];
         this.bridgeIndices = [];
         this.trackIndices = [];
+        this.fauxTrackLayer = {};
     }
 
     generate() {
@@ -804,7 +805,7 @@ class DesertGenerator
                 backgroundData[tileIndex] !== allowed &&
                 (
                     backgroundData[tileIndex] !== SAND ||
-                    this.trackIndices.indexOf(tileIndex) !== -1
+                    this.fauxTrackLayer[tileIndex] === PAVEMENT
                 )
             );
          };
@@ -1309,7 +1310,7 @@ class DesertGenerator
 
       // Call drawHorizontalTrack with an empty object for data for the side
       // effect of setting trackIndices
-      this._drawHorizontalTrack({}, leftPos, length);
+      this._drawHorizontalTrack(this.fauxTrackLayer, leftPos, length);
     }
 
     _drawVerticalPebbleTrack(obstacleLayer, topPos, length) {
@@ -1329,7 +1330,7 @@ class DesertGenerator
 
       // Call drawVerticalTrack with an empty object for data for the side
       // effect of setting trackIndices
-      this._drawVerticalTrack({}, topPos, length);
+      this._drawVerticalTrack(this.fauxTrackLayer, topPos, length);
     }
 
     _drawHorizontalTrack(data, leftPos, length) {
