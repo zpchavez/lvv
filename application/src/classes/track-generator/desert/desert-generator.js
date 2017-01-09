@@ -136,7 +136,6 @@ class DesertGenerator
         this._generateGravel(data);
         this._generateWater(data);
         this._addEdgeTiles(data, this.gravelIndices, GRAVEL);
-        // this._addEdgeTiles(data, this.trackIndices, PAVEMENT);
         this._addEdgeTiles(data, this.waterIndices, WATER);
         this._drawFinishLine(data);
         this._generatePossiblePowerupPoints(data);
@@ -800,9 +799,18 @@ class DesertGenerator
              return false;
          }
 
+         const isSpecialTile = (tileIndex, allowed = -1) => {
+            return (
+                backgroundData[tileIndex] !== allowed &&
+                (
+                    backgroundData[tileIndex] !== SAND ||
+                    this.trackIndices.indexOf(tileIndex) !== -1
+                )
+            );
+         };
+
          const tooCloseToAnotherSpecialTile = tileIndex => {
              const adj = this._getAdjacentTileIndex.bind(this);
-             const bg = backgroundData;
              let tooClose = false;
 
              // Tile can't be touching a non-sand, non-patch-type tile
@@ -810,65 +818,66 @@ class DesertGenerator
                 if (tooClose) {
                     return;
                 }
-                if ([SAND, backgroundTile].indexOf(bg[adj(tileIndex, direction)]) === -1) {
+
+                if (isSpecialTile(adj(tileIndex, direction), backgroundTile)) {
                     tooClose = true;
                 }
              });
 
-             if (bg[adj(tileIndex, N)] === SAND) {
+             if (! tooClose && ! isSpecialTile(adj(tileIndex, N))) {
                  if (
-                     bg[adj(adj(tileIndex, N), N)] !== SAND ||
-                     bg[adj(adj(tileIndex, N), NW)] !== SAND ||
-                     bg[adj(adj(tileIndex, N), NE)] !== SAND
+                     isSpecialTile(adj(adj(tileIndex, N), N)) ||
+                     isSpecialTile(adj(adj(tileIndex, N), NW)) ||
+                     isSpecialTile(adj(adj(tileIndex, N), NE))
                  ) {
                      tooClose = true;
                  }
              }
-             if (! tooClose && bg[adj(tileIndex, S)] === SAND) {
+             if (! tooClose && ! isSpecialTile(adj(tileIndex, S))) {
                  if (
-                     bg[adj(adj(tileIndex, S), S)] !== SAND ||
-                     bg[adj(adj(tileIndex, S), SW)] !== SAND ||
-                     bg[adj(adj(tileIndex, S), SE)] !== SAND
+                     isSpecialTile(adj(adj(tileIndex, S), S)) ||
+                     isSpecialTile(adj(adj(tileIndex, S), SW)) ||
+                     isSpecialTile(adj(adj(tileIndex, S), SE))
                  ) {
                      tooClose = true;
                  }
              }
-             if (! tooClose && bg[adj(tileIndex, E)] === SAND) {
+             if (! tooClose && ! isSpecialTile(adj(tileIndex, E))) {
                  if (
-                     bg[adj(adj(tileIndex, E), E)] !== SAND ||
-                     bg[adj(adj(tileIndex, E), NE)] !== SAND ||
-                     bg[adj(adj(tileIndex, E), SE)] !== SAND
+                     isSpecialTile(adj(adj(tileIndex, E), E)) ||
+                     isSpecialTile(adj(adj(tileIndex, E), NE)) ||
+                     isSpecialTile(adj(adj(tileIndex, E), SE))
                  ) {
                      tooClose = true;
                  };
              }
-             if (! tooClose && bg[adj(tileIndex, W)] === SAND) {
+             if (! tooClose && ! isSpecialTile(adj(tileIndex, W))) {
                  if (
-                     bg[adj(adj(tileIndex, W), W)] !== SAND ||
-                     bg[adj(adj(tileIndex, W), NW)] !== SAND ||
-                     bg[adj(adj(tileIndex, W), SW)] !== SAND
+                     isSpecialTile(adj(adj(tileIndex, W), W)) ||
+                     isSpecialTile(adj(adj(tileIndex, W), NW)) ||
+                     isSpecialTile(adj(adj(tileIndex, W), SW))
                  ) {
                      tooClose = true;
                  };
              }
 
-             if (! tooClose && bg[adj(tileIndex, NE)] === SAND) {
-                 if (bg[adj(adj(tileIndex, NE), NE)] !== SAND) {
+             if (! tooClose && ! isSpecialTile(adj(tileIndex, NE))) {
+                 if (isSpecialTile(adj(adj(tileIndex, NE), NE))) {
                      tooClose = true;
                  }
              }
-             if (! tooClose && bg[adj(tileIndex, NW)] === SAND) {
-                 if (bg[adj(adj(tileIndex, NW), NW)] !== SAND) {
+             if (! tooClose && ! isSpecialTile(adj(tileIndex, NW))) {
+                 if (isSpecialTile(adj(adj(tileIndex, NW), NW))) {
                      tooClose = true;
                  }
              }
-             if (! tooClose && bg[adj(tileIndex, SE)] === SAND) {
-                 if (bg[adj(adj(tileIndex, SE), SE)] !== SAND) {
+             if (! tooClose && ! isSpecialTile(adj(tileIndex, SE))) {
+                 if (isSpecialTile(adj(adj(tileIndex, SE), SE))) {
                      tooClose = true;
                  }
              }
-             if (! tooClose && bg[adj(tileIndex, SW)] === SAND) {
-                 if (bg[adj(adj(tileIndex, SW), SW)] !== SAND) {
+             if (! tooClose && ! isSpecialTile(adj(tileIndex, SW))) {
+                 if (isSpecialTile(adj(adj(tileIndex, SW), SW))) {
                      tooClose = true;
                  }
              }
@@ -892,7 +901,7 @@ class DesertGenerator
              const possiblePoints = this._getSurroundingAreas(centerIndex, checkedIndexes);
              possiblePoints.forEach(possiblePointIndex => {
                 if (
-                    backgroundData[possiblePointIndex] === SAND &&
+                    ! isSpecialTile(possiblePointIndex) &&
                     rng.happensGivenProbability(chance) &&
                     ! tooCloseToAnotherSpecialTile(possiblePointIndex)
                 ) {
