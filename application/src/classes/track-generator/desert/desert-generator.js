@@ -1301,7 +1301,7 @@ class DesertGenerator
       ];
       for (
         let x = objectPos[X];
-        x < objectPos[X] + (length * this.template.tilewidth);
+        x < objectPos[X] + ((length + 1) * this.template.tilewidth);
         x += (this.template.tilewidth * 2)
       ) {
         obstacleLayer.objects.push(this._getRandomizedPebble(x, objectPos[Y] - pad));
@@ -1320,8 +1320,8 @@ class DesertGenerator
         topPos[Y] * this.template.tileheight,
       ];
       for (
-        let y = objectPos[Y];
-        y < objectPos[Y] + (length * this.template.tileheight);
+        let y = objectPos[Y] - (3 * this.template.tileheight);
+        y < objectPos[Y] + ((length + 4) * this.template.tileheight);
         y += (this.template.tileheight * 2)
       ) {
         obstacleLayer.objects.push(this._getRandomizedPebble(objectPos[X] + pad, y));
