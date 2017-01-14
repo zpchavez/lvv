@@ -517,6 +517,7 @@ class DesertGenerator
         drawPoints.forEach((point, index) => {
             if (index > 0) {
                 var prevPoint = points[index - 1];
+                var prevPrevPoint = (index < 2) ? points[points.length - 1] : points[index - 2];
                 if ([NORTH, SOUTH].indexOf(prevPoint[ANGLE]) !== -1) {
                     // this._drawVerticalTrack(
                     //     background.data,
@@ -526,7 +527,10 @@ class DesertGenerator
                     this._drawVerticalPebbleTrack(
                         trackDelineatorLayer,
                         prevPoint[Y] < point[Y] ? prevPoint : point,
-                        Math.abs(point[Y] - prevPoint[Y])
+                        Math.abs(point[Y] - prevPoint[Y]),
+                        prevPrevPoint[ANGLE],
+                        prevPoint[ANGLE],
+                        point[ANGLE],
                     )
                 } else {
                     var leftPoint = (prevPoint[X] < point[X] ? prevPoint : point).slice();
@@ -539,7 +543,10 @@ class DesertGenerator
                     this._drawHorizontalPebbleTrack(
                         trackDelineatorLayer,
                         leftPoint,
-                        Math.abs(point[X] - prevPoint[X]) + 6 // +6 to fill in corners
+                        Math.abs(point[X] - prevPoint[X]) + 6, // +6 to fill in corners,
+                        prevPrevPoint[ANGLE],
+                        prevPoint[ANGLE],
+                        point[ANGLE],
                     )
                 }
             }
@@ -1293,44 +1300,59 @@ class DesertGenerator
         return points;
     }
 
-    _drawHorizontalPebbleTrack(obstacleLayer, leftPos, length) {
-      const pad = ((TRACK_WIDTH / 2) + 1) * this.template.tileheight;
-      const objectPos = [
-        leftPos[X] * this.template.tilewidth,
-        leftPos[Y] * this.template.tileheight,
-      ];
-      for (
-        let x = objectPos[X];
-        x < objectPos[X] + ((length + 1) * this.template.tilewidth);
-        x += (this.template.tilewidth * 2)
-      ) {
-        obstacleLayer.objects.push(this._getRandomizedPebble(x, objectPos[Y] - pad));
-        obstacleLayer.objects.push(this._getRandomizedPebble(x, objectPos[Y] + pad));
-      }
+    _drawHorizontalPebbleTrack(obstacleLayer, leftPos, length, comingFrom, going, turning) {
+        const pad = ((TRACK_WIDTH / 2) + 1) * this.template.tileheight;
+        const objectPos = [
+            leftPos[X] * this.template.tilewidth,
+            leftPos[Y] * this.template.tileheight,
+        ];
+        const fullLength = ((length + 1) * this.template.tilewidth);
+        const endPoint = objectPos[X] + fullLength;
+        for (
+            let x = objectPos[X];
+            x < endPoint;
+            x += (this.template.tilewidth * 2)
+        ) {
+            let skipBottom = false;
+            let skipTop = false;
+            if (comingFrom === NORTH && going === EAST && Math.abs(objectPos[X] - x) < (pad * 2)) {
+                skipBottom = true;
+            }
+            if (comingFrom === NORTH && going === WEST && Math.abs(endPoint- x) < (pad * 2)) {
+                console.log('NW');
+                skipBottom = true;
+            }
 
-      // Call drawHorizontalTrack with an empty object for data for the side
-      // effect of setting trackIndices
-      this._drawHorizontalTrack(this.fauxTrackLayer, leftPos, length);
+            if (! skipTop) {
+                obstacleLayer.objects.push(this._getRandomizedPebble(x, objectPos[Y] - pad));
+            }
+            if (! skipBottom) {
+                obstacleLayer.objects.push(this._getRandomizedPebble(x, objectPos[Y] + pad));
+            }
+        }
+        // Call drawHorizontalTrack with an empty object for data for the side
+        // effect of setting trackIndices
+        this._drawHorizontalTrack(this.fauxTrackLayer, leftPos, length);
     }
 
-    _drawVerticalPebbleTrack(obstacleLayer, topPos, length) {
-      const pad = ((TRACK_WIDTH / 2) + 1) * this.template.tileheight;
-      const objectPos = [
-        topPos[X] * this.template.tilewidth,
-        topPos[Y] * this.template.tileheight,
-      ];
-      for (
-        let y = objectPos[Y] - (3 * this.template.tileheight);
-        y < objectPos[Y] + ((length + 4) * this.template.tileheight);
-        y += (this.template.tileheight * 2)
-      ) {
-        obstacleLayer.objects.push(this._getRandomizedPebble(objectPos[X] + pad, y));
-        obstacleLayer.objects.push(this._getRandomizedPebble(objectPos[X] - pad, y));
-      }
+    _drawVerticalPebbleTrack(obstacleLayer, topPos, length, comingFrom, going, turning) {
+        const pad = ((TRACK_WIDTH / 2) + 1) * this.template.tileheight;
+        const objectPos = [
+            topPos[X] * this.template.tilewidth,
+            topPos[Y] * this.template.tileheight,
+        ];
+        for (
+            let y = objectPos[Y] - (3 * this.template.tileheight);
+            y < objectPos[Y] + ((length + 4) * this.template.tileheight);
+            y += (this.template.tileheight * 2)
+        ) {
+            obstacleLayer.objects.push(this._getRandomizedPebble(objectPos[X] + pad, y));
+            obstacleLayer.objects.push(this._getRandomizedPebble(objectPos[X] - pad, y));
+        }
 
       // Call drawVerticalTrack with an empty object for data for the side
       // effect of setting trackIndices
-      this._drawVerticalTrack(this.fauxTrackLayer, topPos, length);
+        this._drawVerticalTrack(this.fauxTrackLayer, topPos, length);
     }
 
     _drawHorizontalTrack(data, leftPos, length) {
