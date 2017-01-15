@@ -1313,14 +1313,32 @@ class DesertGenerator
             x < endPoint;
             x += (this.template.tilewidth * 2)
         ) {
+            // Don't overlap at turns
             let skipBottom = false;
             let skipTop = false;
             if (comingFrom === NORTH && going === EAST && Math.abs(objectPos[X] - x) < (pad * 2)) {
                 skipBottom = true;
             }
-            if (comingFrom === NORTH && going === WEST && Math.abs(endPoint- x) < (pad * 2)) {
-                console.log('NW');
+            if (comingFrom === NORTH && going === WEST && Math.abs(endPoint - x) < (pad * 2)) {
                 skipBottom = true;
+            }
+            if (comingFrom === SOUTH && going === EAST && Math.abs(objectPos[X] - x) < (pad * 2)) {
+                skipTop = true;
+            }
+            if (comingFrom === SOUTH && going === WEST && Math.abs(endPoint - x) < (pad * 2)) {
+                skipTop = true;
+            }
+            if (going === EAST && turning === SOUTH && Math.abs(endPoint - x) < (pad * 2)) {
+                skipBottom = true;
+            }
+            if (going === EAST && turning === NORTH && Math.abs(endPoint - x) < (pad * 2)) {
+                skipTop = true;
+            }
+            if (going === WEST && turning === SOUTH && Math.abs(objectPos[X] - x) < (pad * 2)) {
+                skipBottom = true;
+            }
+            if (going === WEST && turning === NORTH && Math.abs(objectPos[X] - x) < (pad * 2)) {
+                skipTop = true;
             }
 
             if (! skipTop) {
@@ -1341,13 +1359,47 @@ class DesertGenerator
             topPos[X] * this.template.tilewidth,
             topPos[Y] * this.template.tileheight,
         ];
+        const fullLength = ((length + 4) * this.template.tileheight);
+        const endPoint = objectPos[Y] + fullLength;
         for (
             let y = objectPos[Y] - (3 * this.template.tileheight);
-            y < objectPos[Y] + ((length + 4) * this.template.tileheight);
+            y < endPoint;
             y += (this.template.tileheight * 2)
         ) {
-            obstacleLayer.objects.push(this._getRandomizedPebble(objectPos[X] + pad, y));
-            obstacleLayer.objects.push(this._getRandomizedPebble(objectPos[X] - pad, y));
+            // Don't overlap at turns
+            let skipLeft = false;
+            let skipRight = false;
+            if (comingFrom === EAST && going === NORTH && Math.abs(endPoint - y) < (pad * 1.8)) {
+                skipLeft = true;
+            }
+            if (comingFrom === EAST && going === SOUTH && Math.abs(objectPos[Y] - y) < pad) {
+                skipLeft = true;
+            }
+            if (comingFrom === WEST && going === NORTH && Math.abs(endPoint - y) < (pad * 1.8)) {
+                skipRight = true;
+            }
+            if (comingFrom === WEST && going === SOUTH && Math.abs(objectPos[Y] - y) < pad) {
+                skipRight = true;
+            }
+            if (going === NORTH && turning === WEST && Math.abs(objectPos[Y] - y) < pad) {
+                skipLeft = true;
+            }
+            if (going === NORTH && turning === EAST && Math.abs(objectPos[Y] - y) < pad) {
+                skipRight = true;
+            }
+            if (going === SOUTH && turning === WEST && Math.abs(endPoint - y) < (pad * 1.8)) {
+                skipLeft = true;
+            }
+            if (going === SOUTH && turning === EAST && Math.abs(endPoint - y) < (pad * 1.8)) {
+                skipRight = true;
+            }
+
+            if (! skipLeft) {
+                obstacleLayer.objects.push(this._getRandomizedPebble(objectPos[X] - pad, y));
+            }
+            if (! skipRight) {
+                obstacleLayer.objects.push(this._getRandomizedPebble(objectPos[X] + pad, y));
+            }
         }
 
       // Call drawVerticalTrack with an empty object for data for the side
