@@ -519,11 +519,6 @@ class DesertGenerator
                 var prevPoint = points[index - 1];
                 var prevPrevPoint = (index < 2) ? points[points.length - 1] : points[index - 2];
                 if ([NORTH, SOUTH].indexOf(prevPoint[ANGLE]) !== -1) {
-                    // this._drawVerticalTrack(
-                    //     background.data,
-                    //     prevPoint[Y] < point[Y] ? prevPoint : point,
-                    //     Math.abs(point[Y] - prevPoint[Y])
-                    // );
                     this._drawVerticalPebbleTrack(
                         trackDelineatorLayer,
                         prevPoint[Y] < point[Y] ? prevPoint : point,
@@ -535,11 +530,6 @@ class DesertGenerator
                 } else {
                     var leftPoint = (prevPoint[X] < point[X] ? prevPoint : point).slice();
                     leftPoint[X] -= 3; // -3 to fill in corners
-                    // this._drawHorizontalTrack(
-                    //     background.data,
-                    //     leftPoint,
-                    //     Math.abs(point[X] - prevPoint[X]) + 6 // +6 to fill in corners
-                    // );
                     this._drawHorizontalPebbleTrack(
                         trackDelineatorLayer,
                         leftPoint,
