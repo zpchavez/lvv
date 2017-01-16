@@ -140,6 +140,7 @@ class DesertGenerator
         this._addEdgeTiles(data, this.waterIndices, WATER);
         this._drawFinishLine(data);
         this._generatePossiblePowerupPoints(data);
+        this._removeTrackDelineatorsPlacedOverWater(data);
 
         this.generatedData = data;
 
@@ -543,6 +544,24 @@ class DesertGenerator
         });
 
         return data;
+    }
+
+    _removeTrackDelineatorsPlacedOverWater(data) {
+        const trackDelineatorLayer = this._getLayer(data, 'track-delineators');
+        const waterData = this._getLayer(data, 'water').data;
+        trackDelineatorLayer.objects = trackDelineatorLayer.objects.filter(obstacle => {
+            return (!(
+                obstacle.type.indexOf('Pebble') === 0 &&
+                (
+                    waterData[this._convertObstaclePointToTileIndex([obstacle.x, obstacle.y])] ||
+                    // Include surrounding tiles too to prevent partial overlap
+                    waterData[this._convertObstaclePointToTileIndex([obstacle.x, obstacle.y]) + 1] ||
+                    waterData[this._convertObstaclePointToTileIndex([obstacle.x, obstacle.y]) - 1] ||
+                    waterData[this._convertObstaclePointToTileIndex([obstacle.x, obstacle.y]) - this.template.width] ||
+                    waterData[this._convertObstaclePointToTileIndex([obstacle.x, obstacle.y]) + this.template.width]
+                )
+            ))
+        });
     }
 
     _generatePuddles(points, data) {
@@ -1456,6 +1475,19 @@ class DesertGenerator
             point[Y] = point[Y] * this.template.tileheight;
             data.possiblePowerupPoints.push([point[X], point[Y]]);
         });
+    }
+
+    _convertObstaclePointToTileIndex(point) {
+        return this._convertPointToIndex(
+            this._convertObstaclePointToTilePoint(point)
+        );
+    }
+
+    _convertObstaclePointToTilePoint(point) {
+        const tilePoint = point.slice();
+        Math.floor(tilePoint[X] /= this.template.tilewidth);
+        Math.floor(tilePoint[Y] /= this.template.tileheight);
+        return tilePoint;
     }
 
     _convertPointToIndex(point) {
