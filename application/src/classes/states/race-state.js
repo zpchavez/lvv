@@ -65,6 +65,7 @@ class RaceState extends AbstractState
         this.options          = options;
         // Set this ahead of time to prevent being able to accelerate early
         this.countingDown     = true;
+        this.enabledPowerups  = ['cannon'];
 
         this.track.setDebug(this.debug);
     }
@@ -408,7 +409,7 @@ class RaceState extends AbstractState
             this.powerups[pointIndex] = (
                 this.game.world.addChild(
                     this.powerupFactory.getNew(
-                        rng.pickValueFromArray(['hover', 'cannon']),
+                        rng.pickValueFromArray(this.enabledPowerups),
                         point[0],
                         point[1]
                     )
