@@ -65,7 +65,7 @@ class AbstractTrackDelineator extends AbstractStaticObstacle
     }
 
     getPolygonName() {
-      throw new Error('You must override getPolygonName')
+      return null;
     }
 
     createPhysicsBody(state, angle) {
@@ -73,7 +73,11 @@ class AbstractTrackDelineator extends AbstractStaticObstacle
 
         this.body.clearShapes();
 
-        this.body.loadPolygon('Obstacles', this.getPolygonName());
+        if (this.getPolygonName()) {
+            this.body.loadPolygon('Obstacles', this.getPolygonName());
+        } else {
+            this.body.setRectangleFromSprite();
+        }
 
         this.body.data.shapes.forEach((shape) => {
             shape.sensor = true;

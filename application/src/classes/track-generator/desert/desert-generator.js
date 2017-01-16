@@ -184,6 +184,12 @@ class DesertGenerator
     _getRandomizedPebble(x, y) {
       const pebbleTypes = [
         'Pebble1',
+        'Pebble2',
+        'Pebble3',
+        'Pebble4',
+        'Pebble5',
+        'Pebble6',
+        'Pebble7',
       ];
 
       return {
