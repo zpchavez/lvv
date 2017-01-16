@@ -1,4 +1,6 @@
-/* globals window */
+import AbstractState from './abstract-state';
+import AbstractDynamicObstacle from 'app/classes/obstacles/abstract-dynamic-obstacle';
+import AbstractTrackDelineator from 'app/classes/obstacles/abstract-track-delineator';
 import React from 'react';
 import CarFactory from 'app/classes/car-factory';
 import ObstacleFactory from 'app/classes/obstacles/obstacle-factory';
@@ -11,17 +13,17 @@ import Controls from 'app/classes/controls';
 
 import _ from 'underscore';
 import { rotateVector } from 'app/util';
-import playerColorNames from 'app/player-color-names';
 import globalState from 'app/global-state';
 import OverallScoreState from './overall-score-state';
 import PowerupFactory from 'app/classes/powerups/powerup-factory';
 import rng from 'app/rng';
 import colors from 'app/colors';
+import DelayTimer from 'app/delay';
 
 const NEXT_GAME_DELAY  = 5000;
 const NEXT_ROUND_DELAY = 2500;
 
-class RaceState extends Phaser.State
+class RaceState extends AbstractState
 {
     constructor(trackData, options) {
         super(...arguments);
@@ -63,11 +65,20 @@ class RaceState extends Phaser.State
         this.options          = options;
         // Set this ahead of time to prevent being able to accelerate early
         this.countingDown     = true;
+        this.enabledPowerups  = ['cannon'];
 
         this.track.setDebug(this.debug);
     }
 
     preload() {
+        super.preload();
+
+        if (globalState.get('profiler')) {
+            this.game.add.plugin(Phaser.Plugin.Debug);
+        }
+
+        this.delayTimer = new DelayTimer(this.game);
+
         const cacheKey = Tiled.utils.cacheKey;
 
         this.showMessage('Get Ready!');
@@ -108,6 +119,8 @@ class RaceState extends Phaser.State
     }
 
     create() {
+        super.create();
+
         if (this.options.selector) {
             this.showTrackSelectorOffCanvas();
         }
@@ -134,12 +147,9 @@ class RaceState extends Phaser.State
             this.startingPoint[1] - (this.game.height / 2)
         );
 
-        this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
-        this.game.input.onDown.add(this.toggleFullscreen, this);
-
         this.game.add.graphics();
 
-        setTimeout(this.countDown.bind(this));
+        this.delayTimer.setTimeout(this.countDown.bind(this));
     }
 
     countDown() {
@@ -245,11 +255,20 @@ class RaceState extends Phaser.State
             ));
         }
 
+        let teamPlayers = null;
+        if (this.teams) {
+          teamPlayers = [null, null, null, null];
+          teamPlayers[globalState.get('teamPlayers').blue[0]] = 0;
+          teamPlayers[globalState.get('teamPlayers').blue[1]] = 0;
+          teamPlayers[globalState.get('teamPlayers').red[0]] = 1;
+          teamPlayers[globalState.get('teamPlayers').red[1]] = 1;
+        }
+
         this.cars.forEach((car, index) => {
             car.playerNumber = index;
 
-            if (this.teams) {
-                car.teamNumber = [0, 0, 1, 1][index];
+            if (teamPlayers) {
+                car.teamNumber = teamPlayers[index];
             }
 
             car.body.angle = this.startingPoint[2];
@@ -312,21 +331,38 @@ class RaceState extends Phaser.State
     }
 
     placeObstacles() {
-        let obstacles = [], obstaclesLayer;
+        this.trackDelineators = [];
 
-        obstaclesLayer = _.findWhere(this.trackData.layers, {name : 'obstacles'});
+        let obstaclesLayer = _.findWhere(this.trackData.layers, {name : 'obstacles'});
+        let trackDelineatorLayer = _.findWhere(this.trackData.layers, {name : 'track-delineators'}) || {objects: []};
 
         if (! obstaclesLayer) {
             return;
         }
 
-        obstaclesLayer.objects.forEach((obstacle) => {
-            obstacles.push(this.obstacleFactory.getNew(
-                obstacle.type,
-                obstacle.x,
-                obstacle.y,
-                obstacle.rotation
-            ));
+        trackDelineatorLayer.objects.forEach(delineatorData => {
+            let obstacle = this.obstacleFactory.getNew(
+                delineatorData.type,
+                delineatorData.x,
+                delineatorData.y,
+                delineatorData.rotation
+            );
+            this.trackDelineators.push(obstacle);
+        });
+
+        let obstacles = [];
+        let dynamicObstacles = [];
+        obstaclesLayer.objects.forEach((obstacleData) => {
+            let obstacle = this.obstacleFactory.getNew(
+                obstacleData.type,
+                obstacleData.x,
+                obstacleData.y,
+                obstacleData.rotation
+            );
+            obstacles.push(obstacle);
+            if (obstacle instanceof AbstractDynamicObstacle) {
+                dynamicObstacles.push(obstacle);
+            }
         });
 
         obstacles.forEach((obstacle) => {
@@ -334,6 +370,7 @@ class RaceState extends Phaser.State
             obstacle.add(this);
         });
         this.obstacles = obstacles;
+        this.dynamicObstacles = dynamicObstacles;
     }
 
     postGameObjectPlacement() {
@@ -372,7 +409,7 @@ class RaceState extends Phaser.State
             this.powerups[pointIndex] = (
                 this.game.world.addChild(
                     this.powerupFactory.getNew(
-                        rng.pickValueFromArray(['hover', 'cannon']),
+                        rng.pickValueFromArray(this.enabledPowerups),
                         point[0],
                         point[1]
                     )
@@ -382,12 +419,43 @@ class RaceState extends Phaser.State
         }
     }
 
+    inCamera(sprite) {
+        return !this.offCamera(sprite);
+    }
+
+    offCamera(sprite) {
+        return (
+            sprite.x < this.game.camera.x ||
+            sprite.x > (this.game.camera.x + this.game.camera.width) ||
+            sprite.y < this.game.camera.y ||
+            sprite.y > (this.game.camera.y + this.game.camera.height)
+        );
+    }
+
+    updateTrackDelineators() {
+        this.trackDelineators.forEach(delineator => {
+            if (
+                this.game.world.children.indexOf(delineator) === -1 &&
+                this.inCamera(delineator)
+            ) {
+                delineator.addToCollisionGroup(this.collisionGroup);
+                delineator.add(this);
+                delineator.sendToBack().moveUp().moveUp();
+            } else if (this.game.world.children.indexOf(delineator) > -1 && ! this.inCamera(delineator)) {
+                delineator.body.removeCollisionGroup(this.collisionGroup);
+                this.game.world.removeChild(delineator);
+            }
+        });
+    }
+
     update() {
+        this.updateTrackDelineators();
+
         // If all cars are invisible, reset to last marker. This fixes
         // a bug where the game would be stuck if both remaining players
         // were eliminated at the exact same time. This maybe isn't the
         // best solution since no points are awarded. Everyone just gets a do-over.
-        if (_.every(this.cars, (car) => {return ! car.visible;})) {
+        if (_.every(this.cars, (car) => {return car.isEliminated();})) {
             this.resetAllCarsToLastMarker();
         }
 
@@ -433,12 +501,7 @@ class RaceState extends Phaser.State
                             car.y > this.game.world.height
                         ) ||
                         // car.inCamera is false at unexpected times, so doing this:
-                        (
-                            car.x < this.game.camera.x ||
-                            car.x > (this.game.camera.x + this.game.camera.width) ||
-                            car.y < this.game.camera.y ||
-                            car.y > (this.game.camera.y + this.game.camera.height)
-                        )
+                        this.offCamera(car)
                     )
                 ) {
                     car.visible = false;
@@ -461,7 +524,7 @@ class RaceState extends Phaser.State
             return;
         }
 
-        visibleCars = _.where(this.cars, {visible : true});
+        visibleCars = _.where(this.cars, {visible: true, eliminated: false});
 
         if (this.teams && visibleCars.length === 2 && visibleCars[0].teamNumber === visibleCars[1].teamNumber) {
             visibleCars[0].setVictorySpinning(true);
@@ -489,10 +552,10 @@ class RaceState extends Phaser.State
             if (this.score.getWinner() === false && ! this.suddenDeath) {
                 // Start next round if no overall winner
                 this.eliminationStack = [];
-                window.setTimeout(this.resetAllCarsToLastMarker.bind(this), NEXT_ROUND_DELAY);
+                this.delayTimer.setTimeout(this.resetAllCarsToLastMarker.bind(this), NEXT_ROUND_DELAY);
             } else {
                 this.showWinnerMessage();
-                window.setTimeout(this.nextRace.bind(this), NEXT_GAME_DELAY);
+                this.delayTimer.setTimeout(this.nextRace.bind(this), NEXT_GAME_DELAY);
             }
         }
     }
@@ -588,7 +651,7 @@ class RaceState extends Phaser.State
             }
 
             // Obstacles splash too
-            this.obstacles.forEach((obstacle) => {
+            this.dynamicObstacles.forEach((obstacle) => {
                 if (
                     ! obstacle.splashing &&
                     this.map.getTileWorldXY(obstacle.x, obstacle.y, width, height, 'water')
@@ -619,7 +682,7 @@ class RaceState extends Phaser.State
             }
 
             // Obstacles fall too
-            this.obstacles.forEach((obstacle) => {
+            this.dynamicObstacles.forEach((obstacle) => {
                 if (
                     ! obstacle.falling &&
                     this.map.getTileWorldXY(obstacle.x, obstacle.y, width, height, 'drops')
@@ -704,6 +767,8 @@ class RaceState extends Phaser.State
             offsetVector
         );
 
+        car.eliminated = false;
+
         car.reset(
             lastActivatedMarker.x + offsetVector[0],
             lastActivatedMarker.y + offsetVector[1]
@@ -785,7 +850,7 @@ class RaceState extends Phaser.State
 
         if (options.showFor) {
             return new Promise((resolve) => {
-                window.setTimeout(
+                this.delayTimer.setTimeout(
                     () => {
                         message.destroy();
                         resolve();
@@ -826,7 +891,7 @@ class RaceState extends Phaser.State
 
         if (this.raceOver) {
             this.showWinnerMessage();
-            window.setTimeout(this.nextRace.bind(this), NEXT_GAME_DELAY);
+            this.delayTimer.setTimeout(this.nextRace.bind(this), NEXT_GAME_DELAY);
         } else {
             this.lapNumber += 1;
             this.lapDisplay.setText('Lap ' + this.lapNumber);
@@ -925,16 +990,8 @@ class RaceState extends Phaser.State
                 initialDebug            : this.debug,
                 initialLaps             : this.laps
             }),
-            window.document.getElementById('content')
+            this.delayTimer.document.getElementById('content')
         );
-    }
-
-    toggleFullscreen() {
-        if (this.game.scale.isFullScreen) {
-            this.game.scale.stopFullScreen();
-        } else {
-            this.game.scale.startFullScreen(false);
-        }
     }
 }
 

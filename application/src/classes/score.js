@@ -1,5 +1,6 @@
-import colors from '../colors';
-import globalState from '../global-state';
+import colors from 'app/colors';
+import globalState from 'app/global-state';
+import DelayTimer from 'app/delay';
 
 const BLUE = 0;
 const RED = 1;
@@ -154,6 +155,13 @@ class Score
         );
     }
 
+    getDelayTimer() {
+        if (! this.delayTimer) {
+          this.delayTimer = new DelayTimer(this.state.game);
+        }
+        return this.delayTimer;
+    }
+
     flashBetweenColors(sprite, tint) {
         const originalTint = sprite.tint;
 
@@ -166,7 +174,7 @@ class Score
 
     changeColorIn(sprite, tint, delay) {
         return new Promise((resolve, reject) => {
-            setTimeout(() => {
+            this.getDelayTimer().setTimeout(() => {
                 sprite.tint = tint;
                 resolve();
             }, delay);

@@ -1,6 +1,8 @@
+import AbstractState from './abstract-state';
 import RaceState from './race-state';
 import DesertGenerator from 'app/classes/track-generator/desert/desert-generator';
 import global from 'app/global-state';
+import DelayTimer from 'app/delay';
 
 const textStyle = {
     font: '42px Arial',
@@ -9,12 +11,16 @@ const textStyle = {
     strokeThickness: 5,
 };
 
-class LoadingNextRaceState extends Phaser.State
+class LoadingNextRaceState extends AbstractState
 {
     create() {
+        super.create();
+
         this.renderNextRaceInfo();
 
-        setTimeout(this.loadTrack.bind(this));
+        this.delayTimer = new DelayTimer(this.game);
+
+        this.delayTimer.setTimeout(this.loadTrack.bind(this));
     }
 
     renderNextRaceInfo() {
@@ -62,7 +68,7 @@ class LoadingNextRaceState extends Phaser.State
         );
         memorizeItText.anchor.set(0.5);
 
-        setTimeout(() => {
+        this.delayTimer.setTimeout(() => {
             this.game.state.add(
                 'race',
                 new RaceState(trackData, {

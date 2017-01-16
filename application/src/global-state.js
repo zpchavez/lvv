@@ -1,8 +1,13 @@
 import settingsFromQuery from './settings-from-query';
+import { BLUE, RED, CYAN, PINK, GREEN, YELLOW } from './colors';
 
 const initialState = Object.assign(
     {
-        colors: [0, 1, 2, 3],
+        colors: (
+          settingsFromQuery.teams
+            ? [BLUE, CYAN, RED, PINK]
+            : [BLUE, RED, GREEN, YELLOW]
+        ),
         teamPlayers: {blue: [0, 1], red: [2, 3]},
     },
     settingsFromQuery

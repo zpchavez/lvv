@@ -123,6 +123,7 @@ class DesertGenerator
         this.puddleIndices = [];
         this.bridgeIndices = [];
         this.trackIndices = [];
+        this.fauxTrackLayer = {};
     }
 
     generate() {
@@ -136,10 +137,10 @@ class DesertGenerator
         this._generateGravel(data);
         this._generateWater(data);
         this._addEdgeTiles(data, this.gravelIndices, GRAVEL);
-        this._addEdgeTiles(data, this.trackIndices, PAVEMENT);
         this._addEdgeTiles(data, this.waterIndices, WATER);
         this._drawFinishLine(data);
         this._generatePossiblePowerupPoints(data);
+        this._removeTrackDelineatorsPlacedOverWater(data);
 
         this.generatedData = data;
 
@@ -167,7 +168,37 @@ class DesertGenerator
         minimap.context.putImageData(minimap.imageData, 0, 0);
         minimap.dirty = true;
 
+        // Mark starting line
+        minimap.text(
+          '★',
+          Math.floor(this.finishPoint.x / this.template.tilewidth) - 12,
+          Math.floor(this.finishPoint.y / this.template.tileheight) + 5,
+          '24px Arial',
+          'rgb(255,0,0)',
+          false
+        );
+
         return minimap;
+    }
+
+    _getRandomizedPebble(x, y) {
+      const pebbleTypes = [
+        'Pebble1',
+        'Pebble2',
+        'Pebble3',
+        'Pebble4',
+        'Pebble5',
+        'Pebble6',
+        'Pebble7',
+      ];
+
+      return {
+        rotation: rng.getIntBetween(0, 359),
+        type: rng.pickValueFromArray(pebbleTypes),
+        visible: true,
+        x: x,
+        y: y,
+      };
     }
 
     _getLayer(data, name) {
@@ -207,12 +238,11 @@ class DesertGenerator
         const obstacleLayer = this._getLayer(data, 'obstacles');
 
         const obstacles = [
-            'Comb',
-            'Razor',
-            'AspirinBottle',
-            'Floss',
-            'Toothbrush',
+            'HandShovel',
+            'HorseShoe',
+            'HorseShoe', // Generate two of them
             'Lollipop',
+            'Sprayer',
         ];
 
         const pickedPoints = [];
@@ -484,6 +514,7 @@ class DesertGenerator
 
     _generateTrack(points, data) {
         const background = this._getLayer(data, 'background');
+        const trackDelineatorLayer = this._getLayer(data, 'track-delineators');
 
         this._fillLayer(background.data, SAND);
 
@@ -493,25 +524,50 @@ class DesertGenerator
         drawPoints.forEach((point, index) => {
             if (index > 0) {
                 var prevPoint = points[index - 1];
+                var prevPrevPoint = (index < 2) ? points[points.length - 1] : points[index - 2];
                 if ([NORTH, SOUTH].indexOf(prevPoint[ANGLE]) !== -1) {
-                    this._drawVerticalTrack(
-                        background.data,
+                    this._drawVerticalPebbleTrack(
+                        trackDelineatorLayer,
                         prevPoint[Y] < point[Y] ? prevPoint : point,
-                        Math.abs(point[Y] - prevPoint[Y])
+                        Math.abs(point[Y] - prevPoint[Y]),
+                        prevPrevPoint[ANGLE],
+                        prevPoint[ANGLE],
+                        point[ANGLE],
                     )
                 } else {
                     var leftPoint = (prevPoint[X] < point[X] ? prevPoint : point).slice();
                     leftPoint[X] -= 3; // -3 to fill in corners
-                    this._drawHorizontalTrack(
-                        background.data,
+                    this._drawHorizontalPebbleTrack(
+                        trackDelineatorLayer,
                         leftPoint,
-                        Math.abs(point[X] - prevPoint[X]) + 6 // +6 to fill in corners
+                        Math.abs(point[X] - prevPoint[X]) + 6, // +6 to fill in corners,
+                        prevPrevPoint[ANGLE],
+                        prevPoint[ANGLE],
+                        point[ANGLE],
                     )
                 }
             }
         });
 
         return data;
+    }
+
+    _removeTrackDelineatorsPlacedOverWater(data) {
+        const trackDelineatorLayer = this._getLayer(data, 'track-delineators');
+        const waterData = this._getLayer(data, 'water').data;
+        trackDelineatorLayer.objects = trackDelineatorLayer.objects.filter(obstacle => {
+            return (!(
+                obstacle.type.indexOf('Pebble') === 0 &&
+                (
+                    waterData[this._convertObstaclePointToTileIndex([obstacle.x, obstacle.y])] ||
+                    // Include surrounding tiles too to prevent partial overlap
+                    waterData[this._convertObstaclePointToTileIndex([obstacle.x, obstacle.y]) + 1] ||
+                    waterData[this._convertObstaclePointToTileIndex([obstacle.x, obstacle.y]) - 1] ||
+                    waterData[this._convertObstaclePointToTileIndex([obstacle.x, obstacle.y]) - this.template.width] ||
+                    waterData[this._convertObstaclePointToTileIndex([obstacle.x, obstacle.y]) + this.template.width]
+                )
+            ))
+        });
     }
 
     _generatePuddles(points, data) {
@@ -665,7 +721,7 @@ class DesertGenerator
         ];
         let tileCursor = 0;
         const foregroundData = this._getLayer(data, 'foreground').data;
-        for (let y = westPoint[Y] - 1; y <= westPoint[Y] + 1; y += 1) {
+        for (let y = westPoint[Y] - 2; y <= westPoint[Y] + 2; y += 1) {
             for (let x = westPoint[X]; x <= eastPoint[X]; x += 1) {
                 let index = this._convertPointToIndex([x, y]);
                 foregroundData[index] = tileOrder[tileCursor];
@@ -685,7 +741,7 @@ class DesertGenerator
         ];
         let tileCursor = 0;
         let foregroundData = this._getLayer(data, 'foreground').data;
-        for (let x = northPoint[X] - 1; x <= northPoint[X] + 1; x += 1) {
+        for (let x = northPoint[X] - 2; x <= northPoint[X] + 2; x += 1) {
             for (let y = northPoint[Y]; y <= southPoint[Y]; y += 1) {
                 let index = this._convertPointToIndex([x, y]);
                 foregroundData[index] = tileOrder[tileCursor];
@@ -762,13 +818,22 @@ class DesertGenerator
         layerTile,
         tileIndices
     ) {
-         if (backgroundData[pointIndex] !== SAND) {
+         if (backgroundData[pointIndex] !== SAND || this.trackIndices.indexOf(pointIndex) > -1) {
              return false;
          }
 
+         const isSpecialTile = (tileIndex, allowed = -1) => {
+            return (
+                backgroundData[tileIndex] !== allowed &&
+                (
+                    backgroundData[tileIndex] !== SAND ||
+                    this.fauxTrackLayer[tileIndex] === PAVEMENT
+                )
+            );
+         };
+
          const tooCloseToAnotherSpecialTile = tileIndex => {
              const adj = this._getAdjacentTileIndex.bind(this);
-             const bg = backgroundData;
              let tooClose = false;
 
              // Tile can't be touching a non-sand, non-patch-type tile
@@ -776,65 +841,66 @@ class DesertGenerator
                 if (tooClose) {
                     return;
                 }
-                if ([SAND, backgroundTile].indexOf(bg[adj(tileIndex, direction)]) === -1) {
+
+                if (isSpecialTile(adj(tileIndex, direction), backgroundTile)) {
                     tooClose = true;
                 }
              });
 
-             if (bg[adj(tileIndex, N)] === SAND) {
+             if (! tooClose && ! isSpecialTile(adj(tileIndex, N))) {
                  if (
-                     bg[adj(adj(tileIndex, N), N)] !== SAND ||
-                     bg[adj(adj(tileIndex, N), NW)] !== SAND ||
-                     bg[adj(adj(tileIndex, N), NE)] !== SAND
+                     isSpecialTile(adj(adj(tileIndex, N), N)) ||
+                     isSpecialTile(adj(adj(tileIndex, N), NW)) ||
+                     isSpecialTile(adj(adj(tileIndex, N), NE))
                  ) {
                      tooClose = true;
                  }
              }
-             if (! tooClose && bg[adj(tileIndex, S)] === SAND) {
+             if (! tooClose && ! isSpecialTile(adj(tileIndex, S))) {
                  if (
-                     bg[adj(adj(tileIndex, S), S)] !== SAND ||
-                     bg[adj(adj(tileIndex, S), SW)] !== SAND ||
-                     bg[adj(adj(tileIndex, S), SE)] !== SAND
+                     isSpecialTile(adj(adj(tileIndex, S), S)) ||
+                     isSpecialTile(adj(adj(tileIndex, S), SW)) ||
+                     isSpecialTile(adj(adj(tileIndex, S), SE))
                  ) {
                      tooClose = true;
                  }
              }
-             if (! tooClose && bg[adj(tileIndex, E)] === SAND) {
+             if (! tooClose && ! isSpecialTile(adj(tileIndex, E))) {
                  if (
-                     bg[adj(adj(tileIndex, E), E)] !== SAND ||
-                     bg[adj(adj(tileIndex, E), NE)] !== SAND ||
-                     bg[adj(adj(tileIndex, E), SE)] !== SAND
+                     isSpecialTile(adj(adj(tileIndex, E), E)) ||
+                     isSpecialTile(adj(adj(tileIndex, E), NE)) ||
+                     isSpecialTile(adj(adj(tileIndex, E), SE))
                  ) {
                      tooClose = true;
                  };
              }
-             if (! tooClose && bg[adj(tileIndex, W)] === SAND) {
+             if (! tooClose && ! isSpecialTile(adj(tileIndex, W))) {
                  if (
-                     bg[adj(adj(tileIndex, W), W)] !== SAND ||
-                     bg[adj(adj(tileIndex, W), NW)] !== SAND ||
-                     bg[adj(adj(tileIndex, W), SW)] !== SAND
+                     isSpecialTile(adj(adj(tileIndex, W), W)) ||
+                     isSpecialTile(adj(adj(tileIndex, W), NW)) ||
+                     isSpecialTile(adj(adj(tileIndex, W), SW))
                  ) {
                      tooClose = true;
                  };
              }
 
-             if (! tooClose && bg[adj(tileIndex, NE)] === SAND) {
-                 if (bg[adj(adj(tileIndex, NE), NE)] !== SAND) {
+             if (! tooClose && ! isSpecialTile(adj(tileIndex, NE))) {
+                 if (isSpecialTile(adj(adj(tileIndex, NE), NE))) {
                      tooClose = true;
                  }
              }
-             if (! tooClose && bg[adj(tileIndex, NW)] === SAND) {
-                 if (bg[adj(adj(tileIndex, NW), NW)] !== SAND) {
+             if (! tooClose && ! isSpecialTile(adj(tileIndex, NW))) {
+                 if (isSpecialTile(adj(adj(tileIndex, NW), NW))) {
                      tooClose = true;
                  }
              }
-             if (! tooClose && bg[adj(tileIndex, SE)] === SAND) {
-                 if (bg[adj(adj(tileIndex, SE), SE)] !== SAND) {
+             if (! tooClose && ! isSpecialTile(adj(tileIndex, SE))) {
+                 if (isSpecialTile(adj(adj(tileIndex, SE), SE))) {
                      tooClose = true;
                  }
              }
-             if (! tooClose && bg[adj(tileIndex, SW)] === SAND) {
-                 if (bg[adj(adj(tileIndex, SW), SW)] !== SAND) {
+             if (! tooClose && ! isSpecialTile(adj(tileIndex, SW))) {
+                 if (isSpecialTile(adj(adj(tileIndex, SW), SW))) {
                      tooClose = true;
                  }
              }
@@ -858,7 +924,7 @@ class DesertGenerator
              const possiblePoints = this._getSurroundingAreas(centerIndex, checkedIndexes);
              possiblePoints.forEach(possiblePointIndex => {
                 if (
-                    backgroundData[possiblePointIndex] === SAND &&
+                    ! isSpecialTile(possiblePointIndex) &&
                     rng.happensGivenProbability(chance) &&
                     ! tooCloseToAnotherSpecialTile(possiblePointIndex)
                 ) {
@@ -1060,19 +1126,19 @@ class DesertGenerator
         if ([EAST, WEST].indexOf(finishMarker.rotation) !== -1) {
             startingPos = [point[X], point[Y] - TRACK_WIDTH / 2 - 1];
             decoration.data[this._convertPointToIndex(startingPos)] = FINISH_N;
-            this._drawVerticalLine(decoration.data, FINISH, [startingPos[X], startingPos[Y] + 1], TRACK_WIDTH + 1);
+            this._drawVerticalLine(decoration.data, FINISH, [startingPos[X], startingPos[Y] + 1], TRACK_WIDTH);
             decoration.data[
                 this._convertPointToIndex(
-                    [startingPos[X], startingPos[Y] + TRACK_WIDTH + 2]
+                    [startingPos[X], startingPos[Y] + TRACK_WIDTH + 1]
                 )
             ] = FINISH_S;
         } else {
             startingPos = [point[X] - TRACK_WIDTH / 2 - 1, point[Y]];
             decoration.data[this._convertPointToIndex(startingPos)] = FINISH_W;
-            this._drawHorizontalLine(decoration.data, FINISH, [startingPos[X] + 1, startingPos[Y]], TRACK_WIDTH + 1);
+            this._drawHorizontalLine(decoration.data, FINISH, [startingPos[X] + 1, startingPos[Y]], TRACK_WIDTH);
             decoration.data[
                 this._convertPointToIndex(
-                    [startingPos[X] + TRACK_WIDTH + 2, startingPos[Y]]
+                    [startingPos[X] + TRACK_WIDTH + 1, startingPos[Y]]
                 )
             ] = FINISH_E;
         }
@@ -1249,6 +1315,113 @@ class DesertGenerator
         return points;
     }
 
+    _drawHorizontalPebbleTrack(obstacleLayer, leftPos, length, comingFrom, going, turning) {
+        const pad = ((TRACK_WIDTH / 2) + 1) * this.template.tileheight;
+        const objectPos = [
+            leftPos[X] * this.template.tilewidth,
+            leftPos[Y] * this.template.tileheight,
+        ];
+        const fullLength = ((length + 1) * this.template.tilewidth);
+        const endPoint = objectPos[X] + fullLength;
+        for (
+            let x = objectPos[X];
+            x < endPoint;
+            x += (this.template.tilewidth * 2)
+        ) {
+            // Don't overlap at turns
+            let skipBottom = false;
+            let skipTop = false;
+            if (comingFrom === NORTH && going === EAST && Math.abs(objectPos[X] - x) < (pad * 2)) {
+                skipBottom = true;
+            }
+            if (comingFrom === NORTH && going === WEST && Math.abs(endPoint - x) < (pad * 2)) {
+                skipBottom = true;
+            }
+            if (comingFrom === SOUTH && going === EAST && Math.abs(objectPos[X] - x) < (pad * 2)) {
+                skipTop = true;
+            }
+            if (comingFrom === SOUTH && going === WEST && Math.abs(endPoint - x) < (pad * 2)) {
+                skipTop = true;
+            }
+            if (going === EAST && turning === SOUTH && Math.abs(endPoint - x) < (pad * 2)) {
+                skipBottom = true;
+            }
+            if (going === EAST && turning === NORTH && Math.abs(endPoint - x) < (pad * 2)) {
+                skipTop = true;
+            }
+            if (going === WEST && turning === SOUTH && Math.abs(objectPos[X] - x) < (pad * 2)) {
+                skipBottom = true;
+            }
+            if (going === WEST && turning === NORTH && Math.abs(objectPos[X] - x) < (pad * 2)) {
+                skipTop = true;
+            }
+
+            if (! skipTop) {
+                obstacleLayer.objects.push(this._getRandomizedPebble(x, objectPos[Y] - pad));
+            }
+            if (! skipBottom) {
+                obstacleLayer.objects.push(this._getRandomizedPebble(x, objectPos[Y] + pad));
+            }
+        }
+        // Call drawHorizontalTrack with an empty object for data for the side
+        // effect of setting trackIndices
+        this._drawHorizontalTrack(this.fauxTrackLayer, leftPos, length);
+    }
+
+    _drawVerticalPebbleTrack(obstacleLayer, topPos, length, comingFrom, going, turning) {
+        const pad = ((TRACK_WIDTH / 2) + 1) * this.template.tileheight;
+        const objectPos = [
+            topPos[X] * this.template.tilewidth,
+            topPos[Y] * this.template.tileheight,
+        ];
+        const fullLength = ((length + 4) * this.template.tileheight);
+        const endPoint = objectPos[Y] + fullLength;
+        for (
+            let y = objectPos[Y] - (3 * this.template.tileheight);
+            y < endPoint;
+            y += (this.template.tileheight * 2)
+        ) {
+            // Don't overlap at turns
+            let skipLeft = false;
+            let skipRight = false;
+            if (comingFrom === EAST && going === NORTH && Math.abs(endPoint - y) < (pad * 1.8)) {
+                skipLeft = true;
+            }
+            if (comingFrom === EAST && going === SOUTH && Math.abs(objectPos[Y] - y) < pad) {
+                skipLeft = true;
+            }
+            if (comingFrom === WEST && going === NORTH && Math.abs(endPoint - y) < (pad * 1.8)) {
+                skipRight = true;
+            }
+            if (comingFrom === WEST && going === SOUTH && Math.abs(objectPos[Y] - y) < pad) {
+                skipRight = true;
+            }
+            if (going === NORTH && turning === WEST && Math.abs(objectPos[Y] - y) < pad) {
+                skipLeft = true;
+            }
+            if (going === NORTH && turning === EAST && Math.abs(objectPos[Y] - y) < pad) {
+                skipRight = true;
+            }
+            if (going === SOUTH && turning === WEST && Math.abs(endPoint - y) < (pad * 1.8)) {
+                skipLeft = true;
+            }
+            if (going === SOUTH && turning === EAST && Math.abs(endPoint - y) < (pad * 1.8)) {
+                skipRight = true;
+            }
+
+            if (! skipLeft) {
+                obstacleLayer.objects.push(this._getRandomizedPebble(objectPos[X] - pad, y));
+            }
+            if (! skipRight) {
+                obstacleLayer.objects.push(this._getRandomizedPebble(objectPos[X] + pad, y));
+            }
+        }
+
+      // Call drawVerticalTrack with an empty object for data for the side
+      // effect of setting trackIndices
+        this._drawVerticalTrack(this.fauxTrackLayer, topPos, length);
+    }
+
     _drawHorizontalTrack(data, leftPos, length) {
         const pad = TRACK_WIDTH / 2;
         for (let y = leftPos[Y] - pad; y <= leftPos[Y] + pad; y += 1) {
@@ -1308,6 +1481,19 @@ class DesertGenerator
             point[Y] = point[Y] * this.template.tileheight;
             data.possiblePowerupPoints.push([point[X], point[Y]]);
         });
+    }
+
+    _convertObstaclePointToTileIndex(point) {
+        return this._convertPointToIndex(
+            this._convertObstaclePointToTilePoint(point)
+        );
+    }
+
+    _convertObstaclePointToTilePoint(point) {
+        const tilePoint = point.slice();
+        Math.floor(tilePoint[X] /= this.template.tilewidth);
+        Math.floor(tilePoint[Y] /= this.template.tileheight);
+        return tilePoint;
     }
 
     _convertPointToIndex(point) {

@@ -39,6 +39,7 @@ class AbstractDynamicObstacle extends AbstractObstacle
         this.body.velocity.x = 0;
         this.body.velocity.y = 0;
         this.body.angle = 0;
+        this.body.clearCollision();
         this.tint = 0xffffff;
         this.loadTexture('splash', 0);
         this.body.x = splashTargetLocation.x;
@@ -74,7 +75,7 @@ class AbstractDynamicObstacle extends AbstractObstacle
                 Phaser.Easing.Linear.None,
                 true
             )
-            .onComplete.add(this.destroy, this);
+            .onComplete.add(this.kill, this);
     }
 }
 

@@ -1,3 +1,4 @@
+import AbstractState from 'app/classes/states/abstract-state';
 import Controls from 'app/classes/controls';
 import SelectColorState from './select-color-state';
 import globalState from 'app/global-state';
@@ -8,7 +9,7 @@ const PLAYERS_3 = 2;
 const PLAYERS_4 = 3;
 const TEAMS     = 4;
 
-class MainMenuState extends Phaser.State
+class MainMenuState extends AbstractState
 {
     constructor() {
         super(...arguments);
@@ -23,19 +24,13 @@ class MainMenuState extends Phaser.State
         ];
     }
 
-    preload() {
-        this.game.input.onDown.add(this.toggleFullscreen, this);
-    }
-
     create() {
+        super.create();
+
         this.renderTitle();
 
         this.renderNumPlayersMenu();
         this.renderNumPlayersCursor();
-
-        if (globalState.get('profiler')) {
-            this.game.add.plugin(Phaser.Plugin.Debug);
-        }
 
         this.initInputs();
     }
@@ -117,19 +112,6 @@ class MainMenuState extends Phaser.State
         this.controls.onDown(0, 'UP', this.moveCursorUp.bind(this));
         this.controls.onDown(0, 'DOWN', this.moveCursorDown.bind(this));
         this.controls.onDown(0, 'SELECT', this.selectOption.bind(this));
-    }
-
-    toggleFullscreen() {
-        if (this.game.scale.isFullScreen) {
-            this.game.scale.stopFullScreen();
-        } else {
-            this.game.scale.startFullScreen(false);
-        }
-    }
-
-    shutdown()
-    {
-        this.controls.reset();
     }
 }
 
