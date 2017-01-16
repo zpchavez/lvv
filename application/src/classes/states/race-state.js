@@ -360,7 +360,7 @@ class RaceState extends AbstractState
             );
             obstacles.push(obstacle);
             if (obstacle instanceof AbstractDynamicObstacle) {
-                dynamicObstacles.push(obstacles);
+                dynamicObstacles.push(obstacle);
             }
         });
 
