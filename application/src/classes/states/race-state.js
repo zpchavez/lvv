@@ -66,6 +66,7 @@ class RaceState extends AbstractState
         // Set this ahead of time to prevent being able to accelerate early
         this.countingDown     = true;
         this.enabledPowerups  = ['cannon'];
+        this.displayedTrackDelineators = {};
 
         this.track.setDebug(this.debug);
     }
@@ -331,24 +332,11 @@ class RaceState extends AbstractState
     }
 
     placeObstacles() {
-        this.trackDelineators = [];
-
         let obstaclesLayer = _.findWhere(this.trackData.layers, {name : 'obstacles'});
-        let trackDelineatorLayer = _.findWhere(this.trackData.layers, {name : 'track-delineators'}) || {objects: []};
 
         if (! obstaclesLayer) {
             return;
         }
-
-        trackDelineatorLayer.objects.forEach(delineatorData => {
-            let obstacle = this.obstacleFactory.getNew(
-                delineatorData.type,
-                delineatorData.x,
-                delineatorData.y,
-                delineatorData.rotation
-            );
-            this.trackDelineators.push(obstacle);
-        });
 
         let obstacles = [];
         let dynamicObstacles = [];
@@ -433,17 +421,29 @@ class RaceState extends AbstractState
     }
 
     updateTrackDelineators() {
-        this.trackDelineators.forEach(delineator => {
+        let trackDelineatorLayer = _.findWhere(
+                this.trackData.layers,
+                {name : 'track-delineators'}
+            ) || {objects: []};
+
+        trackDelineatorLayer.objects.forEach((delineatorData, index) => {
             if (
-                this.game.world.children.indexOf(delineator) === -1 &&
-                this.inCamera(delineator)
+                this.inCamera(delineatorData) &&
+                ! this.displayedTrackDelineators[index]
             ) {
+                let delineator = this.obstacleFactory.getNew(
+                    delineatorData.type,
+                    delineatorData.x,
+                    delineatorData.y,
+                    delineatorData.rotation
+                );
                 delineator.addToCollisionGroup(this.collisionGroup);
                 delineator.add(this);
                 delineator.sendToBack().moveUp().moveUp();
-            } else if (this.game.world.children.indexOf(delineator) > -1 && ! this.inCamera(delineator)) {
-                delineator.body.removeCollisionGroup(this.collisionGroup);
-                this.game.world.removeChild(delineator);
+                this.displayedTrackDelineators[index] = delineator;
+            } else if (this.displayedTrackDelineators[index] && ! this.inCamera(delineatorData)) {
+                this.displayedTrackDelineators[index].destroy();
+                delete this.displayedTrackDelineators[index];
             }
         });
     }
