@@ -1,5 +1,6 @@
 import AbstractState from './abstract-state';
 import AbstractDynamicObstacle from 'app/classes/obstacles/abstract-dynamic-obstacle';
+import AbstractTrackDelineator from 'app/classes/obstacles/abstract-track-delineator';
 import React from 'react';
 import CarFactory from 'app/classes/car-factory';
 import ObstacleFactory from 'app/classes/obstacles/obstacle-factory';
@@ -64,6 +65,8 @@ class RaceState extends AbstractState
         this.options          = options;
         // Set this ahead of time to prevent being able to accelerate early
         this.countingDown     = true;
+        this.enabledPowerups  = ['cannon'];
+        this.displayedTrackDelineators = {};
 
         this.track.setDebug(this.debug);
     }
@@ -329,21 +332,25 @@ class RaceState extends AbstractState
     }
 
     placeObstacles() {
-        let obstacles = [], obstaclesLayer;
-
-        obstaclesLayer = _.findWhere(this.trackData.layers, {name : 'obstacles'});
+        let obstaclesLayer = _.findWhere(this.trackData.layers, {name : 'obstacles'});
 
         if (! obstaclesLayer) {
             return;
         }
 
-        obstaclesLayer.objects.forEach((obstacle) => {
-            obstacles.push(this.obstacleFactory.getNew(
-                obstacle.type,
-                obstacle.x,
-                obstacle.y,
-                obstacle.rotation
-            ));
+        let obstacles = [];
+        let dynamicObstacles = [];
+        obstaclesLayer.objects.forEach((obstacleData) => {
+            let obstacle = this.obstacleFactory.getNew(
+                obstacleData.type,
+                obstacleData.x,
+                obstacleData.y,
+                obstacleData.rotation
+            );
+            obstacles.push(obstacle);
+            if (obstacle instanceof AbstractDynamicObstacle) {
+                dynamicObstacles.push(obstacle);
+            }
         });
 
         obstacles.forEach((obstacle) => {
@@ -351,6 +358,7 @@ class RaceState extends AbstractState
             obstacle.add(this);
         });
         this.obstacles = obstacles;
+        this.dynamicObstacles = dynamicObstacles;
     }
 
     postGameObjectPlacement() {
@@ -389,7 +397,7 @@ class RaceState extends AbstractState
             this.powerups[pointIndex] = (
                 this.game.world.addChild(
                     this.powerupFactory.getNew(
-                        rng.pickValueFromArray(['hover', 'cannon']),
+                        rng.pickValueFromArray(this.enabledPowerups),
                         point[0],
                         point[1]
                     )
@@ -399,7 +407,50 @@ class RaceState extends AbstractState
         }
     }
 
+    inCamera(sprite) {
+        return !this.offCamera(sprite);
+    }
+
+    offCamera(sprite) {
+        return (
+            sprite.x < this.game.camera.x ||
+            sprite.x > (this.game.camera.x + this.game.camera.width) ||
+            sprite.y < this.game.camera.y ||
+            sprite.y > (this.game.camera.y + this.game.camera.height)
+        );
+    }
+
+    updateTrackDelineators() {
+        let trackDelineatorLayer = _.findWhere(
+                this.trackData.layers,
+                {name : 'track-delineators'}
+            ) || {objects: []};
+
+        trackDelineatorLayer.objects.forEach((delineatorData, index) => {
+            if (
+                this.inCamera(delineatorData) &&
+                ! this.displayedTrackDelineators[index]
+            ) {
+                let delineator = this.obstacleFactory.getNew(
+                    delineatorData.type,
+                    delineatorData.x,
+                    delineatorData.y,
+                    delineatorData.rotation
+                );
+                delineator.addToCollisionGroup(this.collisionGroup);
+                delineator.add(this);
+                delineator.sendToBack().moveUp().moveUp();
+                this.displayedTrackDelineators[index] = delineator;
+            } else if (this.displayedTrackDelineators[index] && ! this.inCamera(delineatorData)) {
+                this.displayedTrackDelineators[index].destroy();
+                delete this.displayedTrackDelineators[index];
+            }
+        });
+    }
+
     update() {
+        this.updateTrackDelineators();
+
         // If all cars are invisible, reset to last marker. This fixes
         // a bug where the game would be stuck if both remaining players
         // were eliminated at the exact same time. This maybe isn't the
@@ -450,12 +501,7 @@ class RaceState extends AbstractState
                             car.y > this.game.world.height
                         ) ||
                         // car.inCamera is false at unexpected times, so doing this:
-                        (
-                            car.x < this.game.camera.x ||
-                            car.x > (this.game.camera.x + this.game.camera.width) ||
-                            car.y < this.game.camera.y ||
-                            car.y > (this.game.camera.y + this.game.camera.height)
-                        )
+                        this.offCamera(car)
                     )
                 ) {
                     car.visible = false;
@@ -605,9 +651,8 @@ class RaceState extends AbstractState
             }
 
             // Obstacles splash too
-            this.obstacles.forEach((obstacle) => {
+            this.dynamicObstacles.forEach((obstacle) => {
                 if (
-                    obstacle instanceof AbstractDynamicObstacle &&
                     ! obstacle.splashing &&
                     this.map.getTileWorldXY(obstacle.x, obstacle.y, width, height, 'water')
                 ) {
@@ -637,7 +682,7 @@ class RaceState extends AbstractState
             }
 
             // Obstacles fall too
-            this.obstacles.forEach((obstacle) => {
+            this.dynamicObstacles.forEach((obstacle) => {
                 if (
                     ! obstacle.falling &&
                     this.map.getTileWorldXY(obstacle.x, obstacle.y, width, height, 'drops')

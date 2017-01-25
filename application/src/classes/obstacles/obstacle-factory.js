@@ -15,6 +15,13 @@ import MarkerGreen from './marker-green';
 import MarkerRed from './marker-red';
 import MarkerBlue from './marker-blue';
 import MarkerBlack from './marker-black';
+import Pebble1 from './pebble-1';
+import Pebble2 from './pebble-2';
+import Pebble3 from './pebble-3';
+import Pebble4 from './pebble-4';
+import Pebble5 from './pebble-5';
+import Pebble6 from './pebble-6';
+import Pebble7 from './pebble-7';
 import QTip from './q-tip';
 import Razor from './razor';
 import Sprayer from './sprayer';
@@ -40,6 +47,13 @@ const allTypes = {
     'MarkerRed'      : MarkerRed,
     'MarkerBlue'     : MarkerBlue,
     'MarkerBlack'    : MarkerBlack,
+    'Pebble1'        : Pebble1,
+    'Pebble2'        : Pebble2,
+    'Pebble3'        : Pebble3,
+    'Pebble4'        : Pebble4,
+    'Pebble5'        : Pebble5,
+    'Pebble6'        : Pebble6,
+    'Pebble7'        : Pebble7,
     'QTip'           : QTip,
     'Razor'          : Razor,
     'Sprayer'        : Sprayer,
