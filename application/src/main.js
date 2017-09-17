@@ -6,8 +6,8 @@ import MainMenuState from './classes/states/menus/main-menu-state';
 import globalState from './global-state';
 
 var game = new Phaser.Game(
-    960,
-    540,
+    1280,
+    704,
     Phaser.AUTO,
     'phaser-template',
     null

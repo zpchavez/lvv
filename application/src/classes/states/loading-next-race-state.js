@@ -62,7 +62,7 @@ class LoadingNextRaceState extends AbstractState
 
         const memorizeItText = this.game.add.text(
             this.game.width / 2,
-            500,
+            600,
             'Memorize it!',
             textStyle
         );
